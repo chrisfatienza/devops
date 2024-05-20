@@ -1,8 +1,6 @@
 # Provider Configuration
 provider "aws" {
   region = "ap-south-1" # Primary region for initial setup
-  access_key = var.aws_access_key
-  secret_key = var.aws_secret_key
 }
 
 resource "aws_instance" "Demo" {
