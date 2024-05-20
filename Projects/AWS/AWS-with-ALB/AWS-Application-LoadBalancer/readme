@@ -1,0 +1,36 @@
+## Terraform Configuration
+
+### Provider
+
+The Terraform configuration specifies AWS as the provider with the desired region set to `us-west-2`.
+
+
+### Resources
+
+1. **VPC (`aws_vpc.main`):**
+   - Creates a Virtual Private Cloud (VPC) with a CIDR block of `10.0.0.0/16`.
+
+2. **Subnets (`aws_subnet.subnet1` and `aws_subnet.subnet2`):**
+   - Creates two subnets within the VPC, each with a `/24` CIDR block.
+   - Specifies the availability zone for each subnet.
+
+3. **Security Group (`aws_security_group.alb_sg`):**
+   - Creates a security group for the ALB to allow inbound traffic on ports 80 and 443.
+   - Allows all outbound traffic.
+
+4. **Application Load Balancer (`aws_lb.my_alb`):**
+   - Creates an ALB with the specified name, type, security groups, and subnets.
+   - Enables deletion protection (can be configured).
+   - Tags the ALB with a name.
+
+5. **Target Group (`aws_lb_target_group.my_target_group`):**
+   - Creates a target group for the ALB with health check configurations.
+
+6. **Listener (`aws_lb_listener.my_listener`):**
+   - Creates a listener for the ALB to forward traffic to the target group on port 80.
+
+## Notes
+
+- Make sure to review and modify the Terraform code according to your specific requirements before applying it.
+- Ensure that you have the necessary permissions to create and manage AWS resources.
+- Consider enabling deletion protection for critical resources to prevent accidental deletion.
