@@ -1,13 +1,16 @@
 # Provider Configuration
 provider "aws" {
-  region = "us-east-1" # Primary region for initial setup
+  region = "ap-south-1" # Primary region for initial setup
 }
 
 resource "aws_instance" "Demo" {
-  ami           = "instance_id"
-  instance_type = "instance_type"
-  key_name = "key_name"
+  ami           = "ami-0dda4ba9a42839a4b"
+  instance_type = "t2.micro"
+  key_name = "devops-demo"
   tags = {
     Name = "demo"
   }
 }
+
+
+ami-0dda4ba9a42839a4b
