@@ -11,6 +11,3 @@ resource "aws_instance" "Demo" {
     Name = "demo"
   }
 }
-
-
-ami-0dda4ba9a42839a4b
