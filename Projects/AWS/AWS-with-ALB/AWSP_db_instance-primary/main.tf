@@ -11,7 +11,7 @@ resource "aws_db_instance" "mysql_primary" {
   instance_class        = "db.t2.micro"
   name                  = "mydb"
   username              = "admin"
-  password              = "yourpassword"
+  password              = "testboxDB"
   parameter_group_name  = "default.mysql5.7"
   publicly_accessible   = false
 }
