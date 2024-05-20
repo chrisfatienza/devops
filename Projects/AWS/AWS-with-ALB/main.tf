@@ -6,6 +6,10 @@ data "aws_vpc" "selected" {
   default = true
 }
 
+output "vpc_attributes" {
+  value = data.aws_vpc.selected
+}
+
 resource "aws_instance" "web_server" {
   count         = 2
   ami           = "ami-12345678" // Replace with Ubuntu AMI ID
