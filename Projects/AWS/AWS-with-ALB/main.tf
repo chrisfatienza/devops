@@ -11,7 +11,7 @@ resource "aws_instance" "web_server" {
   ami           = "ami-12345678" // Replace with Ubuntu AMI ID
   instance_type = "t2.micro" // Change instance type as needed
   key_name      = "devops-demo" // Change to your key pair
-  subnet_id     = data.aws_vpc.selected.public_subnets[0] // Assuming you're using the first public subnet
+  subnet_id     = data.aws_vpc.selected.subnets[0] // Using the first subnet in the VPC
 
   tags = {
     Name = "Web Server ${count.index + 1}"
@@ -31,7 +31,7 @@ resource "aws_lb" "web_lb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = ["${aws_security_group.lb.id}"]
-  subnets            = data.aws_vpc.selected.public_subnets // Use all public subnets in the VPC
+  subnets            = data.aws_vpc.selected.subnets // Use all subnets in the VPC
 
   tags = {
     Name = "Web Load Balancer"
@@ -88,7 +88,7 @@ resource "aws_instance" "mongodb_instance" {
   ami           = "ami-12345678" // Replace with MongoDB AMI ID
   instance_type = "t2.micro" // Change instance type as needed
   key_name      = "devops-demo" // Change to your key pair
-  subnet_id     = data.aws_vpc.selected.public_subnets[0] // Assuming you're using the first public subnet
+  subnet_id     = data.aws_vpc.selected.subnets[0] // Using the first subnet in the VPC
   tags = {
     Name = "MongoDB Server"
   }
