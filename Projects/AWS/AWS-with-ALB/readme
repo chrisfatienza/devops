@@ -1,0 +1,68 @@
+## Setting Up High Availability Architecture on AWS
+
+### Prerequisites
+
+- AWS account with appropriate permissions to create resources.
+- Terraform installed on your local machine.
+- Route53 hosted zone for your domain.
+
+The Terraform configuration specifies AWS as the provider with the desired region set to `us-west-2`.
+
+
+### Configuration Steps
+
+1. **VPC (`aws_vpc.main`):**
+   - Creates a Virtual Private Cloud (VPC) with a CIDR block of `10.0.0.0/16`.
+
+2. **Subnets (`aws_subnet.subnet1` and `aws_subnet.subnet2`):**
+   - Creates two subnets within the VPC, each with a `/24` CIDR block.
+   - Specifies the availability zone for each subnet.
+
+3. **Security Group (`aws_security_group.alb_sg`):**
+   - Creates a security group for the ALB to allow inbound traffic on ports 80 and 443.
+   - Allows all outbound traffic.
+
+4. **Application Load Balancer (`aws_lb.my_alb`):**
+   - Creates an ALB with the specified name, type, security groups, and subnets.
+   - Enables deletion protection (can be configured).
+   - Tags the ALB with a name.
+
+5. **Target Group (`aws_lb_target_group.my_target_group`):**
+   - Creates a target group for the ALB with health check configurations.
+
+6. **Listener (`aws_lb_listener.my_listener`):**
+   - Creates a listener for the ALB to forward traffic to the target group on port 80.
+
+## Notes
+
+- Make sure to review and modify the Terraform code according to your specific requirements before applying it.
+- Ensure that you have the necessary permissions to create and manage AWS resources.
+- Consider enabling deletion protection for critical resources to prevent accidental deletion.
+
+
+## aws_shield_protection
+  name              = "example-shield-protection"
+  resource_arn      = "arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/example-lb/abcdef1234567890"
+  protection_type   = "ELB"
+
+- name: The name of the Shield protection.
+- resource_arn: The ARN (Amazon Resource Name) of the AWS resource that you want to protect. Replace the example ARN with the ARN of your Elastic Load Balancer or any other resource you want to protect.
+- protection_type: The type of resource being protected. For an Elastic Load Balancer, it's typically "ELB".
+
+## 
+resource "aws_waf_web_acl" "example" {
+  name        = "example-waf-web-acl"
+  metric_name = "example-metric"
+  default_action {
+    type = "ALLOW"
+  }
+}
+
+resource "aws_waf_rule" "example" {
+  name        = "example-waf-rule"
+  metric_name = "example-rule-metric"
+  predicates {
+    data_id = aws_waf_web_acl.example.id
+    negated = false
+    type    = "IPMatch"
+    value   = "192.0.2.0
