@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "your_region"
+  region = "ap-south-1"
 }
 
 data "aws_vpc" "selected" {
