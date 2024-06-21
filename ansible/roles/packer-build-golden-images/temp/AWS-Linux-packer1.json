@@ -1,0 +1,74 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "name": "TPICAP-Amazon-Linux2-{{isotime \"02-Jan-06 03_04_05\"}}",
+    "ssh_username": "ec2-user",
+    "distro": "{{env `Distribution`}}"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "name": "Amazon_Linux_2_LTS",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "eu-west-1",
+    "source_ami_filter": {
+    "filters": {
+      "virtualization-type": "hvm",
+      "name": "amzn2-ami-hvm-*-x86_64-gp2",
+      "root-device-type": "ebs"
+    },
+    "owners": ["137112412989", "591542846629", "801119661308",
+                   "102837901569", "013907871322", "206029621532",
+                   "286198878708", "443319210888"],
+    "most_recent": true
+    },
+    "instance_type": "t2.medium",
+    "ssh_username": "{{user `ssh_username`}}",
+    "ssh_pty": true,
+    "encrypt_boot": true,
+    "vpc_id": "vpc-0ac7f197f4eaef841",
+    "subnet_id": "subnet-03c008a05efaca939",
+    "ami_name": "TPICAP-Amazon-Linux2-{{isotime \"02-Jan-06 03_04_05\"}}",
+    "tags": {
+      "Name": "{{user `name`}}"
+    }
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "bash -c 'sudo amazon-linux-extras install ansible2 -y'",
+      "ssh-keyscan 10.72.32.75 >> ~/.ssh/known_hosts",
+      "bash -c 'sudo yum install git -y'"
+      ]
+    },
+    {
+    "type": "ansible-local",
+    "playbook_file": "linux-playbook.yml",
+    "extra_arguments": [ "--extra-vars \"ansible_distribution_version=2017.12 ansible_distribution=Amazon\"" ],
+    "galaxy_file": "{{user `distro`}}-requirements.yml"
+    },
+    {
+    "type": "shell",
+    "execute_command": "sudo -S sh '{{.Path}}'",
+    "inline_shebang": "/bin/sh -e -x",
+    "inline": [
+        "echo '** Shreding sensitive data ...'",
+        "shred -u /etc/ssh/*_key /etc/ssh/*_key.pub",
+        "shred -u /root/.*history /home/{{user `ssh_username`}}/.*history",
+        "shred -u /root/.ssh/authorized_keys /home/{{user `ssh_username`}}/.ssh/authorized_keys",
+        "shred -u /home/{{user `ssh_username`}}/.ssh/known_hosts /home/{{user `ssh_username`}}/.ssh/id_rsa",
+        "sync; sleep 1; sync"
+        ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "bash -c 'sudo amazon-linux-extras disable ansible2'",
+        "bash -c 'sudo yum remove ansible -y'",
+        "bash -c 'sudo yum clean all'",
+        "bash -c 'sudo rm -rf /var/cache/yum'"
+        ]
+    }
+  ]
+}

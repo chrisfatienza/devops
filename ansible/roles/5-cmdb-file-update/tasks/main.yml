@@ -1,0 +1,18 @@
+---
+# Check for pre-requisites
+- name: check for role pre-requisites
+  import_tasks: precheck.yml
+
+# Install script and timer
+#- name: Install update script and systemd timer
+#  import_tasks: cmdb.yml
+
+- when: rhel_major > 6
+  block:
+  - name: Import systemd service to manage appd config
+    import_tasks: tasks/cmdb_rhel7.yml
+
+- when: rhel_major == 6
+  block:
+  - name: Setup cron job to manage appd config
+    import_tasks: tasks/cmdb_rhel6.yml

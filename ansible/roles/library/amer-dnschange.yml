@@ -1,0 +1,58 @@
+- hosts: hostlist
+  tasks:
+    - name: Create backup of /etc/resolv.conf
+      shell: cp -n /etc/resolv.conf /etc/resolv.conf.CHG0112641b
+
+    - name: Get resolv.conf content
+      shell: cat /etc/resolv.conf
+      register: ResolvContent
+      
+    - name: Change OLD DNS NJCPINFDCG01 10.138.36.31 to 10.161.72.10
+      lineinfile:
+        regexp: "10.138.36.31"
+        line: "nameserver 10.161.72.10"
+        dest: "/etc/resolv.conf"
+      when: ResolvContent.stdout | regex_search('10.138.36.31')
+
+    - name: Change OLD DNS NJCPINFDCG02 10.137.36.31 to 10.160.72.10
+      lineinfile:
+        regexp: "10.137.36.31"
+        line: "nameserver 10.160.72.10"
+        dest: "/etc/resolv.conf"
+      when: ResolvContent.stdout | regex_search('10.137.36.31')
+
+    - name: Change OLD DNS NJCPINFDCG03 10.138.36.32 to NJC1WS0001 10.161.72.10
+      lineinfile:
+        regexp: "10.138.36.32"
+        line: "nameserver 10.161.72.10"
+        dest: "/etc/resolv.conf"
+      when: ResolvContent.stdout | regex_search('10.138.36.32')
+     
+    - name: Change OLD DNS NJCPINFDCN01 10.138.36.18 to NJC2WS2833 10.160.72.84
+      lineinfile:
+        regexp: "10.138.36.18"
+        line: "nameserver 10.160.72.84"
+        dest: "/etc/resolv.conf"
+      when: ResolvContent.stdout | regex_search('10.138.36.18')
+
+    - name: Change OLD DNS NJCPINFDCN03 10.138.36.19to NJC1WS0857 10.161.72.29
+      lineinfile:
+        regexp: "10.138.36.19"
+        line: "nameserver 10.161.72.29"
+        dest: "/etc/resolv.conf"
+      when: ResolvContent.stdout | regex_search('10.138.36.19')
+
+    - name: Change OLD DNS NJCPINFDCR01 10.138.36.21 to NJC1WS0005 10.161.72.12
+      lineinfile:
+        regexp: "10.138.36.21"
+        line: "nameserver 10.161.72.12"
+        dest: "/etc/resolv.conf" 
+      when: ResolvContent.stdout | regex_search('10.138.36.21')
+
+    - name: Change OLD DNS NJCPINFDCG05 10.138.36.33 to NJC1WS0001 10.161.72.10
+      lineinfile:
+        regexp: "10.138.36.33"
+        line: "nameserver 10.161.72.10
+"
+        dest: "/etc/resolv.conf"
+      when: ResolvContent.stdout | regex_search('10.138.36.33')

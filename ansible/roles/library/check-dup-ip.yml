@@ -1,0 +1,19 @@
+---
+- name: Check IP Addresses on the server
+  hosts: hostlist
+  gather_facts: true
+
+  tasks:
+    - name: Gather IP addresses
+      shell: ip -o -4 addr show | grep -v 127.0 | awk '{split($4, a, "/"); print a[1]}'
+      register: ip_addresses
+
+    - name: Identify Duplicate IP Addresses
+      set_fact:
+        ip_count: "{{ ip_addresses.stdout_lines | length }}"
+
+    - name: Display Message if More Than One IP Found
+      debug:
+        msg: "Server has {{ ip_count }} IP addresses. Check DNS entries later and remove other entries."
+      when: ip_count | int > 1
+

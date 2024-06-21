@@ -1,0 +1,30 @@
+---
+- name: Check if UDP port 319 is open
+  hosts: all
+  tasks:
+    - name: Check UDP port 319 on servers
+      command: nc -z -u -w1 {{ item }} 31964
+      ignore_errors: yes
+      register: result
+      with_items:
+        - ldn2va1001.corp.ad.tullib.com
+        - ldn2va1001.corp.ad.tullib.com
+        - njc2va1000.corp.ad.tullib.com
+        - njc4va1000.corp.ad.tullib.com
+        - Njc1va1000.corp.ad.tullib.com
+
+    # - name: Check TCP port 319 on servers
+    #   command: nc -zv {{ item }} 319
+    #   ignore_errors: yes
+    #   register: result
+    #   with_items:
+    #     - ldn2va1001.corp.ad.tullib.com
+    #     - ldn2va1001.corp.ad.tullib.com
+    #     - njc2va1000.corp.ad.tullib.com
+    #     - njc4va1000.corp.ad.tullib.com
+    #     - Njc1va1000.corp.ad.tullib.com
+
+
+    - name: Display the result
+      debug:
+        var: result.rc

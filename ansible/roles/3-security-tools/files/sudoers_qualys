@@ -1,0 +1,6 @@
+#Sudo Config for Qualys User
+Cmnd_Alias	SU=/bin/su
+secscan-a	ALL=SU
+
+#Sudo Config for Qualys Cloud Agent User
+%svcqca ALL=(ALL) NOPASSWD: ALL

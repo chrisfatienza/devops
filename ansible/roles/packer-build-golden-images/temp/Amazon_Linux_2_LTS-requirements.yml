@@ -1,0 +1,3 @@
+- src: git@10.72.32.75:infrastructure-engineering/golden-images.git
+  scm: git
+  version: "AmazonLinux2"

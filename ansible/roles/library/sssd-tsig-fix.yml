@@ -1,0 +1,24 @@
+---
+- name: Ensure dyndns_update is set to false in sssd.conf
+  hosts: all
+  become: yes
+  tasks:
+    - name: Check if dyndns_update = false is present in sssd.conf
+      command: grep -q '^dyndns_update = false$' /etc/sssd/sssd.conf
+      register: grep_result
+      ignore_errors: yes
+
+    - name: Add dyndns_update = false to sssd.conf if not present
+      lineinfile:
+        path: /etc/sssd/sssd.conf
+        line: 'dyndns_update = false'
+      when: grep_result.rc != 0
+      notify:
+        - Restart SSSD
+
+  handlers:
+    - name: Restart SSSD
+      service:
+        name: sssd
+        state: restarted
+

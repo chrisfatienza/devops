@@ -1,0 +1,36 @@
+  - name: Copy bon-ethdefault file
+    copy:
+      src: bond-ethdefault
+      dest: /tmp/bond-ethdefault
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: Copy bond-bond0default file
+    copy:
+      src: bond-bond0default 
+      dest: /tmp/bond-bond0default
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: Copy bond0 template
+    copy:
+      src: setbond0-eth0-eth1.sh
+      dest: /tmp
+      owner: root
+      group: root
+      mode: 0770
+
+  - name: Execute Bond configuration
+    shell: bash /tmp/setbond0-eth0-eth1.sh
+
+  - name: Bond files cleanup
+    shell: rm /tmp/bond-bond0default /tmp/bond-ethdefault /tmp/setbond0-eth0-eth1.sh
+    args:
+      warn: false
+
+  - name: Restarting Network Service
+    service:
+      name: network
+      state: restarted

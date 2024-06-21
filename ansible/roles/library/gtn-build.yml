@@ -1,0 +1,5 @@
+- hosts: hostlist
+
+  roles:
+  - vmware-gtn-images
+...

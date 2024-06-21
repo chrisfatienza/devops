@@ -1,0 +1,21 @@
+---
+- include: section1-password_policy_account_lockout_policy.yml
+  tags: account
+
+- include: section2-user_rights.yml
+  tags: user_rights
+
+- include: section2-security-access.yml
+  tags: security_access
+
+- include: section9-firewall.yml
+  tags: firewall
+
+- include: section17-audit.yml
+  tags: audit
+
+- include: section18-system_policies.yml
+  tags: system_policies
+
+# - include: section19-registry.yml excluded CIS
+#   tags: registry

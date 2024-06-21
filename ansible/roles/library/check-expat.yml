@@ -1,0 +1,4 @@
+- hosts: hostlist
+  tasks:
+    - name: Check expat and nss
+      shell: 'rpm -qa |egrep "expat|nss"'

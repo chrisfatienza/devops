@@ -1,0 +1,70 @@
+- name: "SCORED | 4.2.1.1 | PATCH | Ensure rsyslog Service is enabled"
+  command: yum -q list rsyslog
+  ignore_errors: true
+  register: rsyslog_4_2_1_1
+
+- name: 4.2.1.1 - Ensure rsyslog Service is enabled
+  service:
+    name: "rsyslog"
+    enabled: true
+    state: started
+  when:
+    - rsyslog_4_2_1_1.rc is not defined or rsyslog_4_2_1_1.rc == 0
+  ignore_errors: false
+
+
+- name: "SCORED | 4.2.1.3 | PATCH | Ensure rsyslog default file permissions configured"
+  lineinfile:
+      dest: /etc/rsyslog.conf
+      regexp: '^\$FileCreateMode'
+      line: '$FileCreateMode 0640'
+
+#testing on udp 514
+# - name: "SCORED | 4.2.1.4 | PATCH | Ensure rsyslog is configured to send logs to a remote log host"
+#   lineinfile:
+#     regexp: "^#?\\*.*?@@remote"
+#     line: "*.* @@10.44.53.145"
+#     dest: "/etc/rsyslog.conf"
+
+# - name: "NOTSCORED | 4.2.1.5 | PATCH | Ensure remote rsyslog messages are only accepted on designated log hosts."
+#   lineinfile:
+#     regexp: "{{ item.regexp }}"
+#     line: "{{ item.line }}"
+#     dest: "/etc/rsyslog.conf"
+#     state: present
+#   with_items:
+#     - { regexp: "^#?\\$ModLoad\\s+imtcp.so", line: "$ModLoad imtcp.so" }
+#     - { regexp: "^#?\\$InputTCPServerRun\\s+", line: "$InputTCPServerRun 514" }
+#   notify: Restart rsyslog
+
+
+- name: 4.2.1.5 - Ensure remote rsyslog messages are not accepted on non-designated log hosts
+  lineinfile:
+    regexp: "{{ item }}"
+    dest: "/etc/rsyslog.conf"
+    state: absent
+  with_items:
+    - "^#?\\$ModLoad\\s+imtcp"
+    - "^#?\\$InputTCPServerRun\\s+514"
+  notify: Restart rsyslog
+
+
+- name: "SCORED | 4.2.4 | PATCH | Ensure permissions on all logfiles are configured"
+  command: find /var/log -type f -exec chmod g-wx,o-rwx {} +
+
+
+
+- name: "NOTSCORED | 4.3 | PATCH | Ensure logrotate is configured"
+  find:
+    paths: /etc/logrotate.d/
+  register: log_rotates
+
+
+- name: "NOTSCORED | 4.3 | PATCH | Ensure logrotate is configured"
+  replace:
+    path: "{{ item.path }}"
+    regexp: '^(\s*)(daily|weekly|monthly|yearly)$'
+    replace: "\\daily"
+  with_items:
+    - "{{ log_rotates.files }}"
+    - { path: "/etc/logrotate.conf" }

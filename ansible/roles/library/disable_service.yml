@@ -1,0 +1,30 @@
+# Author: Christopher Atienza
+# Usages:
+# ansible-playbook -e "target_host=your_hostname target_service=your_service_name" disable_service.yml
+# Sample: ansible-playbook -e "target_hostname=ldn2lx0003 target_service=autofs" disable_service.yml
+
+---
+- name: Disable and Stop Service
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Convert the JSON-encoded hostnames to a list
+      set_fact:
+        target_hostnames: "{{ target_hostnames | from_json }}"
+      run_once: true
+
+    - name: Disable and stop the service on the target hosts
+      systemd:
+        name: "{{ target_service }}"
+        enabled: no
+        state: stopped
+      with_items: "{{ target_hostnames }}"
+      loop_control:
+        loop_var: target_hostname
+      register: service_status
+
+    - name: Print the service status
+      debug:
+        var: service_status
+

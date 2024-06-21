@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh CMDB data every day from 03:00
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Unit=cmdb_update.service
+RandomizedDelaySec=120m
+AccuracySec=1s
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,62 @@
+SSSD: "Failed to read Keytab" - resolution
+Resolution process:
+
+	1. Put "ad_server = NJC2WS0002.corp.ad.tullib.com" entry into sssd.conf
+	2. echo 'password' | realm leave --remove --user=Srvcpbis corp.ad.tullib.com
+	3. echo 'password' | realm join --user=Srvcpbis --computer-ou='OU=Linux,OU=Jersey City,OU=AMER,OU=DC,DC=corp,DC=ad,DC=tullib,DC=com' NJC2WS0002.corp.ad.tullib.com
+	4. systemctl restart sssd
+	5. systemctl restart realmd
+	
+
+Force delete AD computer
+  adcli delete-computer -U  Srvcpbis --domain=corp.ad.tullib.com njc1lx2839 ;  realm join --user=Srvcpbis njc2ws0002.corp.ad.tullib.com
+
+run this to see if the kerberos is created
+/usr/sbin/adcli join --verbose --domain corp.ad.tullib.com --domain-realm CORP.AD.TULLIB.COM --domain-controller 10.160.72.10 --login-type user --login-user Srvcpbis --stdin-password
+
+Sample:
+[root@njc1lx2839 ~]# /usr/sbin/adcli join --verbose --domain corp.ad.tullib.com --domain-realm CORP.AD.TULLIB.COM --domain-controller 10.160.72.10 --login-type user --login-user Srvcpbis --stdin-password
+ * Using domain name: corp.ad.tullib.com
+ * Calculated computer account name from fqdn: NJC1LX2839
+ * Using domain realm: corp.ad.tullib.com
+ * Sending NetLogon ping to domain controller: 10.160.72.10
+ * Received NetLogon info from: NJC2WS0002.corp.ad.tullib.com
+ * Wrote out krb5.conf snippet to /tmp/adcli-krb5-CdCFcq/krb5.d/adcli-krb5-conf-4AOZpv
+
+To specific AD server, check the server DC location
+
+[root@njc1lx2839 ~]# realm join --user=Srvcpbis NJC2WS0002.corp.ad.tullib.com
+Password for Srvcpbis:
+
+Check the sssd process once connect by force
+
+root@njc1lx2839 ~]# systemctl status sssd
+● sssd.service - System Security Services Daemon
+   Loaded: loaded (/usr/lib/systemd/system/sssd.service; enabled; vendor preset: disabled)
+   Active: active (running) since Mon 2024-03-11 05:26:40 EDT; 34s ago
+ Main PID: 90655 (sssd)
+   CGroup: /system.slice/sssd.service
+           ├─90655 /usr/sbin/sssd -i --logger=files
+           ├─90656 /usr/libexec/sssd/sssd_be --domain corp.ad.tullib.com --uid 0 --gid 0 --logger=files
+           ├─90657 /usr/libexec/sssd/sssd_nss --uid 0 --gid 0 --logger=files
+           └─90658 /usr/libexec/sssd/sssd_pam --uid 0 --gid 0 --logger=files
+
+Mar 11 05:26:40 njc1lx2839 sssd[pam][90658]: Starting up
+
+Note: if no error copy /root/sssd.conf to /etc/sssd
+
+Restart the sssd again, then test the user
+
+Sample:
+
+	time id catienza-a
+
+
+[root@njc1lx2839 ~]# time id catienza-a
+uid=1752254239(catienza-a) gid=1752200513(domain users) groups=1752200513(domain users),1752247550(corp-unixsa-linux),1126632614(l njc1ws4667),1752204606(l njcpinfadm05),1752241801(corp-check_mk-unix-admins),1752252832(vcenter admin amer),1752317487(ntfs l amer filerepo tcapture rw),569419289(unix admins - vm admins@eur.ad.tullib.com),1752321698(ucs manager oracle rac admin),1752277836(msa storage admin),1752205344(l sydpinfadm05),1752242409(global l domain join unix admins),1752253394(l hkgpinfadm05),1752248649(unix admin),1752317488(ntfs l amer filerepo tcaptureuat rw),1752216961(ucs manager kvm),1752241163(wksrdp-mnl00xw50337),1752218944(ldn unix admins),1126637122(ntfs l amer filerepo tcapturedev rw),1126630480(linux.admins),1752222724(gbl g s hpe oneview read only),1126600360(vcenter global unix admin access),1752218635(ldn it department),1126644768(ntfs l amer nuggets common2 public ro),1752204702(gbl g s pure storage admin),1752396981(tp_icap_users (liquidnet)),1752201103(dnsadmins),1752224283(global_l_axiom_users),1126607314(ntfs l amer filerepo tcaptureshadow rw_domainusers),1752221527(vmware iswap administrators),1752372775(commvault admins amer),1752202122(global dns modify),1752216104(l sngpqmmapp01),1752317490(ntfs l amer filerepo bmksystem rw),1752317489(ntfs l amer filerepo tcaptureshadow rw),1752323547(commvault admins emea),1752321696(ucs manager admin)
+
+real    0m1.437s     <- ensure less than 5secs max
+user    0m0.001s
+sys     0m0.008s
+
+Then add all remaining AD group/s

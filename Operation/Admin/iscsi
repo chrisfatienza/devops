@@ -1,0 +1,38 @@
+Creating an iSCSI Initiator
+25.2. Creating an iSCSI Initiator
+In Red Hat Enterprise Linux 7, the iSCSI service is lazily started by default: the service starts after running the iscsiadm command.
+Procedure 25.7. Creating an iSCSI Initiator
+	1. Install iscsi-initiator-utils:
+# yum install iscsi-initiator-utils -y
+	2. If the ACL was given a custom name in Section 25.1.6, “Configuring ACLs”, modify the /etc/iscsi/initiatorname.iscsi file accordingly. For example:
+# cat /etc/iscsi/initiatorname.iscsi
+InitiatorName=iqn.2006-04.com.example.node1
+
+# vi /etc/iscsi/initiatorname.iscsi
+	3. Discover the target:
+# iscsiadm -m discovery -t st -p target-ip-address 
+10.64.24.179:3260,1 iqn.2006-04.com.example:3260
+	4. Log in to the target with the target IQN you discovered in step 3:
+# iscsiadm -m node -T iqn.2006-04.com.example:3260 -l 
+Logging in to [iface: default, target: iqn.2006-04.com.example:3260, portal: 10.64.24.179,3260] (multiple)
+Login to [iface: default, target: iqn.2006-04.com.example:3260, portal: 10.64.24.179,3260] successful.
+
+This procedure can be followed for any number of initators connected to the same LUN so long as their specific initiator names are added to the ACL as described in Section 25.1.6, “Configuring ACLs”.
+	5. Find the iSCSI disk name and create a file system on this iSCSI disk:
+# grep "Attached SCSI" /var/log/messages
+
+# mkfs.ext4 /dev/disk_name
+Replace disk_name with the iSCSI disk name displayed in /var/log/messages.
+	6. Mount the file system:
+# mkdir /mount/point
+# mount /dev/disk_name /mount/point
+Replace /mount/point with the mount point of the partition.
+	7. Edit the /etc/fstab to mount the file system automatically when the system boots:
+# vim /etc/fstab
+/dev/disk_name /mount/point ext4 _netdev 0 0
+
+Replace disk_name with the iSCSI disk name.
+	8. Log off from the target:
+# iscsiadm -m node -T iqn.2006-04.com.example:3260 -u
+
+From <https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/storage_administration_guide/osm-create-iscsi-initiator> 

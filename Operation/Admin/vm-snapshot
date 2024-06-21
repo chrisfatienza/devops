@@ -1,0 +1,139 @@
+# Define the vCenter Server, username, and password
+$vCenterServer = "serverVcemnter"    # Replace with your vCenter Server name or IP address
+$username = "GuestAdmin" # Replace with your username
+$password = "Svsdfds2"               # Replace with your password
+
+# Function to connect to vCenter Server
+function Connect-ToVCenter {
+    param (
+        [string]$Server,
+        [string]$User,
+        [string]$Password
+    )
+    Connect-VIServer -Server $Server -User $User -Password $Password -ErrorAction SilentlyContinue -Force | Out-Null
+}
+
+# Function to show VM snapshot status for a specific server
+function Show-SingleVMSnapshotStatus {
+    param (
+        [string]$VMName
+    )
+
+    $vmStatus = Get-VM -Name $VMName -ErrorAction SilentlyContinue
+    if ($vmStatus) {
+        $snapshots = Get-Snapshot -VM $VMName -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike "Consolidate*" }
+        if ($snapshots) {
+            Write-Output "Snapshots found for VM '$VMName':"
+            $snapshots | Select-Object VM, Name, Description, Created | Format-Table -AutoSize | Out-String
+        } else {
+            Write-Output "No snapshots found for VM '$VMName'."
+        }
+    } else {
+        Write-Output "VM '$VMName' not found."
+    }
+}
+
+# Function to confirm snapshot creation without progress messages
+function Confirm-SnapshotCreation {
+    param (
+        [string]$VMName,
+        [string]$SnapshotName
+    )
+
+    New-Snapshot -VM $VMName -Name $SnapshotName -Confirm:$false -ErrorAction SilentlyContinue -Verbose:$false | Out-Null
+}
+
+# Function to take a snapshot for a specific server
+function Take-SingleVMSnapshot {
+    param (
+        [string]$VMName
+    )
+
+    $vmStatus = Get-VM -Name $VMName -ErrorAction SilentlyContinue
+    if ($vmStatus) {
+        try {
+            $null = Invoke-Command -ScriptBlock {
+                param ($VMName)
+                New-Snapshot -VM $VMName -Name "Snapshot_$(Get-Date -Format 'yyyyMMdd_HHmmss')" -Confirm:$false -Verbose:$false
+            } -ArgumentList $VMName -ErrorAction SilentlyContinue
+            Write-Output "Snapshot created for VM '$VMName'."
+        } catch {
+            Write-Output "Failed to create snapshot for VM '$VMName'."
+        }
+    } else {
+        Write-Output "VM '$VMName' not found."
+    }
+}
+
+# Function to delete snapshots for a specific server
+function Delete-SingleVMSnapshots {
+    param (
+        [string]$VMName
+    )
+
+    $snapshotsToDelete = Get-Snapshot -VM $VMName -ErrorAction SilentlyContinue
+    if ($snapshotsToDelete) {
+        foreach ($snapshot in $snapshotsToDelete) {
+            try {
+                $null = Remove-Snapshot -Snapshot $snapshot -Confirm:$false -ErrorAction Stop -WarningAction SilentlyContinue -Verbose:$false
+                Write-Output "Snapshot '$($snapshot.Name)' deleted successfully."
+            } catch {
+                Write-Output "Failed to delete snapshot '$($snapshot.Name)' from VM '$VMName'."
+            }
+        }
+        Write-Output "Finished processing snapshots for VM '$VMName'."
+    } else {
+        Write-Output "No snapshots found for VM '$VMName'."
+    }
+}
+
+# Main script
+
+try {
+    # Attempt to connect to vCenter Server
+    $connection = Connect-ToVCenter -Server $vCenterServer -User $username -Password $password
+    Write-Output "Connection successful to $($connection.Name)! Proceed with other operations."
+
+    # Prompt user to enter VM names separated by commas
+    $vmInput = Read-Host "Enter VM names separated by commas (e.g., VM1, VM2, VM3)"
+
+    # Parse VM names into an array
+    $vms = $vmInput -split ',' | ForEach-Object { $_.Trim() }
+
+    # Main loop
+    while ($true) {
+        # Prompt user for snapshot actions
+        $snapshotAction = Read-Host "Select snapshot action:`n1. View snapshot status`n2. Take snapshots`n3. Delete snapshots`nEnter option number (1-3) or 'quit' to exit:"
+
+        if ($snapshotAction -eq 'quit') {
+            break
+        }
+
+        switch ($snapshotAction) {
+            1 {
+                foreach ($vm in $vms) {
+                    Show-SingleVMSnapshotStatus -VMName $vm
+                }
+            }
+            2 {
+                foreach ($vm in $vms) {
+                    Take-SingleVMSnapshot -VMName $vm
+                }
+            }
+            3 {
+                foreach ($vm in $vms) {
+                    Delete-SingleVMSnapshots -VMName $vm
+                }
+            }
+            default {
+                Write-Output "Invalid option selected."
+            }
+        }
+    }
+} finally {
+    # Disconnect from vCenter Server if connected
+    if ($connection) {
+        Disconnect-VIServer -Server $connection -Confirm:$false
+        Write-Output "Disconnected from vCenter Server: $($connection.Name)"
+    }
+}

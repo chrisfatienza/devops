@@ -1,0 +1,20 @@
+---
+- name: Check ports on destination servers
+  #hosts: "{{ destination_servers }}"
+  hosts: hostlist
+  gather_facts: no
+  vars:
+   ports_to_check: "{{ ports | default([80, 443, 22]) }}"
+  tasks:
+    - name: Check ports
+      wait_for:
+        host: "{{ item }}"
+        port: "{{ item_port }}"
+        timeout: 5
+        state: started
+      with_items: "{{ destination_servers }}"
+      loop_control:
+        loop_var: item_hostname
+        dict:
+          item_port: "{{ ports_to_check }}"
+          item_hostname: "{{ item }}"

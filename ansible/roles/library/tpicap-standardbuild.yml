@@ -1,0 +1,10 @@
+- hosts: hostlist
+
+  roles:
+  - 1-rhel76-hardening
+  - 2-common-tools-realm
+  - 3-security-tools
+  - 4-appdynamics-machine-agent
+  - 5-cmdb-file-update
+  - 6-motd-update
+...

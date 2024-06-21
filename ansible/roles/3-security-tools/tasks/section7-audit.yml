@@ -1,0 +1,465 @@
+
+- name: "SCORED | 6.1.2 | PATCH | Ensure permissions on /etc/passwd are configured"
+  file:
+      dest: /etc/passwd
+      owner: root
+      group: root
+      mode: 0644
+
+
+- name: "SCORED | 6.1.3 | PATCH | Ensure permissions on /etc/shadow are configured"
+  file:
+      dest: /etc/shadow
+      owner: root
+      group: root
+      mode: 0000
+
+
+- name: "SCORED | 6.1.4 | PATCH | Ensure permissions on /etc/group are configured"
+  file:
+      dest: /etc/group
+      owner: root
+      group: root
+      mode: 0644
+
+
+- name: "SCORED | 6.1.5 | PATCH | Ensure permissions on /etc/gshadow are configured"
+  file:
+      dest: /etc/gshadow
+      owner: root
+      group: root
+      mode: 0000
+
+- name: "SCORED | 6.1.6 | PATCH | Ensure permissions on /etc/passwd- are configured"
+  file:
+      dest: /etc/passwd-
+      owner: root
+      group: root
+      mode: 0600
+
+
+- name: "SCORED | 6.1.7 | PATCH | Ensure permissions on /etc/shadow- are configured"
+  file:
+      dest: /etc/shadow-
+      owner: root
+      group: root
+      mode: 0000
+
+
+- name: "SCORED | 6.1.8 | PATCH | Ensure permissions on /etc/group- are configured"
+  file:
+      dest: /etc/group-
+      owner: root
+      group: root
+      mode: 0600
+
+
+- name: "SCORED | 6.1.9 | PATCH | Ensure permissions on /etc/gshadow- are configured"
+  file:
+      dest: /etc/gshadow-
+      owner: root
+      group: root
+      mode: 0600
+
+
+- name: "SCORED | 6.1.10 | PATCH | Ensure no world writable files exist"
+  shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -0002
+  register: audit_6_1_10
+
+- name: 6.1.10 - Ensure no world writable files exist
+  fail:
+    msg: "{{ audit_6_1_10.stdout_lines }}"
+  when:
+    - audit_6_1_10.stdout_lines is defined and audit_6_1_10.stdout_lines|length > 0
+
+- name: 6.1.10 - Ensure no world writable files exist
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_1_10.stdout }}"
+  when:
+    - audit_6_1_10.stdout_lines is defined and audit_6_1_10.stdout_lines|length > 0
+
+- name: "SCORED | 6.1.11 | PATCH | Ensure no unowned files or directories exist"
+  shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nouser
+  register: audit_6_1_11
+
+- name: 6.1.11 - Ensure no unowned files or directories exist
+  fail:
+    msg: "{{ audit_6_1_11.stdout_lines }}"
+  when:
+    - audit_6_1_11.stdout_lines is defined and audit_6_1_11.stdout_lines|length > 0
+
+- name: 6.1.11 - Ensure no unowned files or directories exist
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_1_11.stdout }}"
+  when:
+    - audit_6_1_11.stdout_lines is defined and audit_6_1_11.stdout_lines|length > 0
+
+- name: "SCORED | 6.1.12 | PATCH | Ensure no ungrouped files or directories exist"
+  shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -nogroup
+  register: audit_6_1_12
+
+
+- name: 6.1.12 - Ensure no ungrouped files or directories exist
+  fail:
+    msg: "{{ audit_6_1_12.stdout_lines }}"
+  when:
+    - audit_6_1_12.stdout_lines is defined and audit_6_1_12.stdout_lines|length > 0
+
+- name: 6.1.12 - Ensure no ungrouped files or directories exist
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_1_12.stdout }}"
+  when:
+    - audit_6_1_12.stdout_lines is defined and audit_6_1_12.stdout_lines|length > 0
+
+
+#
+# - name:  "NOTSCORED | 6.1.13 | PATCH | Audit SUID executables"
+#   shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -4000
+#   register: audit_6_1_13
+#
+# - name: 6.1.13 - Audit SUID executables
+#   fail:
+#     msg: "{{ audit_6_1_13.stdout_lines }}"
+#   when:
+#     - audit_6_1_13.stdout_lines is defined and audit_6_1_13.stdout_lines|length > 0
+#
+#
+# - name: 6.1.13 - Audit SUID executables
+#   debug:
+#     msg: "*** ACTION REQUIRED *** {{ audit_6_1_13.stdout }}"
+#   when:
+#     - audit_6_1_13.stdout_lines is defined and audit_6_1_13.stdout_lines|length > 0
+#
+# - name: "NOTSCORED | 6.1.14 | PATCH | Audit SGID executables"
+#   shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type f -perm -2000
+#   register: audit_6_1_14
+#
+# - name: 6.1.14 - Audit SGID executables
+#   fail:
+#     msg: "{{ audit_6_1_14.stdout }}"
+#   when:
+#     - audit_6_1_14.stdout_lines is defined and audit_6_1_14.stdout_lines|length > 0
+#
+#
+# - name: 6.1.14 - Audit SGID executables
+#   debug:
+#     msg: "*** ACTION REQUIRED *** {{ audit_6_1_14.stdout }}"
+#   when:
+#     - audit_6_1_14.stdout_lines is defined and audit_6_1_14.stdout_lines|length > 0
+
+
+
+- name: 6.2.1 - Identify any accounts without passwords
+  shell: "cat /etc/shadow | awk -F: '($2 == \"\" ) { print $1 }'"
+  register: accounts_6_2_1
+  check_mode: no
+  changed_when: False
+
+
+- name: 6.2.1 - Lock any accounts without passwords
+  command: "passwd -l {{ item }}"
+  with_items: "{{ accounts_6_2_1.stdout_lines }}"
+  when: accounts_6_2_1.stdout_lines is defined
+
+
+
+- name: "SCORED | 6.2.2 | PATCH | Ensure no legacy '+' entries exist in /etc/passwd"
+  command: sed -i '/^+/ d' /etc/passwd
+  changed_when: no
+  failed_when: no
+
+
+- name: "SCORED | 6.2.3 | PATCH | Ensure no legacy '+' entries exist in /etc/shadow"
+  command: sed -i '/^+/ d' /etc/shadow
+  changed_when: no
+  failed_when: no
+
+
+- name: "SCORED | 6.2.4 | PATCH | Ensure no legacy '+' entries exist in /etc/group"
+  command: sed -i '/^+/ d' /etc/group
+  changed_when: no
+  failed_when: no
+
+
+- name: "SCORED | 6.2.5 | PATCH | Ensure root is the only UID 0 account"
+  shell: "cat /etc/passwd | awk -F: '($3 == 0) { print $1 }'"
+  check_mode: no
+  changed_when: False
+  register: cat_6_2_5
+
+- name: 6.2.5 - Fail if root is not the only UID 0 account
+  fail:
+    msg: "root is not the only UID 0 account."
+  when:
+    - cat_6_2_5.stdout_lines is defined and (cat_6_2_5.stdout_lines|length > 1 or (cat_6_2_5.stdout_lines|length == 1 and 'root' not in cat_6_2_5.stdout_lines))
+
+- name: 6.2.5 - Warn if root is not the only UID 0 account
+  debug:
+    msg: "*** ACTION REQUIRED *** root is not the only UID 0 account"
+  when:
+    - cat_6_2_5.stdout_lines is defined and (cat_6_2_5.stdout_lines|length > 1 or (cat_6_2_5.stdout_lines|length == 1 and 'root' not in cat_6_2_5.stdout_lines))
+
+
+- name: "SCORED | 6.2.6 | PATCH | Ensure root PATH Integrity"
+  script: "{{ role_path }}/files/audit_6.2.6.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_6
+
+- name: 6.2.6 - Ensure root PATH Integrity
+  fail:
+    msg: "{{ audit_6_2_6.stdout_lines }}"
+  when:
+    - audit_6_2_6.stdout_lines is defined and audit_6_2_6.stdout_lines|length > 0
+
+
+- name: 6.2.6 - Ensure root PATH Integrity
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_6.stdout }}"
+  when:
+    - audit_6_2_6.stdout_lines is defined and audit_6_2_6.stdout_lines|length > 0
+
+
+
+- name: "SCORED | 6.2.7 | PATCH | Ensure all users' home directories exist"
+  script: "{{ role_path }}/files/audit_6.2.7.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_7
+
+- name: 6.2.7 - Ensure users' home directories exist.
+  user:
+    name: "{{ item.split(':')[0] }}"
+    home: "{{ item.split(':')[1] }}"
+  when: audit_6_2_7.stdout_lines is defined and audit_6_2_7.stdout_lines|length > 0
+  with_items: "{{ audit_6_2_7.stdout_lines }}"
+
+
+- name: "SCORED | 6.2.8 | PATCH | Ensure users' home directories permissions are 750 or more restrictive"
+  script: "{{ role_path }}/files/audit_6.2.8.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_8
+
+- name: 6.2.8 - Ensure users' home directories permissions are 750 or more restrictive
+  fail:
+    msg: "{{ audit_6_2_8.stdout_lines }}"
+  when:
+    - audit_6_2_8.stdout_lines is defined and audit_6_2_8.stdout_lines|length > 0
+
+
+
+- name: 6.2.8 - Ensure users' home directories permissions are 750 or more restrictive
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_8.stdout }}"
+  when:
+    - audit_6_2_8.stdout_lines is defined and audit_6_2_8.stdout_lines|length > 0
+
+
+
+- name: "SCORED | 6.2.9 | PATCH | Ensure users own their home directories"
+  script: "{{ role_path }}/files/audit_6.2.9.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_9
+
+- name: 6.2.9 - Ensure users own their home directories
+  file:
+    owner: "{{ item.split(':')[1] }}"
+    path: "{{ item.split(':')[0] }}"
+    state: directory
+    follow: yes
+  when: audit_6_2_9.stdout_lines is defined and audit_6_2_9.stdout_lines|length > 0
+  with_items: "{{ audit_6_2_9.stdout_lines }}"
+
+- name: "SCORED | 6.2.10 | PATCH | Ensure users' dot files are not group or world writable"
+  script: "{{ role_path }}/files/audit_6.2.10.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_10
+
+- name: 6.2.10 - Ensure users' dot files are not group or world writable
+  fail:
+    msg: "{{ audit_6_2_10.stdout }}"
+  when:
+    - audit_6_2_10.stdout_lines is defined and audit_6_2_10.stdout_lines|length > 0
+
+
+- name: 6.2.10 - Ensure users' dot files are not group or world writable
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_10.stdout }}"
+  when:
+    - audit_6_2_10.stdout_lines is defined and audit_6_2_10.stdout_lines|length > 0
+
+- name: "SCORED | 6.2.11 | PATCH | Ensure no users have .forward files"
+  script: "{{ role_path }}/files/audit_6.2.11.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_11
+
+
+- name: 6.2.11 - Ensure no users have .forward files
+  fail:
+    msg: "{{ audit_6_2_11.stdout }}"
+  when:
+    - audit_6_2_11.stdout_lines is defined and audit_6_2_11.stdout_lines|length > 0
+
+
+- name: 6.2.11 - Ensure no users have .forward files
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_11.stdout }}"
+  when:
+    - audit_6_2_11.stdout_lines is defined and audit_6_2_11.stdout_lines|length > 0
+
+- name: "SCORED | 6.2.12 | PATCH | Ensure no users have .netrc files"
+  script: "{{ role_path }}/files/audit_6.2.12.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_12
+
+- name: 6.2.12 - Ensure no users have .netrc files
+  fail:
+    msg: "{{ audit_6_2_12.stdout_lines }}"
+  when:
+    - audit_6_2_12.stdout_lines is defined and audit_6_2_12.stdout_lines|length > 0
+
+- name: 6.2.12 - Ensure no users have .netrc files
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_12.stdout }}"
+  when:
+    - audit_6_2_12.stdout_lines is defined and audit_6_2_12.stdout_lines|length > 0
+
+- name: "SCORED | 6.2.13 | PATCH | Ensure users' .netrc Files are not group or world accessible"
+  script: "{{ role_path }}/files/audit_6.2.13.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_13
+
+- name: 6.2.13 - Ensure users' .netrc Files are not group or world accessible
+  fail:
+    msg: "{{ audit_6_2_13.stdout }}"
+  when:
+    - audit_6_2_13.stdout_lines is defined and audit_6_2_13.stdout_lines|length > 0
+
+
+- name: 6.2.13 - Ensure users' .netrc Files are not group or world accessible
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_13.stdout }}"
+  when:
+    - audit_6_2_13.stdout_lines is defined and audit_6_2_13.stdout_lines|length > 0
+
+
+- name: "SCORED | 6.2.14 | PATCH | Ensure no users have .rhosts files"
+  script: "{{ role_path }}/files/audit_6.2.14.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_14
+
+- name: 6.2.14 - Ensure no users have .rhosts files
+  fail:
+    msg: "{{ audit_6_2_14.stdout_lines }}"
+  when:
+    - audit_6_2_14.stdout_lines is defined and audit_6_2_14.stdout_lines|length > 0
+
+- name: 6.2.14 - Ensure no users have .rhosts files
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_14.stdout }}"
+  when:
+    - audit_6_2_14.stdout_lines is defined and audit_6_2_14.stdout_lines|length > 0
+
+
+- name: "SCORED | 6.2.15 | PATCH | Ensure all groups in /etc/passwd exist in /etc/group"
+  script: "{{ role_path }}/files/audit_6.2.15.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_15
+
+
+- name: 6.2.15 - Ensure all groups in /etc/passwd exist in /etc/group
+  fail:
+    msg: "{{ audit_6_2_15.stdout_lines }}"
+  when:
+    - audit_6_2_15.stdout_lines is defined and audit_6_2_15.stdout_lines|length > 0
+
+- name: 6.2.15 - Ensure all groups in /etc/passwd exist in /etc/group
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_15.stdout }}"
+  when:
+    - audit_6_2_15.stdout_lines is defined and audit_6_2_15.stdout_lines|length > 0
+
+- name: "SCORED | 6.2.16 | PATCH | Ensure no duplicate UIDs exist"
+  script: "{{ role_path }}/files/audit_6.2.16.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_16
+
+
+- name: 6.2.16 - Ensure no duplicate UIDs exist
+  fail:
+    msg: "{{ audit_6_2_16.stdout_lines }}"
+  when:
+    - audit_6_2_16.stdout_lines is defined and audit_6_2_16.stdout_lines|length > 0
+
+
+- name: 6.2.16 - Ensure no duplicate UIDs exist
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_16.stdout }}"
+  when:
+    - audit_6_2_16.stdout_lines is defined and audit_6_2_16.stdout_lines|length > 0
+
+
+- name: "SCORED | 6.2.17 | PATCH | Ensure no duplicate GIDs exist"
+  script: "{{ role_path }}/files/audit_6.2.17.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_17
+
+- name: 6.2.17 - Ensure no duplicate GIDs exist
+  fail:
+    msg: "{{ audit_6_2_17.stdout_lines }}"
+  when:
+    - audit_6_2_17.stdout_lines is defined and audit_6_2_17.stdout_lines|length > 0
+
+
+- name: 6.2.17 - Ensure no duplicate GIDs exist
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_17.stdout }}"
+  when:
+    - audit_6_2_17.stdout_lines is defined and audit_6_2_17.stdout_lines|length > 0
+
+
+- name: "SCORED | 6.2.18 | PATCH | Ensure no duplicate user names exist"
+  script: "{{ role_path }}/files/audit_6.2.18.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_18
+
+- name: 6.2.18 - Ensure no duplicate user names exist
+  fail:
+    msg: "{{ audit_6_2_18.stdout_lines }}"
+  when:
+    - audit_6_2_18.stdout_lines is defined and audit_6_2_18.stdout_lines|length > 0
+
+- name: 6.2.18 - Ensure no duplicate user names exist
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_18.stdout }}"
+  when:
+    - audit_6_2_18.stdout_lines is defined and audit_6_2_18.stdout_lines|length > 0
+
+- name: "SCORED | 6.2.19 | PATCH | Ensure no duplicate group names exist"
+  script: "{{ role_path }}/files/audit_6.2.19.sh"
+  check_mode: no
+  changed_when: False
+  register: audit_6_2_19
+
+- name: 6.2.19 - Ensure no duplicate group names exist
+  fail:
+    msg: "{{ audit_6_2_19.stdout_lines }}"
+  when:
+    - audit_6_2_19.stdout_lines is defined and audit_6_2_19.stdout_lines|length > 0
+
+- name: 6.2.19 - Ensure no duplicate group names exist
+  debug:
+    msg: "*** ACTION REQUIRED *** {{ audit_6_2_19.stdout }}"
+  when:
+    - audit_6_2_19.stdout_lines is defined and audit_6_2_19.stdout_lines|length > 0

@@ -1,0 +1,91 @@
+---
+- hosts: hostlist
+  become: yes
+  gather_facts: yes
+
+  tasks:
+  - name: Get release version
+    shell: cat /etc/redhat-release
+    register: OSMajorVersion
+
+  - name: copy Agent-PGPCore-RedHat_EL9-20.0.0-5761.x86_64.rpm
+    copy:
+       src: /root/cfgmain/deployment/xdr/files/Agent-PGPCore-RedHat_EL9-20.0.0-5761.x86_64.rpm
+       dest: /var/tmp/agent.rpm
+       force: yes
+       group: root
+       owner: root
+       mode: 0755
+    when: OSMajorVersion.stdout | regex_search('release 9')
+
+  - name: copy Agent-PGPCore-RedHat_EL8-20.0.0-5761.x86_64.rpm
+    copy:
+       src: /root/cfgmain/deployment/xdr/files/Agent-PGPCore-RedHat_EL8-20.0.0-5761.x86_64.rpm
+       dest: /var/tmp/agent.rpm
+       force: yes
+       group: root
+       owner: root
+       mode: 0755
+    when: OSMajorVersion.stdout | regex_search('release 8')
+
+  - name: copy Agent-PGPCore-RedHat_EL7-20.0.0-5761.x86_64.rpm
+    copy:
+       src: /root/cfgmain/deployment/xdr/files/Agent-PGPCore-RedHat_EL7-20.0.0-5761.x86_64.rpm
+       dest: /var/tmp/agent.rpm
+       force: yes
+       group: root
+       owner: root
+       mode: 0755
+    when: OSMajorVersion.stdout | regex_search('release 7')
+
+  - name: copy Agent-PGPCore-RedHat_EL6-20.0.0-5761.x86_64.rpm
+    copy:
+       src: /root/cfgmain/deployment/xdr/files/Agent-PGPCore-RedHat_EL6-20.0.0-5761.x86_64.rpm
+       dest: /var/tmp/agent.rpm
+       force: yes
+       group: root
+       owner: root
+       mode: 0755
+    when: OSMajorVersion.stdout | regex_search('release 6')
+
+  - name: copy rhel5-agent.rpm
+    copy:
+       src: /root/cfgmain/deployment/xdr/files/rhel5-agent.rpm
+       dest: /var/tmp/agent.rpm
+       force: yes
+       group: root
+       owner: root
+       mode: 0755
+    when: OSMajorVersion.stdout | regex_search('release 5')
+
+  - name: installl agent.rpm
+    yum:
+      name: /var/tmp/agent.rpm
+      disable_gpg_check: true 
+      state: present
+
+  - name: pause
+    pause:
+      seconds: 15
+
+  - name: run /opt/ds_agent/dsa_control -r
+    command: /opt/ds_agent/dsa_control -r
+
+  - name: Get Server Location
+    shell: uname -n
+    register: ServerLoc
+
+
+  - name: Activate AMER
+    command: /opt/ds_agent/dsa_control -a dsm://agents-001.workload.gb-1.cloudone.trendmicro.com:443 "tenantID:BE123086-1CAA-5C3A-2027-3BCB78B797A6" "token:9BA0BFE0-65DE-2658-82BB-2AD32ED43100" "policyid:661" "groupid:201"
+    when:  ServerLoc.stdout | regex_search('njc|pwc|jcc')
+
+  - name: Activate EMEA
+    command: /opt/ds_agent/dsa_control -a dsm://agents.workload.gb-1.cloudone.trendmicro.com:443/ "tenantID:BE123086-1CAA-5C3A-2027-3BCB78B797A6" "token:9BA0BFE0-65DE-2658-82BB-2AD32ED43100" "policyid:661" "groupid:464"
+    when:  ServerLoc.stdout | regex_search('ldn')
+
+  - name: Activate APAC
+    command: /opt/ds_agent/dsa_control -a dsm://agents.workload.gb-1.cloudone.trendmicro.com:443/ "tenantID:BE123086-1CAA-5C3A-2027-3BCB78B797A6" "token:9BA0BFE0-65DE-2658-82BB-2AD32ED43100" "policyid:661" "groupid:464"
+    when:  ServerLoc.stdout | regex_search('sng')
+
+...

@@ -1,0 +1,19 @@
+---
+
+- include: section1.yml
+  become: yes
+
+- include: section2.yml
+  become: yes
+
+- include: section3.yml
+  become: yes
+
+- include: section4.yml
+  become: yes
+
+- include: section5.yml
+  become: yes
+
+- include: section6.yml
+  become: yes

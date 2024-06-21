@@ -1,0 +1,55 @@
+#Playbook for chronyd
+#Created by: Christopher Atienza
+#
+- name: Check timekeeper if exist
+  package_facts:
+    manager: auto
+
+- name: Print the package facts
+  debug:
+    var: ansible_facts.packages
+  
+- name: It will not skipp this if Timekeeper is installed
+  debug:
+    mgs: "{{ ansible_facts.packges['timekeeper'] | length }}  versions of timekepper are installed"
+  when: "'timekeeper' in ansible_facts.packages"
+
+- name: Create log directory on Ansible control machine (localhost)
+  local_action:
+    module: file
+    path: "/root/cfgmain/chronyd/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+    state: directory
+    recurse: yes
+
+- name: Copy Chrony config for Servers
+  copy:
+    src: "{{ 'chrony.conf-' + item.name }}"
+    dest: "/etc/chrony.conf"
+    force: yes
+  when: ansible_hostname | regex_search(item.pattern)
+  register: copy_result
+  loop:
+    - { name: "sungard", pattern: '^njc1' }
+    - { name: "cyrusone", pattern: '^njc2' }
+    - { name: "ny5", pattern: '^njc4' }
+    - { name: "ny11", pattern: '^njc3' }
+    - { name: "ld5", pattern: '^ldn1' }
+    - { name: "ark", pattern: '^ldn2' }
+    - { name: "sng1", pattern: '^sng1' }
+    - { name: "sng2", pattern: '^sng2' }
+    - { name: "syd1", pattern: '^syd1' }
+    - { name: "syd2", pattern: '^syd2' }
+    - { name: "seo", pattern: '^seo' }
+    - { name: "hk", pattern: '^hk' }
+
+- name: Update chrony.keys
+  copy:
+    src: chrony.keys
+    dest: /etc/chrony.keys
+    force: yes
+
+- name: "chrondyd service start"
+  service:
+    name: "chronyd"
+    state: restarted
+    enabled: yes

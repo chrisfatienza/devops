@@ -1,0 +1,98 @@
+Disk Commands
+Ldm list -o disk <ldom>
+
+Adding disk to Logical Domain
+zfs create -V 1G cpool/jcbodev1-2nd
+ldm add-vdiskserverdevice /dev/zvol/dsk/cpool/jcbodev1-2nd jcbodev1@primary-vds0
+ldm add-vdisk jcbodev1-2nd jcbodev1@primary-vds0 jcbodev1
+bash-3.2# ldm list -o disk jcbodev1 
+NAME             
+jcbodev1         
+
+DISK
+    NAME             VOLUME                      TOUT DEVICE  SERVER         MPGROUP       
+    vdisk0           vol4@primary-vds0                disk@0  primary                      
+    jcbodev1-2nd     jcbodev1@primary-vds0            disk@1  primary     
+
+
+Display Default LDOM services
+Purpose	Command
+Check ldom manager (ldmd)	# svcs ldmd
+Check vntsd is running	# svcs vntsd
+Check Default Services are running	# ldm list-services primary
+Check ldm software	# ldm -V
+check ldoms manager package in Solaris 11	# pkg info ldomsmanager
+Creating Default LDOM services
+Purpose	Command
+add virtual console concentrator (vcc)	# ldm add-vcc port-range=5000-5100 primary-vcc0 primary
+add virtual network switch (vsw)	# ldm add-vsw net-dev=net0 primary-vsw0 primary
+add virtual disk server (vds)	#ldm  add-vds primary-vds0 primary
+add virtual storage device to virtual disk service (Add zfs filesystem to existing Guest domain)	# zfs   create -V   5G   rpool/ldom01_disk01
+	# ldm add-vdsdev  /dev/zvol/dsk/rpool/ldom01_disk01 ldom01_disk01@primary-vds0
+Removing Default LDOM services
+Purpose	Command
+remove virtual console concentrator (vcc)	# ldm remove-vcc  primary-vcc0
+remove virtual network switch (vsw)	# ldm remove-vsw  primary-vsw0
+remove virtual disk server (vds)	# ldm remove-vds primary-vds0
+remove virtual storage device to virtual disk  service	# ldm remove-vdsdev dvd-iso@primary-vds0
+Start Default Services
+Purpose	Command
+start ldom manager	# svcadm [enable|restart] ldmd
+start vntsd	# svcadm [enable|restrat] vntsd
+Basic Guest LDOM Administration
+Purpose	Command
+list resources binded to a Guest Domain   	#ldm list-bindings ldom01
+how to identify if the current domain role ? [Control,Guest,Service or Root]	# virtinfo -a
+how to check status of I/O device	# ldm list-io
+how to check logical domain (ldom) status	# ldm  list-domain -o domain ldom01
+list the status of all the guest domains on the system	# ldm list
+how to manually list the LDOM config on a  system	# ldm list-bindings [ldom_name]
+list current LDOM configuration in Solaris	# ldm list-spconfig
+Check CPU activation	# ldm list-permits
+Check Autoreplacement policy for CPU	# svccfg -s ldmd listprop ldmd/autoreplacement_policy_cpu
+stop/start/break/unbind/bind
+Purpose	Command
+issue send break	# telnet localhost 5000
+	telnet> send brk
+stop Guest Domain	# ldm stop ldom01
+start Guest Domain	# ldm start ldom01
+unbind Guest Domain 	# ldm unbind ldom01
+bind Guest Domain 	# ldm bind ldom01
+Add/Create/Assign
+Purpose	Command
+Add Guest Domain	# ldm add-domain ldom01 
+assign cpu threads to Guest Domain	# ldm add-vcpu 6 ldom01
+assign vcpu units of cores	# ldm add-core, ldm set-core  [number] [ldom]
+assign memory to Guest Domain	# ldm add-memory 4G ldom01
+add vnet device to Guest Domain	# ldm add-vnet vnet1 primary-vsw0 ldom01
+assign disk resource to Guest Domain	# ldm add-vdisk ldom01-disk01  ldom01-disk01@primary-vds0 ldom01
+Remove/Delete
+Purpose	Command
+Remove a Guest Domain	# ldm remove-domain ldom01
+Remove disk resource from Guest Domain	# ldm remove-vdisk vdisk01 ldom01
+Remove virtual network device from a Guest Domain	# ldm remove-vnet vnet1 ldom01
+Remove CPU threads from a Guest Domain	# ldm remove-vcpu 8 ldom01
+Remove virtual cpu units in cores from a  Guest Domain	# ldm remove-core 2 ldom01
+Remove memory from a Guest Domain	# ldm remove-memory 8G ldom01
+Save LDOM Config
+Purpose	Command
+save ldom configuration to the SP	# ldm add-spconfig newconfig
+backup of existing configuration from the control domain	# ldm list-constraints -x >  /var/tmp/guest-domain-name.xml
+	# ldm list-bindings > /var/tmp/full-bindings
+	# ldm ls -l > /var/tmp/guest-domain-list.xml”
+Miscellaneous Commands
+Purpose	Command
+identify physical resources bindings	# ldm list-constraints
+login to the console of a Guest Domain	# telnet localhost 5001
+Enable/Disable console loggging function for  a Guest Domain	# ldm set-vcons log=[off|on]  [dom-name]
+Display current console settings of a Guest  Domain	# ldm list -o console ldom01
+list all LDOM config from SP with timestamp	-> show /HOST/domain/configs date_created -t
+list current LDOM config from SP	-> show /HOST/bootmode config -t
+Generate crashdump from SP	-> set  /HOST/send_break_action=dumpcore
+Crash a guest domain from the control domain	# ldm panic-domain ldom01
+to check failed cpu or memory components from Control Domain	# ldm list-domain -l -S
+
+From <https://www.thegeekdiary.com/ldoms-ovm-for-sparc-command-line-reference-cheat-sheet/> 
+
+
+

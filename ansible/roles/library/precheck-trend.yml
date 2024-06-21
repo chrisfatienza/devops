@@ -1,0 +1,12 @@
+- hosts: hostlist
+  tasks:
+     - name: Check Trend Activation URL port if accessible
+       wait_for:
+         host: agents-001.workload.gb-1.cloudone.trendmicro.com
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 443

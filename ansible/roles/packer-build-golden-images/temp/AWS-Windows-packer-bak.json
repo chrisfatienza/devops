@@ -1,0 +1,66 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "name": "TPICAP-AWS-WINDOWS-{{isotime \"02-Jan-06 03_04_05\"}}",
+    "ostype": "{{env `OS`}}"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "name": "TPICAP-{{user `ostype`}}",
+    "region": "eu-west-1",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "instance_type": "t2.medium",
+    "vpc_id": "vpc-0ac7f197f4eaef841",
+    "subnet_id": "subnet-03c008a05efaca939",
+    "source_ami_filter": {
+    "filters": {
+      "virtualization-type": "hvm",
+      "name": "{{user `ostype`}}-*",
+      "root-device-type": "ebs"
+      },
+    "owners": ["801119661308"],
+    "most_recent": true
+    },
+    "ami_name": "TPICAP-{{user `ostype`}}-{{timestamp}}",
+    "tags": {
+      "Name": "{{user `ostype`}}"
+    },
+    "user_data_file": "userdata/windows-aws.txt",
+    "communicator": "winrm",
+    "winrm_username": "Administrator"
+  }],
+  "provisioners": [{
+    "type": "powershell",
+    "inline": [
+      "dir c:\\"
+    ]
+  },
+  {
+      "type":  "ansible",
+      "playbook_file": "./windows-playbook.yml",
+      "extra_arguments": [
+        "--connection", "packer",
+        "--extra-vars", "ansible_shell_type=powershell ansible_shell_executable=None"
+      ]
+  },
+  {
+    "type": "powershell",
+    "inline": [
+        "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SendWindowsIsReady.ps1 -Schedule",
+        "C:/ProgramData/Amazon/EC2-Windows/Launch/Scripts/InitializeInstance.ps1 -Schedule",
+        "C:/ProgramData/Amazon/EC2-Windows/Launch/Scripts/SysprepInstance.ps1 -NoShutdown"
+    ],
+    "except": ["TPICAP-Windows_Server-2012-R2_RTM-English-64Bit-Base","TPICAP-Windows_Server-2012-R2_RTM-English-64Bit-Core"]
+  },
+  {
+    "type": "powershell",
+    "scripts": [
+        "powershell/sysprep-ec2config.ps1",
+        "powershell/sysprep-bundleconfig.ps1"
+      ],
+    "only": ["TPICAP-Windows_Server-2012-R2_RTM-English-64Bit-Base","TPICAP-Windows_Server-2012-R2_RTM-English-64Bit-Core"]
+  }
+  ]
+}

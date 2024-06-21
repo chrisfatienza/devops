@@ -1,0 +1,9 @@
+[Unit]
+Description=CMDB Refresh and AppDynamics Config Update
+
+[Service]
+Type=simple
+ExecStart=/home/appdynamics/get_cmdb.sh
+
+[Install]
+WantedBy=multi-user.target

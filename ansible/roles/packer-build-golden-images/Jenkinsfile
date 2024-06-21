@@ -1,0 +1,62 @@
+def label = "mypod-${UUID.randomUUID().toString()}"
+
+properties(
+  [parameters(
+    [
+    choice(choices: ['AWS', 'VMware'], description: 'Please select the Hypervisor', name: 'Hypervisor'),
+    choice(choices: ['eu-west-1', 'eu-west-2', 'us-east-1'], description: 'Please select the Region', name: 'region'),
+    choice(choices: ['Windows', 'Linux'], description: 'Please select Operating System', name: 'OS'),
+    choice(choices: ['Windows_Server-2019-English-Full-Base', 'Windows_Server-2019-English-Core-Base', 'Windows_Server-2016-English-Full-Base', 'Windows_Server-2016-English-Core-Base', 'Windows_Server-2012-R2_RTM-English-64Bit-Base', 'Windows_Server-2012-R2_RTM-English-64Bit-Core', 'Amazon_Linux_2_LTS', 'RHEL_7.6'], description: 'Please select your OS distribution', name: 'Distribution')
+    ])
+  ]
+)
+podTemplate(label: label, containers: [
+    containerTemplate(name: 'ansible', image: '627822851775.dkr.ecr.eu-west-1.amazonaws.com/cloudbees:ansible', command: 'cat', ttyEnabled: true)
+  ],
+    annotations: [
+    podAnnotation(key: 'iam.amazonaws.com/role', value: 'k8s-eks-mgmt-role')
+    ,]
+  ) {
+  node(label) {
+    checkout scm
+    container('ansible')
+        {
+        stage('Setup Docker container') {
+                sh '''
+                apt-get install git -y
+                git version
+                ansible --version
+                aws sts get-caller-identity
+                '''
+            }
+        stage('Verify Template configuration') {
+                sh '''
+                export USER=root
+                packer validate -only=$Distribution $region-$Hypervisor-$OS-packer.json
+                '''
+            }
+        stage('Build Golden Images')
+            {
+                sh '''
+                export USER=root
+                packer build -only=$Distribution $region-$Hypervisor-$OS-packer.json
+                echo "completed"
+                '''
+            }
+        stage('Get AMI') {
+                sh '''
+                export USER=root
+                cat manifest.json | jq -r .builds[0].artifact_id |  cut -d':' -f2
+                '''
+            }
+
+        stage('Share encrypted AMI') {
+                sh '''
+                export USER=root
+                export ami=$(cat manifest.json | jq -r .builds[0].artifact_id |  cut -d':' -f2)
+                aws ec2 modify-image-attribute --image-id $ami --launch-permission --region $region "Add=[{UserId=391041839887}]"
+                '''
+              }
+        }
+    }
+}

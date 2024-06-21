@@ -1,0 +1,7 @@
+---
+- hosts: hostlist
+  tasks:
+     - shell: "cat /etc/redhat-release ; echo ; ip a ; echo ; ip s ; cat /etc/fstab ; mount ; df -h ; w ; echo; uptime ; echo ; rpm -qa ; echo ; "
+       register: precheck_result
+
+     - local_action: copy content="{{ precheck_result.stdout }}" dest="/root/cfgmain/logs/postcheck.{{ inventory_hostname }}.{{ lookup('pipe', 'date +%Y%m%d-%H%M') }}"

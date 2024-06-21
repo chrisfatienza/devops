@@ -1,0 +1,16 @@
+<RIBCL VERSION="2.0">
+<LOGIN USER_LOGIN="Dontcare" PASSWORD="UsingAutologin">
+ <USER_INFO MODE="write">
+   <ADD_USER
+     USER_NAME="ILOAdmin"
+     USER_LOGIN="ILOAdmin"
+     PASSWORD="IL0Adm1n">
+     <ADMIN_PRIV value ="Yes"/>
+     <REMOTE_CONS_PRIV value ="Yes"/>
+     <RESET_SERVER_PRIV value ="No"/>
+     <VIRTUAL_MEDIA_PRIV value ="Yes"/>
+     <CONFIG_ILO_PRIV value="Yes"/>
+   </ADD_USER>
+ </USER_INFO>
+ </LOGIN>
+</RIBCL>

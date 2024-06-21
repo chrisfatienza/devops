@@ -1,0 +1,21 @@
+---
+
+#- include: section1-hardening.yml
+#  become: yes
+
+- include: section1-qualys.yml
+  become: yes
+
+#- include: section2-trend.yml
+#  become: yes
+
+#- include: section3-msdefender.yml
+#  become: yes
+
+#- include: section4-check_mk.yml
+#  become: yes
+
+#- include: section5-syslog.yml
+#  become: yes
+
+...

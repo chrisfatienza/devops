@@ -1,0 +1,6 @@
+---
+- hosts: hostlist
+  tasks:
+    - name: Install Qualys Agent
+      import_tasks: /etc/ansible/roles/3-security-tools/tasks/section1-qualys.yml
+...

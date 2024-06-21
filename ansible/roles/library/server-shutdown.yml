@@ -1,0 +1,22 @@
+---
+- name: Shutdown Linux Server and Verify
+  hosts: hostlist
+  become: yes
+
+  tasks:
+    - name: Shutdown the server
+      shell: shutdown -h now
+      async: 1
+      poll: 0
+      become: no
+      ignore_errors: yes
+
+    - name: Wait for poweroff
+      local_action:
+        module: shell
+        cmd: "ping -c 1 {{ inventory_hostname }}"
+      register: myping
+      failed_when: (myping.rc != 0) and ('100% packet loss' not in myping.stdout)
+      retries: 100
+      delay: 3
+      until: myping.rc == 1

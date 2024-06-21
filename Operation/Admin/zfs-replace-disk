@@ -1,0 +1,62 @@
+Replacing Devices in a Storage Pool
+
+You can replace a device in a storage pool by using the zpool replace command.
+$ zpool replace pool replaced-device [new-device]
+If you are installing a device's replacement on the same location in a redundant pool, you might only need to identify the replaced device. On some hardware, ZFS recognizes the new device on the same location. However, if you install the replacement on a different location, you must specify both the replaced device and the new device.
+The automatic detection of replaced devices is hardware-dependent and might not be supported on all platforms. Furthermore, some hardware types support the autoreplace pool property. If this property is enabled, then a device's replacement on the same location is automatically formatted and replaced. Running the zpool replace command is unnecessary.
+Note the following guidelines:
+• A hot spare device, if available, automatically replaces a device that is removed while the system is running. After a failed disk is replaced, you might need to detach the spare by using the zpool detach command. For information about detaching a hot spare, see Activating and Deactivating Hot Spares in Your Storage Pool.
+• A device that is removed and then reinserted is automatically brought online. In this case, no replacement occurred. The replacement hot spare device is automatically removed after the reinserted device is brought back online.
+When you replace a device with one that has a larger capacity, the new device is not automatically expanded to its full size after you add it to the pool. The autoexpand pool property determines the automatic expansion of a replacement LUN. By default, this property is disabled. You can enable it before or after the larger LUN is added to the pool.
+On some systems with SATA disks, you must unconfigure a disk before you can take it offline. If you are replacing a disk in the same slot position on this system, then you can just run the zpool replace command as described in Example 13, Replacing Devices in a Mirrored Poolthe first example in this section. For an example of replacing a SATA disk, see Example 55, Replacing a SATA Disk in a ZFS Storage Pool.
+Because of the resilvering of data onto new disks, replacing disks is time-consuming. Between disk replacements, run the zpool scrub command to ensure that the replacement devices are operational and that the data is written correctly.
+For more information about replacing devices, see Resolving a Missing or Removed Device and Replacing or Repairing a Damaged Device.
+
+How to Replace a Device in a Storage Pool
+1. If necessary, switch the device to the OFFLINE state.
+$ zpool offline pool device
+2. Physically replace the device with a new device.
+In the case of redundant storage pools, ensure that the replacement device is equal to or larger than the smallest disk in the pool.
+3. Run the format command.
+Check the following in the output:
+• Ensure that the new device is listed.
+• Check whether the replacement device is marked as WWN to verify that the device ID has changed..
+4. Replace the device in the pool.
+If the new device has a new ID, include the ID in the command.
+$ zpool replace pool replaced-device [new-device-ID]
+
+Note -  If you are replacing multiple devices, make sure that each device is fully resilvered before you replace the next device.
+
+5. If necessary, bring the device online.
+$ zpool online pool new-device
+6. If faulted device errors are reported, perform FMA procedures.
+a. Run the command fmadm faulty.
+b. From the Affects: section of the output, identify the pool name and the GUID of the virtual device.
+c. Run the following command and provide the information from the previous step.
+$ fmadm repaired zfs://pool=name/vdev=guid
+Example 13  Replacing Devices in a Mirrored Pool
+In this example, two 16GB disks in the pool system1 are replaced with two 72GB disks. The autoexpand property is enabled after the disk replacements to expand the full disk sizes.
+$ zpool status system1
+  pool: system1
+ state: ONLINE
+ scrub: none requested
+config:
+NAME         STATE     READ WRITE CKSUM
+        system1      ONLINE       0     0     0
+          mirror     ONLINE       0     0     0
+            c1t16d0  ONLINE       0     0     0
+            c1t17d0  ONLINE       0     0     0
+$ zpool list system1
+NAME      SIZE   ALLOC   FREE    CAP  HEALTH  ALTROOT
+system1  16.8G   76.5K  16.7G     0%  ONLINE  -
+$ zpool replace system1 c1t16d0 c1t1d0
+$ zpool replace system1 c1t17d0 c1t2d0
+$ zpool list system1
+NAME      SIZE   ALLOC   FREE    CAP  HEALTH  ALTROOT
+system1  16.8G   88.5K  16.7G     0%  ONLINE  -
+$ zpool set autoexpand=on system1
+$ zpool list system1
+NAME      SIZE   ALLOC   FREE    CAP  HEALTH  ALTROOT
+system1  68.2G    117K  68.2G     0%  ONLINE  -
+
+From <https://docs.oracle.com/cd/E37838_01/html/E61017/gazgd.html> 

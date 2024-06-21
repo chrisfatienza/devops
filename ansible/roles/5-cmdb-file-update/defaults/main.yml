@@ -1,0 +1,18 @@
+cmdb_timer_path: "/usr/lib/systemd/system/cmdb_update.timer"
+cmdb_service_path: "/usr/lib/systemd/system/cmdb_update.service"
+cmdb_script_path: "/home/appdynamics/get_cmdb.sh"
+
+# search for red hat 7 in /etc/system-release
+rhel7_regex: '^Red\sHat\s.*7\..*$'
+
+# search for red hat 6 in /etc/system-release
+rhel6_regex: '^Red\sHat\s.*6\..*$'
+
+a2rm_base_url: https://api.a2rm.tpicapcloud.com/host
+a2rm_host_url: "\'{{ a2rm_base_url }}/{{ inventory_hostname_short }}/?report=appd\'"
+
+ansible_user: root
+appd_uid : 8700
+appd_gid : 8700
+appd_user : appdynamics
+appd_group : appdynamics

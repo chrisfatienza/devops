@@ -1,0 +1,11 @@
+---
+- name: register
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Run register
+      command: "cmk-agent-ctl register --server ldn1lx1001.corp.ad.tullib.com --user agent_registration  --site Main --hostname {{ inventory_hostname }} --password RQQHK@BWCRXDUISJFHUW --trust-cert"
+      register: cmk_output
+
+    - debug:
+        var: cmk_output.stdout_lines

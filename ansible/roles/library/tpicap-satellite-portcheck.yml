@@ -1,0 +1,14 @@
+- hosts: hostlist
+  tasks:
+     - name: Check all port numbers are accessible from the current host
+       wait_for:
+         host: ldn2lx1000.corp.ad.tullib.com
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 443
+         - 80
+         - 22

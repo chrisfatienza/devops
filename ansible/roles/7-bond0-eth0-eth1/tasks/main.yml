@@ -1,0 +1,6 @@
+---
+
+- include: section1-bondsetup.yml
+  become: yes
+
+...

@@ -1,0 +1,6 @@
+---
+- hosts: hostlist
+
+  roles:
+  - microsoftdefender
+...

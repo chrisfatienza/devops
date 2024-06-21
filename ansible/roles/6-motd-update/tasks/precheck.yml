@@ -1,0 +1,27 @@
+---
+# Test for conditions that can cause the role to fail later on. The scripts are installed into /root
+- name: check block
+  block:
+# This file doesnt exist on SuSE so those hosts should fail.
+  - name: Record linux distribution and version
+    shell: cat /etc/system-release
+    register: lin_rel
+    tags:
+     - prechecks
+
+  - when: "lin_rel.stdout is match ( rhel7_regex )"
+    block:
+    - name: check if RHEL7
+      set_fact: 
+       rhel_major: 7
+    tags:
+     - prechecks
+
+  - when: "lin_rel.stdout is match ( rhel6_regex )"
+    block:
+    - name: check if RHEL6
+      set_fact:
+       rhel_major: 6
+    tags:
+     - prechecks
+...

@@ -1,0 +1,17 @@
+BOOTPROTO=none
+IPADDR="hostIP"
+NETMASK="255.255.255.0"
+GATEWAY="hostGW.1"
+DOMAIN="corp.ad.tullib.com"
+DEVICE=bond0
+ONBOOT=yes
+PEERDNS=no
+PEERROUTES=yes
+DEFROUTE=yes
+VLAN=yes
+MTU=1500
+BONDING_OPTS="miimon=100 mode=active-backup"
+BONDING_MASTER=yes
+NM_CONTROLLED=no
+NOZEROCONF=yes
+USERCTL=no

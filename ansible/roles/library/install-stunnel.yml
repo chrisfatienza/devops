@@ -1,0 +1,22 @@
+---
+- hosts: hostlist
+  tasks:
+
+    - name: Install Stunnel Package
+      package: 
+        name: stunnel
+        state: present
+  
+#    - name: Configure Stunnel
+#      copy:
+#        src: /etc/ansible/roles/RMDS/files/stunnel_rhel7
+#        dest: /etc/systemd/system/stunnel.service
+#        owner: root
+#        group: root
+#        mode: 0755
+
+    - name: Enable and Start Stunnel Service
+      systemd:
+        name: stunnel
+        enabled: yes
+        state: started

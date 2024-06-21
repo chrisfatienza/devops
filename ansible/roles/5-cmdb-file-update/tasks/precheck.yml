@@ -1,0 +1,50 @@
+---
+# Test for conditions that can cause the role to fail later on.
+- name: check block
+  block:
+  - name: Check that appdynamics machine agent is installed on the target system
+    package_facts:
+     manager: "auto"
+    tags:
+     - prechecks
+
+  - when: ansible_facts.packages["appdynamics-machine-agent"] is undefined
+    block: 
+    - name: fail the role if appdynamics-machine-agent is not installed
+      fail: 
+       msg: "The appdynamics-machine-agent package is not installed. Halting."
+    tags:
+     - prechecks
+
+# This file doesnt exist on SuSE so those hosts should fail.
+  - name: Record linux distribution and version
+    shell: cat /etc/system-release
+    register: lin_rel
+    tags:
+     - prechecks
+
+  - when: "lin_rel.stdout is match ( rhel7_regex )"
+    block:
+    - name: check if RHEL7
+      set_fact: 
+       rhel_major: 7
+    tags:
+     - prechecks
+
+  - when: "lin_rel.stdout is match ( rhel6_regex )"
+    block:
+    - name: check if RHEL6
+      set_fact:
+       rhel_major: 6
+    tags:
+     - prechecks
+
+# Check configuration data from a2rm can be downloaded.
+# If this step fails there is no point in continuing for the host in question.
+#- name: Get a2rm json file
+#  block:
+#  - name: Run curl command
+#    shell: curl --connect-timeout 15 -X GET -u 'readonly:readonly' {{ a2rm_host_url }} -o /etc/cmdb.json
+
+
+...

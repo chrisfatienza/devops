@@ -1,0 +1,115 @@
+- hosts: hostlist
+  vars:
+      log_timestamp: "{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+    
+  tasks:
+    - name: Create log directory on Ansible control machine (localhost)
+      local_action:
+        module: file
+        path: "/root/cfgmain/sssd/pbis/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}"
+        state: directory
+        recurse: yes
+
+    - name: install realmd packages
+      yum:
+        name:
+          - realmd
+          - oddjob
+          - oddjob-mkhomedir
+          - sssd
+          - sssd-tools
+          - adcli
+          - krb5-workstation
+          - samba-common-tools
+        state: present
+
+    - name: discover realm
+      shell: /bin/bash -c "/usr/sbin/realm discover corp.ad.tullib.com"
+
+    - name: Ensure Server is not currently joined in CORP Domain and clean up Existing Computer Object
+      command: /bin/bash -c "realm leave"
+      ignore_errors: yes
+
+    - name: Realmd Join Domain
+      command: /bin/bash -c "echo 'dtO#E%lwwNqhzo16BhC!*))sD)ICCcSv' | realm join --user=Srvcpbis corp.ad.tullib.com && sleep 15"
+      ignore_errors: yes
+
+    - name: Gather site location
+      shell: "adcli info corp.ad.tullib.com |grep computer-site | awk '{print $3}'"
+      register: adSITE_output
+
+    - name: Copy Standard SSSD file to /etc/sssd/sssd.conf
+      copy:
+        src: /root/cfgmain/sssd/sssd.conf
+        dest: /etc/sssd/sssd.conf
+        force: yes
+
+    - name: Search for ad_server line in sssd.conf
+      shell: "grep 'ad_domain =' /etc/sssd/sssd.conf"
+      register: ad_domain_line
+      ignore_errors: yes
+      changed_when: false
+
+    - name: Add ad_site on /etc/sssd/sssd.conf
+      lineinfile:
+        path: /etc/sssd/sssd.conf
+        insertafter: '^ad_domain'
+        line: 'ad_site = {{ adSITE_output.stdout }}'        
+      
+    - name: Add corp-unixsa-linux AD group as default
+      shell:  realm permit -g corp-unixsa-linux
+      ignore_errors: yes
+      
+    - name: Restart SSSD
+      shell:  systemctl restart sssd
+      ignore_errors: yes
+
+  # Todo
+  # 1. get the pbis existing config
+
+    # - name: Check PBIS service status
+    #   shell: /opt/pbis/bin/lwsm status lsass
+    #   register: pbis_service_status
+    #   ignore_errors: yes
+
+    - name: Get PBIS groups available on existing server
+      shell: /opt/pbis/bin/config --dump | egrep RequireMembershipOf  | cut -d " " -f 2- | tr " " '\n' |grep -v corp-unixsa-linux |grep -i corp |sed 's/\"CORP\\\\//'g | sed 's/\"//g' | tr '\n' " "
+      register: PBISGroups_output
+      ignore_errors: yes
+
+    - name: Add PBIS groups into realmd
+      shell:  realm permit -g {{ PBISGroups_output.stdout }}
+      ignore_errors: yes
+
+    - name: Get PBIS Dump output
+      shell: /opt/pbis/bin/config --dump
+      register: pbisconfig
+      ignore_errors: yes
+
+    - name: PBIS config log capture
+      copy:
+        content: "{{ pbisconfig.stdout }}"
+        dest: "/root/cfgmain/sssd/pbis/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/pbisconfig.log"
+      delegate_to: localhost
+      ignore_errors: yes
+
+    - name: Remove PBIS package
+      yum:
+        name:
+          - pbis-open
+          - pbis-open-upgrade
+        state: absent
+      register: pbisuninstall
+
+    - name: Gather IP addresses
+      shell: ip -o -4 addr show | awk '{split($4, a, "/"); print a[1]}'
+      register: ip_addresses
+
+    - name: Identify IP Addresses
+      set_fact:
+        ip_count: "{{ ip_addresses.stdout_lines | length }}"
+
+    - name: Display Message if More Than One IP Found
+      debug:
+        msg: "If Server have {{ ip_count }} IP addresses. Check DNS entries later and remove other entries."
+      when: ip_count | int > 1

@@ -1,0 +1,21 @@
+---
+
+#- import_tasks: section1-hardening.yml
+#  become: yes
+
+- import_tasks: section1-qualys.yml
+  become: yes
+
+#- import_tasks: section2-trend.yml
+#  become: yes
+
+#- import_tasks: section3-msdefender.yml
+#  become: yes
+
+#- import_tasks: section4-check_mk.yml
+#  become: yes
+
+#- import_tasks: section5-syslog.yml
+#  become: yes
+
+...

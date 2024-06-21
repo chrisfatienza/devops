@@ -1,0 +1,146 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": "",
+    "name": "TPICAP-AWS-Linux-{{isotime \"02-Jan-06 03_04_05\"}}",
+    "ssh_username": "ec2-user",
+    "distro": "{{env `Distribution`}}"
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "name": "Amazon_Linux_2_LTS",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "eu-west-1",
+    "source_ami_filter": {
+    "filters": {
+      "virtualization-type": "hvm",
+      "name": "amzn2-ami-hvm-*-x86_64-gp2",
+      "root-device-type": "ebs"
+    },
+    "owners": ["137112412989", "591542846629", "801119661308",
+                   "102837901569", "013907871322", "206029621532",
+                   "286198878708", "443319210888"],
+    "most_recent": true
+    },
+    "instance_type": "t2.medium",
+    "ssh_username": "{{user `ssh_username`}}",
+    "ssh_pty": true,
+    "encrypt_boot": true,
+    "kms_key_id": "18291a14-e8e9-4d60-9d07-daa26432b634",
+    "vpc_id": "vpc-0ac7f197f4eaef841",
+    "subnet_id": "subnet-03c008a05efaca939",
+    "ami_name": "TPICAP-{{user `distro`}}-{{isotime \"02-Jan-06 03_04_05\"}}",
+    "run_tags": {
+      "Name": "Golden-Image-{{user `distro`}}",
+      "Environment": "Staging",
+      "ServiceName": "Golden Image",
+      "SupportOwner": "TBD"
+      },
+    "run_volume_tags":
+      {
+      "Name": "Golden-Image-{{user `distro`}}",
+      "Environment": "Staging",
+      "ServiceName": "Golden Image",
+      "SupportOwner": "TBD"
+      },
+    "tags": {
+      "Name": "{{user `distro`}}",
+      "Environment": "Production",
+      "ServiceName": "Golden Image",
+      "SupportOwner": "TBD"
+    }
+  },
+  {
+    "type": "amazon-ebs",
+    "name": "RHEL_7.6",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "eu-west-1",
+    "source_ami_filter": {
+    "filters": {
+      "virtualization-type": "hvm",
+      "name": "RHEL-7.6_HVM_GA-*-x86_64-0-Hourly2-GP2",
+      "root-device-type": "ebs"
+    },
+    "owners": ["309956199498"],
+    "most_recent": true
+    },
+    "ami_users": ["193035316937","707651310077","416217053813","262137340881","609102950081","627822851775","319058589213","868138235929","554559335830","252076662869","773952218216","738444228612","419780551305","363979571053","475008716826","423632037611","622346833529","175036559345","391041839887","979987617655","930053427171","843231313958","568131156175","490093196297","142776275967","732635853910","560898620951","628951513962","475500628881","321550375667","071164712854","139767978787","058870190570","558815501378","213073952525","699885164445","025103447449","041001868294"],
+    "snapshot_users": ["193035316937","707651310077","416217053813","262137340881","609102950081","627822851775","319058589213","868138235929","554559335830","252076662869","773952218216","738444228612","419780551305","363979571053","475008716826","423632037611","622346833529","175036559345","391041839887","979987617655","930053427171","843231313958","568131156175","490093196297","142776275967","732635853910","560898620951","628951513962","475500628881","321550375667","071164712854","139767978787","058870190570","558815501378","213073952525","699885164445","025103447449","041001868294"],
+    "instance_type": "t2.medium",
+    "ssh_username": "{{user `ssh_username`}}",
+    "ssh_pty": true,
+    "encrypt_boot": false,
+    "vpc_id": "vpc-0ac7f197f4eaef841",
+    "subnet_id": "subnet-03c008a05efaca939",
+    "ami_name": "TPICAP-{{user `distro`}}-{{isotime \"02-Jan-06 03_04_05\"}}",
+    "run_tags": {
+      "Name": "Golden-Image-{{user `distro`}}",
+      "Environment": "Staging",
+      "ServiceName": "Golden Image",
+      "SupportOwner": "TBD"
+      },
+    "run_volume_tags":
+      {
+      "Name": "Golden-Image-{{user `distro`}}",
+      "Environment": "Staging",
+      "ServiceName": "Golden Image",
+      "SupportOwner": "TBD"
+      },
+    "tags": {
+      "Name": "{{user `distro`}}",
+      "Environment": "Production",
+      "ServiceName": "Golden Image",
+      "SupportOwner": "TBD"
+    }
+  }
+],
+  "provisioners": [
+    {
+    "type": "shell",
+    "inline": [
+      "bash -c 'sudo yum install wget -y'",
+      "bash -c 'wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm'",
+      "bash -c 'sudo rpm -ivh epel-release-latest-7.noarch.rpm'",
+      "bash -c 'sudo yum install epel-release -y'",
+      "ssh-keyscan 10.72.32.75 >> ~/.ssh/known_hosts"
+    ],
+    "only": ["RHEL_7.6"]
+    },
+    {
+        "type":  "ansible",
+        "playbook_file": "./linux-playbook.yml",
+        "user": "ec2-user",
+        "ansible_env_vars": [ "ANSIBLE_HOST_KEY_CHECKING=False", "ANSIBLE_SSH_ARGS='-o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=60s'", "ANSIBLE_NOCOLOR=True" ]
+    },
+    {
+    "type": "shell",
+    "execute_command": "sudo -S sh '{{.Path}}'",
+    "inline_shebang": "/bin/sh -e -x",
+    "inline": [
+        "echo '** Shreding sensitive data ...'",
+        "shred -u /etc/ssh/*_key /etc/ssh/*_key.pub",
+        "shred -u /root/.*history /home/{{user `ssh_username`}}/.*history",
+        "shred -u /root/.ssh/authorized_keys /home/{{user `ssh_username`}}/.ssh/authorized_keys",
+        "shred -u /home/{{user `ssh_username`}}/.ssh/known_hosts /home/{{user `ssh_username`}}/.ssh/id_rsa",
+        "sync; sleep 1; sync"
+        ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "bash -c 'sudo yum remove ansible -y'",
+        "bash -c 'sudo yum clean all'",
+        "bash -c 'sudo rm -rf /var/cache/yum'"
+        ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "manifest",
+      "output": "manifest.json",
+      "strip_path": true
+    }
+  ]
+}

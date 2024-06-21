@@ -1,0 +1,18 @@
+---
+# Tasks file for Trend Workload
+
+  - name: "Trend Workload"
+    copy:
+      src: AgentDeploymentScript.sh
+      dest: /root/AgentDeploymentScript.sh
+      mode: 0755
+
+  - name: Executing AgentDeploymentScript.sh
+    shell:  /bin/bash /root/AgentDeploymentScript.sh 
+    ignore_errors: yes
+
+  - name: AgentDeploymentScript.sh cleanup
+    shell: rm /root/AgentDeploymentScript.sh /tmp/agent.rpm
+    args:
+      warn: false
+    ignore_errors: yes

@@ -1,0 +1,52 @@
+---
+- name: Install and configure PBIS in RHEL6
+  become: true
+  hosts: all
+
+  tasks:
+  - name: Copy PBIS installer
+    copy:
+     src: /root/cfgmain/library/PBIS/
+     dest: /root/
+     owner: root
+     group: root
+     mode: 0640
+     force: yes
+
+  - name: Install PBIS 
+    command: /bin/bash -c "rpm -ivh /root/pbis-open-upgrade-8.8.0-506.x86_64.rpm ; rpm -ivh pbis-open-8.8.0-506.x86_64.rpm"
+    ignore_errors: yes
+
+  - name: PBIS domain join
+    command: /bin/bash -c "echo 'dtO#E%lwwNqhzo16BhC!*))sD)ICCcSv' | domainjoin-cli join corp.ad.tullib.com srvcpbis && sleep 10"
+    ignore_errors: yes
+
+  - name: Set LoginShellTemplate to /bin/bash
+    command: /bin/bash -c "/opt/pbis/bin/config LoginShellTemplate /bin/bash" 
+    ignore_errors: yes
+
+  - name: Set AssumeDefaultDomain to true
+    command: /bin/bash -c "/opt/pbis/bin/config AssumeDefaultDomain true"
+    ignore_errors: yes
+
+  # Added by Chris to eliminate adding CORP\ during login prompt
+  - name: Set AssumeDeUserDomainPrefix to CORP
+    command: /bin/bash -c "/opt/pbis/bin/config AssumeDeUserDomainPrefix CORP"
+    ignore_errors: yes
+
+  - name: Permit groups
+    #command: /opt/pbis/bin/config requiremembershipof "CORP\corp-unixsa-linux" "CORP\corp-itrs-linux"
+    command: /opt/pbis/bin/config requiremembershipof "CORP\\corp-unixsa-linux" "CORP\\corp-itrs-linux"
+    ignore_errors: yes
+
+  - name: Restart lwsmd service
+    shell: service lwsmd restart
+    ignore_errors: yes
+
+  - name: Ensure root is in user-ignore
+    command: cat /etc/pbis/user-ignore
+    register: user
+
+  - name: Output content of /etc/pbis/user-ignore
+    debug:
+     var: user.stdout_lines

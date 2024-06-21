@@ -1,0 +1,5 @@
+- hosts: hostlist
+
+  roles:
+  - 8-commv-bkp-agent
+...

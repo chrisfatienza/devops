@@ -1,0 +1,92 @@
+---
+- name: Update and Gather Information
+  hosts: hostlist
+  become: yes
+  vars:
+    log_timestamp: "{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+
+  tasks:
+  - name: Create log directory on Ansible control machine (localhost)
+    local_action:
+      module: file
+      path: "/root/cfgmain/sssd/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}"
+      state: directory
+      recurse: yes
+  
+  - name: Backup existing /etc/sssd/sssd.conf first
+    shell: "{{ item }}"
+    loop:
+      - "realm list"
+      - "cat /etc/sssd/sssd.conf"
+    register: command_result
+    ignore_errors: yes
+
+  - name: Save realm config as log files
+    copy:
+      content: "{{ item.stdout }}"
+      dest: "/root/cfgmain/sssd/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/{{ item.item.split(' ')[0] }}.log"
+    loop: "{{ command_result.results }}"
+    delegate_to: localhost
+
+  - name: Preserve the AD group allocation
+    shell: "realm list |grep group |cut -d : -f 2- | sed 's/,//g'"
+    register: adGroup
+    ignore_errors: yes
+
+  - name: install realmd packages
+    yum:
+      name:
+        - realmd
+        - oddjob
+        - oddjob-mkhomedir
+        - sssd
+        - sssd-tools
+        - adcli
+        - krb5-workstation
+        - samba-common-tools
+      state: present
+
+  - name: discover realm
+    shell: /bin/bash -c "/usr/sbin/realm discover corp.ad.tullib.com"
+
+  - name: Ensure Server is not currently joined in CORP Domain and clean up Existing Computer Object
+    command: /bin/bash -c "realm leave"
+    ignore_errors: yes
+
+  - name: Realmd Join Domain
+    command: /bin/bash -c "echo 'dtO#E%lwwNqhzo16BhC!*))sD)ICCcSv' | realm join --user=Srvcpbis corp.ad.tullib.com && sleep 15"
+    ignore_errors: yes
+
+  - name: Gather site location
+    shell: "adcli info corp.ad.tullib.com |grep computer-site | awk '{print $3}'"
+    register: adSITE_output
+
+  - name: Copy Standard SSSD file to /etc/sssd/sssd.conf
+    copy:
+      src: /root/cfgmain/sssd/sssd.conf
+      dest: /etc/sssd/sssd.conf
+      force: yes
+
+  - name: Search for ad_server line in sssd.conf
+    shell: "grep 'ad_domain =' /etc/sssd/sssd.conf"
+    register: ad_domain_line
+    ignore_errors: yes
+    changed_when: false
+
+  - name: Add ad_site on /etc/sssd/sssd.conf
+    lineinfile:
+      path: /etc/sssd/sssd.conf
+      insertafter: '^ad_domain'
+      line: 'ad_site = {{ adSITE_output.stdout }}'
+
+  - name: Add corp-unixsa-linux AD group as default
+    shell:  realm permit -g corp-unixsa-linux
+    ignore_errors: yes
+
+ # - name: Restore existing AD group
+ #   shell: realm permit -g "{{ addGroup }}"
+
+  - name: Restart SSSD
+    shell:  systemctl restart sssd
+  ignore_errors: yes
+

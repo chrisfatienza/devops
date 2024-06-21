@@ -1,0 +1,5 @@
+- hosts: hostlist
+
+  roles:
+  - aws-gtn-images
+...

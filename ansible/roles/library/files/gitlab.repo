@@ -1,0 +1,5 @@
+[ldn2lx1000-GitLab]
+name = GitLab
+baseurl=https://ldn2lx1000.corp.ad.tullib.com/pulp/content/TPICAP/Library/custom/gitlab/gitlab-rhel7/
+enabled = 1
+gpgcheck = 0

@@ -1,0 +1,328 @@
+#! /bin/bash
+# ----------------------------------------------------------------------
+# Filename: get_cmdb.sh
+# ----------------------------------------------------------------------
+# Created by: David Stedman
+# Creation Date: 21/11/2019
+# ----------------------------------------------------------------------
+# Description: Refresh server details from the a2rm CMDB
+#
+# ----------------------------------------------------------------------
+# Usage:  
+#
+#        Called from systemd timer or cron
+#
+#
+# ----------------------------------------------------------------------
+# Calls:
+#
+# ----------------------------------------------------------------------
+# Called by:  Called from systemd timer
+#
+# ----------------------------------------------------------------------
+# CHANGE HISTORY:
+# ----------------------------------------------------------------------
+# DATE(dd/mm/ccyy) BY(login)      Nature of Change (+ Change request no)
+# ----------------------------------------------------------------------
+#  21/11/2019     dstedman-a      Initial version
+#  07/01/2020     dstedman-a      Initial version
+#  20/01/2020     dstedman-a      Migrated to direct URL for a2rm
+#  23/01/2020     dstedman-a      Added check for changed hostname
+#  28/01/2020	  dstedman-a	  Default the hierarchy to UNKNOWN
+#  10/07/2020     lbertin         Change DE_CMD grep regex to catch PROD and DR	                  
+#		                          if its empty in A2RM
+#  24/09/2020     lbertin         Increase curl timeout from 10 to 30 secs	                  
+#  30/09/2020     lbertin         Always use host shortname
+#  14/10/2020     lbertin         Capture a corrupt cmdb.json file and exit script (don't update the machine agent config as a result)
+#
+#  30/11/2021     gcolgate        Added two vars, CFILE_OLD and CFILE_NEW, used for working file and to keep the previous version to compare	
+#  30/11/2021     gcolgate        Adding extra check to catch when incomplete data is sent from A2RM
+#
+#
+#
+# ----------------------------------------------------------------------
+# Set variables
+
+HNAME=`uname -n|cut -d. -f1`
+CFILE=/etc/cmdb.json
+CFILE_NEW="${CFILE}.new"
+CFILE_OLD="${CFILE}.old"
+#DE_CMD="grep -qi "derived-environment.*prod" ${CFILE}"
+SH_CMD="grep -qi "Server-Hierarchy"  ${CFILE}"
+
+JA_VER_DIR=`find /opt/appdynamics/java-agent/ -maxdepth 1 -type d | egrep "ver.*"`
+JA_CI_VER_FILE="${JA_VER_DIR}/conf/controller-info.xml"
+CI_FILE="/opt/appdynamics/machine-agent/conf/controller-info.xml"
+JA_CI_FILE="/opt/appdynamics/java-agent/conf/controller-info.xml"
+AA_PROP_FILE="/opt/appdynamics/machine-agent/monitors/analytics-agent/conf/analytics-agent.properties"
+
+# controller-info.xml
+MA_CONT=`grep '<controller-host>' $CI_FILE  | cut -f2 -d '>' | cut -f1 -d '<'`
+MA_PATH=`grep '<machine-path>' $CI_FILE  | cut -f2 -d '>' | cut -f1 -d '<'`
+
+# check which hostname is being used in the configuration files
+MA_HN=`grep '<unique-host-id>' $CI_FILE  | cut -f2 -d '>' | cut -f1 -d '<'`
+AA_HN=`grep 'ad.agent.name=' $AA_PROP_FILE  | cut -f2 -d '='`
+
+
+# AppDynamics parameters:
+PRD_CONT_HOST=">tpicap.saas.appdynamics.com<"
+NONPRD_CONT_HOST=">tpicap-dev.saas.appdynamics.com<"
+PRD_ACC_KEY="xbmmwtracn05"
+NONPRD_ACC_KEY="j8nf8zpu0mpp"
+PRD_ACC_NAME=">tpicap<"
+NONPRD_ACC_NAME=">tpicap-dev<"
+PRD_AA_URL="\/tpicap.saas.appdynamics.com:443"
+NONPRD_AA_URL="\/tpicap-dev.saas.appdynamics.com:443"
+PRD_AA_EV="name\=tpicap"
+NONPRD_AA_EV="name\=tpicap-dev"
+PRD_AA_ACC="Name\=tpicap_4888abaa-5d3e-4aa9-a2cb-2f8b18f33de4"
+NONPRD_AA_ACC="Name\=tpicap-dev_282fa861-554e-4073-ba0c-a5f77f27ad11"
+PRD_AA_ACCKEY="xbmmwtracn05"
+NONPRD_AA_ACCKEY="j8nf8zpu0mpp"
+
+
+NEED_RESTART=0
+
+# ----------------------------------------------------------------------
+# LOG functions
+# ----------------------------------------------------------------------
+
+
+LOG_DATE() {
+echo "`date +%Y%m%d-%H:%M:%S`:$@" >> ~appdynamics/cmdb_update.log
+}
+
+LOG_INFO() {
+LOG_DATE "INFO: $@"
+}
+
+LOG_ERROR() {
+LOG_DATE "ERROR: $@"
+}
+
+# ----------------------------------------------------------------------
+# APPD CONFIG SWITCH FUNCTIONS
+# ----------------------------------------------------------------------
+CHANGE_HOSTNAME() {
+
+LOG_INFO "Changing the AppDynamics configuration to hostname ${HNAME}"
+
+AA_NAME="${HNAME}-analytics-agent"
+
+sed -i -r "s/$MA_HN/$HNAME/g" $CI_FILE
+sed -i -r "s/$AA_HN/$AA_NAME/g" $AA_PROP_FILE
+
+NEED_RESTART=1
+
+}
+
+SWITCH_TO_PROD() {
+
+LOG_INFO "Switching the AppDynamics configuration from non-prod to prod"
+
+sed -i -r "s/$NONPRD_CONT_HOST/$PRD_CONT_HOST/" $CI_FILE
+sed -i -r "s/$NONPRD_ACC_KEY/$PRD_ACC_KEY/" $CI_FILE
+sed -i -r "s/$NONPRD_ACC_NAME/$PRD_ACC_NAME/" $CI_FILE
+
+
+sed -i -r "s/$NONPRD_CONT_HOST/$PRD_CONT_HOST/" $JA_CI_FILE
+sed -i -r "s/$NONPRD_ACC_KEY/$PRD_ACC_KEY/" $JA_CI_FILE
+sed -i -r "s/$NONPRD_ACC_NAME/$PRD_ACC_NAME/" $JA_CI_FILE
+
+sed -i -r "s/$NONPRD_AA_URL/$PRD_AA_URL/" $AA_PROP_FILE
+sed -i -r "s/$NONPRD_AA_EV/$PRD_AA_EV/" $AA_PROP_FILE
+sed -i -r "s/$NONPRD_AA_ACC/$PRD_AA_ACC/" $AA_PROP_FILE
+sed -i -r "s/$NONPRD_AA_ACCKEY/$PRD_AA_ACCKEY/" $AA_PROP_FILE
+
+if [ -f $JA_CI_VER_FILE ]
+	then
+		sed -i -r "s/$NONPRD_CONT_HOST/$PRD_CONT_HOST/" $JA_CI_VER_FILE
+		sed -i -r "s/$NONPRD_ACC_KEY/$PRD_ACC_KEY/" $JA_CI_VER_FILE
+		sed -i -r "s/$NONPRD_ACC_NAME/$PRD_ACC_NAME/" $JA_CI_VER_FILE
+fi
+
+NEED_RESTART=1
+
+}
+
+SWITCH_TO_NONPROD() {
+
+LOG_INFO "Switching the AppDynamics configuration from prod to non-prod"
+
+sed -i -r "s/$PRD_CONT_HOST/$NONPRD_CONT_HOST/" $CI_FILE
+sed -i -r "s/$PRD_ACC_KEY/$NONPRD_ACC_KEY/" $CI_FILE
+sed -i -r "s/$PRD_ACC_NAME/$NONPRD_ACC_NAME/" $CI_FILE
+
+
+sed -i -r "s/$PRD_CONT_HOST/$NONPRD_CONT_HOST/" $JA_CI_FILE
+sed -i -r "s/$PRD_ACC_KEY/$NONPRD_ACC_KEY/" $JA_CI_FILE
+sed -i -r "s/$PRD_ACC_NAME/$NONPRD_ACC_NAME/" $JA_CI_FILE
+
+sed -i -r "s/$PRD_AA_URL/$NONPRD_AA_URL/" $AA_PROP_FILE
+sed -i -r "s/$PRD_AA_EV/$NONPRD_AA_EV/" $AA_PROP_FILE
+sed -i -r "s/$PRD_AA_ACC/$NONPRD_AA_ACC/" $AA_PROP_FILE
+sed -i -r "s/$PRD_AA_ACCKEY/$NONPRD_AA_ACCKEY/" $AA_PROP_FILE
+
+if [ -f $JA_CI_VER_FILE ]
+	then
+		sed -i -r "s/$PRD_CONT_HOST/$NONPRD_CONT_HOST/" $JA_CI_VER_FILE
+		sed -i -r "s/$PRD_ACC_KEY/$NONPRD_ACC_KEY/" $JA_CI_VER_FILE
+		sed -i -r "s/$PRD_ACC_NAME/$NONPRD_ACC_NAME/" $JA_CI_VER_FILE
+fi
+
+NEED_RESTART=1
+
+}
+
+CHANGE_HIERARCHY() {
+
+LOG_INFO "Updating the AppDynamics hierarchy"
+NEWPATH="<machine-path>${APPD_HIER}</machine-path>" 
+sed -i '/\<machine-path\>/d' $CI_FILE
+sed -i -r '/<\/controller-info>.*/d' $CI_FILE
+
+echo "    "${NEWPATH} >> $CI_FILE
+echo '</controller-info>' >> $CI_FILE
+
+NEED_RESTART=1
+
+}
+
+RESTART_SERVICE() {
+
+
+LOG_INFO "Re-starting Appdynamics machine agent service following configuration changes"
+
+/sbin/service appdynamics-machine-agent stop
+
+find /opt/appdynamics/machine-agent/monitors/analytics-agent -name *analytics-agent.id -exec rm -f {} \;
+
+/sbin/service appdynamics-machine-agent start
+
+
+}
+
+
+# ----------------------------------------------------------------------
+# MAIN SECTION
+# ----------------------------------------------------------------------
+
+LOG_INFO "The Current Machine Agent Controller is ${MA_CONT}"
+LOG_INFO "The Current Machine Agent machine path is ${MA_PATH}"
+LOG_INFO "The Current Hostname Used By AppD is ${MA_HN}"
+
+case "$MA_CONT" in
+tpicap-dev.saas.appdynamics.com)
+        CURR_ENV="NONPROD"
+        LOG_INFO "The Current AppDynamics environment for this system is ${CURR_ENV}"
+
+        ;;
+tpicap.saas.appdynamics.com)
+        CURR_ENV="PROD"
+        LOG_INFO "The Current AppDynamics environment for this system is ${CURR_ENV}"
+
+        ;;
+*)
+
+        LOG_ERROR "Invalid Current AppDynamics environment for this system"
+        exit 1
+esac
+
+
+LOG_INFO "Refreshing CMDB data to ${CFILE}"
+
+curl --connect-timeout 30 -s -X GET -u 'readonly:readonly' https://api.a2rm.direct.tpicapcloud.com/host/${HNAME}?report=appd | sed -e 's/\([^\s]\)\(\"s\)/\1\"s/g' | python -m json.tool > ${CFILE_NEW}
+
+# ----------------------------------------------------------------------
+# A2RM file validation
+# ----------------------------------------------------------------------
+if [ ! -s ${CFILE_NEW} ]
+then
+  LOG_ERROR "!!! CMDB data file ${CFILE_NEW} looks corrupt, exiting !!!"
+  exit
+fi
+
+# Added by gcolgate 30/11/2021
+egrep -qi "derived-environment" ${CFILE_NEW}
+if [ $? -ne 0 ]
+then
+	LOG_ERROR "!!! CMDB data file ${CFILE_NEW} looks corrupt, missing derived-environment, exiting !!!"
+  	exit
+fi	
+
+cp ${CFILE} ${CFILE_OLD}
+cp ${CFILE_NEW} ${CFILE}
+chmod 644 ${CFILE}
+
+# ----------------------------------------------------------------------
+
+#$DE_CMD
+egrep -qi "derived-environment.*prod|derived-environment.*dr" /etc/cmdb.json
+if [ $? -eq 0 ]
+	then
+		APPD_ENV="PROD"
+	else
+		APPD_ENV="NONPROD"
+fi	
+
+LOG_INFO "The AppDynamics environment derived from A2RM is now ${APPD_ENV}"
+
+$SH_CMD
+if [ $? -eq 0 ]
+	then
+		APPD_HIER=`grep -i server-hierarchy ${CFILE} | cut -f2 -d ':' | tr -d [\"\,\{\}] | sed s/^' '// | sed s/' '$//`
+
+		if [ ${#APPD_HIER} -lt 2 ]
+			then
+				LOG_INFO "The server-hierarchy obtained from A2RM is too short. Setting to UNKNOWN"
+				APPD_HIER="UNKNOWN|LINUX|"
+		fi
+	else
+		APPD_HIER="UNKNOWN|LINUX|"
+fi	
+
+
+LOG_INFO "The AppDynamics server hierarchy derived from A2RM is now ${APPD_HIER}"
+
+if [[ ${APPD_ENV} = ${CURR_ENV} ]]
+	then
+		 LOG_INFO "No change in environment found"
+	else
+		 LOG_INFO "Environment has changed from ${CURR_ENV} to ${APPD_ENV}"
+
+		 if  [ $APPD_ENV = "PROD" ]
+			then
+				SWITCH_TO_PROD
+			else
+				SWITCH_TO_NONPROD
+		 fi
+				
+fi
+
+
+if [[ ${APPD_HIER} = ${MA_PATH} ]]
+	then
+		 LOG_INFO "No change in server hierarchy found"
+	else
+		 LOG_INFO "Server hierarchy has changed from $MA_PATH to $APPD_HIER"
+		 CHANGE_HIERARCHY
+fi
+
+if [[ ${HNAME} = ${MA_HN} ]]
+	then
+		 LOG_INFO "No change in hostname found"
+	else
+		 LOG_INFO "Hostname has changed from $MA_HN to $HNAME"
+		 CHANGE_HOSTNAME
+		 
+fi
+
+
+if [ $NEED_RESTART -gt 0 ]
+	then
+		RESTART_SERVICE
+fi
+
+
+LOG_INFO "End of CMDB and AppDynamics refresh"

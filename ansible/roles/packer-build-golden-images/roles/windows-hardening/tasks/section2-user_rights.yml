@@ -1,0 +1,150 @@
+---
+- name: remove User Rights in Group Policy
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'BUILTIN\Access Control Assistance Operators'
+    - 'Administrators'
+    - 'Backup Operators'
+    - 'BUILTIN\Certificate Service DCOM Access'
+    - 'BUILTIN\Cryptographic Operators'
+    - 'BUILTIN\Distributed COM Users'
+    - 'BUILTIN\Event Log Readers'
+    - 'Guests'
+    - 'BUILTIN\Hyper-V Administrators'
+    - 'BUILTIN\Network Configuration Operators'
+    - 'BUILTIN\Performance Log Users'
+    - 'BUILTIN\Performance Monitor Users'
+    - 'Power Users'
+    - 'Print Operators'
+    - 'BUILTIN\RDS Endpoint Servers'
+    - 'BUILTIN\RDS Management Servers'
+    - 'BUILTIN\RDS Remote Access Servers'
+    - 'BUILTIN\Remote Desktop Users'
+    - 'BUILTIN\Remote Management Users'
+    - 'Users'
+    action: remove
+  with_items:
+  - { rule: 2.2.1, name: SeTrustedCredManAccessPrivilege }
+  - { rule: 2.2.2, name: SeNetworkLogonRight }
+  - { rule: 2.2.3, name: SeTcbPrivilege }
+  # 2.2.4 excluded
+  # - { rule: 2.2.5, name: SeIncreaseQuotaPrivilege } #exclusion list
+  # - { rule: 2.2.6, name: SeInteractiveLogonRight } #exclusion list
+  - { rule: 2.2.7, name: SeRemoteInteractiveLogonRight }
+  - { rule: 2.2.8, name: SeBackupPrivilege }
+  - { rule: 2.2.9, name: SeSystemtimePrivilege }
+  - { rule: 2.2.10, name: SeTimeZonePrivilege }
+  - { rule: 2.2.11, name: SeCreatePagefilePrivilege }
+  - { rule: 2.2.12, name: SeCreateTokenPrivilege }
+  - { rule: 2.2.13, name: SeCreateGlobalPrivilege }
+  - { rule: 2.2.14, name: SeCreatePermanentPrivilege }
+  - { rule: 2.2.15, name: SeCreateSymbolicLinkPrivilege }
+  - { rule: 2.2.16, name: SeDebugPrivilege }
+  # - { rule: 2.2.17, name: SeDenyNetworkLogonRight }   Configuring a standalone (non-domain-joined) server as described above may result in an inability to remotely administer the server
+  - { rule: 2.2.22, name: SeEnableDelegationPrivilege }
+  - { rule: 2.2.23, name: SeRemoteShutdownPrivilege }
+  - { rule: 2.2.24, name: SeAuditPrivilege }
+  # - { rule: 2.2.25, name: SeImpersonatePrivilege } #exclusion list
+  - { rule: 2.2.26, name: SeIncreaseBasePriorityPrivilege }
+  - { rule: 2.2.27, name: SeLoadDriverPrivilege }
+  - { rule: 2.2.28, name: SeLockMemoryPrivilege }
+  # - { rule: 2.2.30, name: SeSecurityPrivilege } #exclusion list
+  - { rule: 2.2.31, name: SeRelabelPrivilege }
+  - { rule: 2.2.32, name: SeSystemEnvironmentPrivilege }
+  - { rule: 2.2.33, name: SeManageVolumePrivilege }
+  - { rule: 2.2.34, name: SeProfileSingleProcessPrivilege }
+  - { rule: 2.2.35, name: SeSystemProfilePrivilege }
+  # - { rule: 2.2.36, name: SeAssignPrimaryTokenPrivilege } #exclusion list
+  - { rule: 2.2.37, name: SeRestorePrivilege }
+  - { rule: 2.2.38, name: SeShutdownPrivilege }
+  - { rule: 2.2.40, name: SeTakeOwnershipPrivilege }
+
+
+- name: add User Rights in Group Policy
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'Guests'
+    action: add
+  with_items:
+  - { rule: 2.2.18, name: SeDenyServiceLogonRight } # cannot find Ensure 'Deny log on as a batch job' to include 'Guests' in 2016 !
+  - { rule: 2.2.19, name: SeDenyServiceLogonRight }
+  - { rule: 2.2.20, name: SeDenyInteractiveLogonRight }
+  - { rule: 2.2.21, name: SeDenyRemoteInteractiveLogonRight }
+
+
+- name: add User Rights in Group Policy 2.2.2
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'Administrators'
+    - 'Authenticated Users'
+    action: add
+  with_items:
+  - { rule: 2.2.2, name: SeNetworkLogonRight }
+
+- name: add User Rights in Group Policy 2.2.7
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'Administrators'
+    - 'Remote Desktop Users'
+    action: add
+  with_items:
+  - { rule: 2.2.7, name: SeRemoteInteractiveLogonRight }
+
+- name: add User Rights in Group Policy 2.2.8
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'Administrators'
+    action: add
+  with_items:
+  - { rule: 2.2.8, name: SeBackupPrivilege }
+  - { rule: 2.2.11, name: SeCreatePagefilePrivilege }
+  - { rule: 2.2.15, name: SeCreateSymbolicLinkPrivilege }
+  - { rule: 2.2.16, name: SeDebugPrivilege }
+  - { rule: 2.2.23, name: SeRemoteShutdownPrivilege }
+  - { rule: 2.2.26, name: SeIncreaseBasePriorityPrivilege }
+  - { rule: 2.2.27, name: SeLoadDriverPrivilege }
+  - { rule: 2.2.32, name: SeSystemEnvironmentPrivilege }
+  - { rule: 2.2.33, name: SeManageVolumePrivilege }
+  - { rule: 2.2.34, name: SeProfileSingleProcessPrivilege }
+  - { rule: 2.2.35, name: SeSystemProfilePrivilege }
+  - { rule: 2.2.37, name: SeRestorePrivilege }
+  - { rule: 2.2.38, name: SeShutdownPrivilege }
+  - { rule: 2.2.40, name: SeTakeOwnershipPrivilege }
+
+- name: add User Rights in Group Policy 2.2.9
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'Administrators'
+    - 'LOCAL SERVICE'
+    action: add
+  with_items:
+  - { rule: 2.2.9, name: SeSystemtimePrivilege }
+  - { rule: 2.2.10, name: SeTimeZonePrivilege }
+
+- name: add User Rights in Group Policy 2.2.13
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'Administrators'
+    - 'LOCAL SERVICE'
+    - 'NETWORK SERVICE'
+    - 'SERVICE'
+    action: add
+  with_items:
+  - { rule: 2.2.13, name: SeCreateGlobalPrivilege }
+
+- name: add User Rights in Group Policy 2.2.24
+  win_user_right:
+    name: "{{ item.name }}"
+    users:
+    - 'LOCAL SERVICE'
+    - 'NETWORK SERVICE'
+    action: add
+  with_items:
+  - { rule: 2.2.24, name: SeAuditPrivilege }

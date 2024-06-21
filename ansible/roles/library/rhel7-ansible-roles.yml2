@@ -1,0 +1,15 @@
+---
+- hosts: hostlist
+  roles:
+  - 1-rhel76-hardening
+#  - 2-common-tools-realm
+#  - 3-security-tools
+#  - 4-appdynamics-machine-agent
+#  - 5-cmdb-file-update
+#  - 6-motd-update
+  # - 7-bond0-eth0-eth1
+  # - 8-commv-bkp-agent only if Prod - pending 
+#  - liquidnet
+#  - timekeeper  - tested OK Feb 15 2024 - via cli
+#  - chronyd
+...

@@ -1,0 +1,9 @@
+[Unit]
+Description=Refresh motd with details from A2RM
+
+[Service]
+Type=simple
+ExecStart=/root/update_motd.sh
+
+[Install]
+WantedBy=multi-user.target

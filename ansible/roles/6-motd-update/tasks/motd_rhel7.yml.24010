@@ -1,0 +1,34 @@
+---
+- name: "Copy files to target"
+  Block:
+  - name: "Copy script onto target system"
+    copy:
+     src: "update_motd.sh"
+     dest: "{{ motd_script_path }}"
+     owner: "{{ motd_user }}"
+     group: "{{ motd_user }}"
+     mode: u+rwx,g+r,o+r
+  - name: "Copy service file onto target system"
+    copy:
+     src: "motd_update.service"
+     dest: "{{ motd_service_path }}"
+     owner: root
+     group: root 
+  - name: "Copy timer file onto target system"
+    copy:
+     src: "motd_update.timer"
+     dest: "{{ motd_timer_path }}"
+     owner: root 
+     group: root
+  - name: "enable service motd_update.service"
+    systemd:
+     name: motd_update
+     daemon_reload: yes
+     enabled: yes
+     masked: no
+  - name: "enable a timer for motd_update"
+    systemd:
+     name: motd_update.timer
+     state: started
+     enabled: yes
+     daemon_reload: yes

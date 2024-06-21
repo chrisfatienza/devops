@@ -1,0 +1,5 @@
+Ansible role to install motd refresh script.
+The script name is /root/update_motd.sh
+The source of the CMDB data in /etc/motd is the A2RM API.
+
+David Stedman

@@ -1,0 +1,16 @@
+motd_timer_path: "/usr/lib/systemd/system/motd_update.timer"
+motd_service_path: "/usr/lib/systemd/system/motd_update.service"
+motd_script_path: "/root/update_motd.sh"
+
+# search for red hat 7 in /etc/system-release
+rhel7_regex: '^Red\sHat\s.*7\..*$'
+
+# search for red hat 6 in /etc/system-release
+rhel6_regex: '^Red\sHat\s.*6\..*$'
+
+a2rm_base_url: https://api.a2rm.direct.tpicapcloud.com/host
+a2rm_host_url: "\'{{ a2rm_base_url }}/{{ inventory_hostname_short }}/?report=appd\'"
+
+motd_user: root
+motd_group: root
+

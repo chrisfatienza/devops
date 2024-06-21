@@ -1,0 +1,8 @@
+PARTED for 4TB ASM disk partitioning
+
+parted /dev/mapper/<whatever lun>
+ 
+mklabel gpt
+mkpart primary 0% 100%
+align-check optimal 1
+Quit

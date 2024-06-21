@@ -1,0 +1,131 @@
+---
+- name: Update and Gather Information
+  hosts: hostlist
+  become: yes
+  vars:
+    log_timestamp: "{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+
+  tasks:
+    - name: Create log directory on Ansible control machine (localhost)
+      local_action:
+        module: file
+        path: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}"
+        state: directory
+        recurse: yes
+
+    - name: Execute commands and capture output
+      shell: "{{ item }}"
+      loop:
+        - "ifconfig -a"
+        - "ip a s"
+        - "netstat -rn"
+        - "cat /etc/fstab"
+        - "mount"
+        - "df -h"
+        - "rpm -qa"
+        - "ps -ef"
+        - "uptime"   
+        - "uname -r"
+        - "crontab -l -u root"
+        - "yum list kernel"
+      register: command_result
+      ignore_errors: yes
+
+    - name: Save command outputs as log files
+      copy:
+        content: "{{ item.stdout }}"
+        dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/{{ item.item.split(' ')[0] }}.log"
+      loop: "{{ command_result.results }}"
+      delegate_to: localhost
+
+    - name: Ensure /etc/yum.repos.d is cleared
+      shell: mv /etc/yum.repos.d/*.repo /root
+      register: cleanrepofile
+      ignore_errors: yes
+
+    - name: Log /etc/yum.repos.d cleanup
+      copy:
+        content: "{{ cleanrepofile.stdout }}"
+        dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/cleanrepofile.log"
+      delegate_to: localhost
+    
+    - name: Initiating Subcription-manager refresh
+      shell: /usr/sbin/subscription-manager refresh
+      register: refreshrepolist
+      ignore_errors: yes
+
+    - name: Log subcription-manager refresh
+      copy:
+        content: "{{ refreshrepolist.stdout }}"
+        dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/refreshrepolist.log"
+      delegate_to: localhost
+
+    - name: Perform clean up first before patching
+      shell: yum clean all
+      register: varcleanup
+      ignore_errors: yes
+
+    # - name: Log /var size cleanup
+    #   copy:
+    #     content: "{{ yumcleanup.stdout }}"
+    #     dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/varcleanup.log"
+    #   delegate_to: localhost
+
+    # - name: Modified notify_only=0 on /etc/yum/pluginconf.d/search-disabled-repos.conf
+    #   copy:
+    #     src: search-disabled-repos.conf
+    #     dest: /etc/yum/pluginconf.d/search-disabled-repos.conf
+    #   ignore_errors: yes
+
+    - name: Disable TPICAP_Extra_Packages_for_Enterprise_Linux__EPEL_EPEL_7_-_x86_64
+      shell: "subscription-manager repos --disable=TPICAP_Extra_Packages_for_Enterprise_Linux__EPEL_EPEL_7_-_x86_64"
+      ignore_errors: yes
+
+    - name: Perform patching
+      shell: "yum -y update"
+      register: patching_result
+      ignore_errors: yes
+
+    - name: Save patching output as a log file
+      copy:
+        content: "{{ patching_result.stdout }}"
+        dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/patching.log"
+      delegate_to: localhost
+
+    - name: Rebooting the server after patching
+      reboot:
+
+    - name: Remove old kernel/s
+      shell: "package-cleanup -y --oldkernels --count=1"
+      register: kernel_removal_result
+
+    - name: Save kernel removal output as a log file
+      copy:
+        content: "{{ kernel_removal_result.stdout }}"
+        dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/kernel_removal.log"
+      delegate_to: localhost
+
+    - name: Yum clean-up
+      shell: yum clean all
+      register: yumcleanup
+      ignore_errors: yes
+
+    - name: Log the YUM cleanup
+      copy:
+        content: "{{ yumcleanup.stdout }}"
+        dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/yumcleanup.log"
+      delegate_to: localhost
+
+    - name: Check the new Kernel
+      shell: "{{ item }}"
+      loop:
+        - "uname -r"
+      register: command2_result
+      ignore_errors: yes
+
+    - name: Save command outputs as log files
+      copy:
+        content: "{{ item.stdout }}"
+        dest: "/root/cfgmain/patching/prepatch/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/{{ item.item.split(' ')[0] }}-new.log"
+      loop: "{{ command2_result.results }}"
+      delegate_to: localhost

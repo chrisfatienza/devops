@@ -1,0 +1,7 @@
+Ansible role to install cmdb refresh script and update the AppDynamics machine agent config if required.
+The script name is /home/appdynamics/get_cmdb.sh
+The source of the CMDB data is the A2RM API.
+If a change affecting the Appdynamics configuration is found, the script will update this configuration
+and re-start the appd machine agent overnight.
+
+David Stedman

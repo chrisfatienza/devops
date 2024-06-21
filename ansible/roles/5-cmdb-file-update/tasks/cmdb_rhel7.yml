@@ -1,0 +1,34 @@
+---
+- name: Copy files to target
+  block:
+  - name: "Copy script onto target system"
+    copy:
+     src: "get_cmdb.sh"
+     dest: "{{ cmdb_script_path }}"
+     owner: "{{ appd_user }}"
+     group: "{{ appd_user }}"
+     mode: u+rwx,g+r,o+r
+  - name: "Copy service file onto target system"
+    copy:
+     src: "cmdb_update.service"
+     dest: "{{ cmdb_service_path }}"
+     owner: root
+     group: root 
+  - name: "Copy timer file onto target system"
+    copy:
+     src: "cmdb_update.timer"
+     dest: "{{ cmdb_timer_path }}"
+     owner: root 
+     group: root
+  - name: "enable service cmdb_update.service"
+    systemd:
+     name: cmdb_update
+     daemon_reload: yes
+     enabled: yes
+     masked: no
+  - name: "enable a timer for cmdb_update"
+    systemd:
+     name: cmdb_update.timer
+     state: started
+     enabled: yes
+     daemon_reload: yes

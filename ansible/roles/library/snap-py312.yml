@@ -1,0 +1,20 @@
+- name: Install Python 3.12
+  hosts: hostlist
+
+  tasks:
+    - name: Check if Python 3 is already installed
+      ansible.builtin.command: python3 --version
+      register: python_version_result
+      ignore_errors: true
+
+    - name: Install Python 3 (if not present)
+      ansible.builtin.yum:
+        name: python312
+        state: present
+      when: python_version_result is failed 
+
+    - name: Install Pip for Python 3 (if not present)
+      ansible.builtin.yum:
+        name: python312-pip
+        state: present
+      when: python_version_result is failed

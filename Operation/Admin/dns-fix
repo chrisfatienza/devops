@@ -1,0 +1,25 @@
+Stop auto adding DNS entries 
+Copilot
+Certainly! To disable automatic DNS updates during the realm join process, you can follow these steps:
+1. Edit sssd.conf:
+• First, ensure that you’ve joined the realm using realmd.
+• Locate your sssd.conf file (usually located at /etc/sssd/sssd.conf).
+• Remove the existing sssd.conf file (make sure to back it up first).
+• Create a new override file in the directory /etc/sssd/conf.d/. You can name it something like 01-mydomain.conf.
+• Set the ownership and permissions of this file to match those of sssd.conf (usually root:root with permissions 600).
+• In the override file, add the following section:
+[domain/ad.example.com]
+dyndns_update = false
+
+Replace ad.example.com with your actual domain name.
+2. Re-Join the Realm:
+• Re-join the realm using realmd.
+• The newly generated sssd.conf will include the specified override settings.
+• These settings will suppress dynamic DNS updates during the realm join process.
+ 
+
+3. Note on Overrides:
+• sssd reads and applies configuration from files in the conf.d directory in sort order.
+• Overrides in this directory take precedence over the main sssd.conf.
+• Remember that the override files won’t be included in the main sssd.conf, so you’ll need to look for them specifically in the conf.d directory1.
+By following these steps, you should be able to disable dynamic DNS updates during the realm join process effectively. 

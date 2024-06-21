@@ -1,0 +1,98 @@
+- hosts: hostlist
+  tasks:
+     - name: Checking NJC1WS0001 10.161.72.10 open ports for DNS, AD and kerberos
+       wait_for:
+         host: 10.161.72.10
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 389  
+         - 3268 
+         - 3269
+         - 88
+         - 464
+         - 53
+
+     - name: Checking NJC2WS0002 10.160.72.10 open ports for DNS, AD and kerberos
+       wait_for:
+         host: 10.160.72.10
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 389
+         - 3268
+         - 3269
+         - 88
+         - 464
+         - 53
+
+     - name: Checking NJC2WS2833 10.160.72.84 open ports for DNS, AD and kerberos
+       wait_for:
+         host: 10.160.72.84
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 389
+         - 3268
+         - 3269
+         - 88
+         - 464
+         - 53
+
+
+     - name: Checking njc1ws0857 10.161.72.29 open ports for DNS, AD and kerberos
+       wait_for:
+         host: 10.161.72.29
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 389
+         - 3268
+         - 3269
+         - 88
+         - 464
+         - 53
+
+     - name: Checking njc2ws6146 10.160.72.83 open ports for DNS, AD and kerberos
+       wait_for:
+         host: 10.160.72.83
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 389
+         - 3268
+         - 3269
+         - 88
+         - 464
+         - 53
+
+     - name: Checking njc1ws3101 10.161.72.28 open ports for DNS, AD and kerberos
+       wait_for:
+         host: 10.161.72.28
+         port: "{{ item }}"
+         state: started         # Port should be open
+         delay: 0               # No wait before first check (sec)
+         timeout: 3             # Stop checking after timeout (sec)
+       ignore_errors: yes
+       with_items:
+         - 389
+         - 3268
+         - 3269
+         - 88
+         - 464
+         - 53

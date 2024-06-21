@@ -1,0 +1,19 @@
+---
+- name: Copy files to target
+  block:
+  - name: "Copy script onto target system"
+    copy:
+     src: "get_cmdb.sh"
+     dest: "{{ cmdb_script_path }}"
+     owner: "{{ appd_user }}"
+     group: "{{ appd_user }}"
+     mode: u+rwx,g+r,o+r
+  - name: Creates a cron file under /etc/cron.d
+    cron:
+     name: cmdb update
+     weekday: "*"
+     minute: "0"
+     hour: "1"
+     user: root
+     job: "perl -le 'sleep rand 18000' && /home/appdynamics/get_cmdb.sh"
+     cron_file: ansible_cmdb_update

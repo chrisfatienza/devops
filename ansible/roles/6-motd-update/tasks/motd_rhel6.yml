@@ -1,0 +1,19 @@
+---
+- name: Copy files to target
+  block:
+  - name: "Copy script onto target system"
+    copy:
+     src: "update_motd.sh"
+     dest: "{{ motd_script_path }}"
+     owner: "{{ motd_user }}"
+     group: "{{ motd_user }}"
+     mode: u+rwx,g+r,o+r
+  - name: Creates a cron file under /etc/cron.d
+    cron:
+     name: motd update
+     weekday: "*"
+     minute: "0"
+     hour: "1"
+     user: root
+     job: "perl -le 'sleep rand 18000' && /root/update_motd.sh"
+     cron_file: ansible_motd_update

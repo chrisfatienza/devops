@@ -1,0 +1,33 @@
+---
+- name: Configure VMware guest network
+  hosts: hostlist
+  tasks:
+    - name: Gather facts about the VM
+      vmware_vm_info:
+        hostname: "arkpinfvca01.corp.ad.tullib.com"
+        username: "srvvcrwlinux"
+        password: "R83JdsfCi^qf4k!gH"
+        validate_certs: no
+        datacenter: "ARK"
+        name: "{{ inventory_hostname }}"
+      register: vm_info
+
+    - name: Extract active network name
+      set_fact:
+        active_network_name: "{{ vm_info.virtual_machines[0].networks[0].name }}"  # Adjust the index if needed
+
+    - name: Configure VMware guest network
+      community.vmware.vmware_guest_network:
+        hostname: "arkpinfvca01.corp.ad.tullib.com"
+        username: "srvvcrwlinux"
+        password: "R83JdsfCi^qf4k!gH"
+        datacenter: "ARK"
+        validate_certs: no
+        state: present
+        name: "{{ inventory_hostname }}"
+        gather_network_info: false
+        network_name: "{{ active_network_name }}"
+        start_connected: true
+        connected: true
+        wake_onlan: false
+      delegate_to: localhost

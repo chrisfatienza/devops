@@ -1,0 +1,15 @@
+---
+- hosts: hostlist
+  tasks:
+
+    - name: "Copy dns change script to /tmp/dnschange.sh"
+      copy:
+       src: /root/cfgmain/deployment/dnschange.sh
+        dest: /tmp/dnschange.sh
+        force: yes
+        group: root
+        owner: root
+        mode: 0755
+
+    -  name: Execute /tmp/dnschange.sh
+       command: /tmp/dnschange.sh
