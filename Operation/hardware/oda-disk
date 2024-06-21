@@ -1,0 +1,73 @@
+Detailed Description of Procedure
+
+1.	Follow this process to replace a disk…
+
+ https://support.oracle.com/epmos/faces/DocumentDisplay?_afrLoop=124531555921363&parent=SrDetailText&sourceId=3-31042055381&id=1435946.1&_afrWindowMode=0&_adf.ctrl-state=yj2bnadj6_21
+
+
+2.	If the above procedure fails, as it has done twice on ODA usprora10pn1/usprora10pn2, attempt the following fix
+
+1.	Remove Entries from both /etc/multipath.conf
+2.	Oakcli stop oak (on both nodes)
+3.	Oakcli start oak on Node 1
+4.	After 5 mins, oakcli start oak on node 2
+5.	oakcli show ismaster - should show Master on Node 1
+6.	Multipath -r
+7.	Multipath -F
+8.	Multipath -v3
+9.	Multipath -ll
+10.	On Master Node: oakcli reinit e0_pd__04
+ 
+[root@usprora10pn1 etc]# oakcli reinit e0_pd_04
+ 
+Are you sure you want to reinitialize the disk? : 'e0_pd_04'? [yes/no] : 
+yes
+Re-initializing the Disk, please wait …
+ 
+[root@usprora10pn1 etc]# oakcli show disk
+        NAME            PATH            TYPE            STATE           STATE_DETAILS
+ 
+        e0_pd_00        /dev/sdx        HDD             ONLINE          Good           
+        e0_pd_01        /dev/sdy        HDD             PARTIAL          PredictiveFail
+        e0_pd_02        /dev/sdz        HDD             ONLINE          Good           
+        e0_pd_03        /dev/sdaa       HDD             ONLINE          Good           
+        e0_pd_04        /dev/sda        HDD             ONLINE          Good           
+        e0_pd_05        /dev/sdac       HDD             ONLINE          Good           
+        e0_pd_06        /dev/sdad       HDD             ONLINE          Good           
+        e0_pd_07        /dev/sdae       HDD             PARTIAL          PredictiveFail
+        e0_pd_08        /dev/sdaf       HDD             ONLINE          Good           
+        e0_pd_09        /dev/sdag       HDD             ONLINE          Good           
+        e0_pd_10        /dev/sdah       HDD             ONLINE          Good           
+        e0_pd_11        /dev/sdai       HDD             ONLINE          Good           
+        e0_pd_12        /dev/sdaj       HDD             PARTIAL          PredictiveFail
+        e0_pd_13        /dev/sdak       HDD             ONLINE          Good           
+        e0_pd_14        /dev/sdal       HDD             ONLINE          Good           
+        e0_pd_15        /dev/sdam       HDD             ONLINE          Good           
+        e0_pd_16        /dev/sdan       HDD             ONLINE          Good           
+        e0_pd_17        /dev/sdao       HDD             ONLINE          Good           
+        e0_pd_18        /dev/sdap       HDD             ONLINE          Good           
+        e0_pd_19        /dev/sdaq       HDD             ONLINE          Good           
+        e0_pd_20        /dev/sdaw       SSD             ONLINE          Good           
+        e0_pd_21        /dev/sdar       SSD             ONLINE          Good           
+        e0_pd_22        /dev/sdas       SSD             ONLINE          Good           
+        e0_pd_23        /dev/sdat       SSD             ONLINE          Good   
+
+
+
+
+
+
+Additional Documentation
+Additional commands:
+
+oakcli show storage
+oakcli show disk
+oakcli stordiag e0_pd_04
+multipath -ll
+cat /etc/multipath.conf
+oakcli show env_hw
+oakcli show version  -detail
+cat /opt/oracle/extapi/asmappl.config
+
+ 
+
