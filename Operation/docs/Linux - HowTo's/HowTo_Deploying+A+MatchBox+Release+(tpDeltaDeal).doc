@@ -1,0 +1,376 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>Deploying A MatchBox Release (tpDeltaDeal)</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>Deploying A MatchBox Release (tpDeltaDeal)</h1>
+        <h1><a name="DeployingAMatchBoxRelease%28tpDeltaDeal%29-Overview%3A"></a>Overview:</h1>
+
+<p><br clear="all" />
+Periodically, a request will be made by the Matchbox application team to install a new release of the Matchbox application The following instructions describe the method used to deploy the matchbox application software release to any of the Matchbox environments.
+<br clear="all" />
+In the request to perform the release you should expect to be made aware of the environment(s) where the new release is to be made available and when the release is expected to be performed.
+<br clear="all" />
+The new release software is applied in three parts.
+<br clear="all" /></p>
+<ol>
+	<li>Replace the application software and application properties directories on the Application server</li>
+	<li>Replace the application software and application properties directories on the Solver server</li>
+	<li>Execute the database scripts for the new release environment</li>
+</ol>
+
+
+<p><br clear="all" />
+The available environments and their associated server names are shown in the table below.
+<br clear="all" /></p>
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> <b>Environment Name</b> </td>
+<td class='confluenceTd'> <b>Primary Application</b> <b>Server</b> </td>
+<td class='confluenceTd'> <b>Primary</b> <br clear="all" />
+<b>Solver Server</b> </td>
+<td class='confluenceTd'> <b>Secondary Application Server</b> </td>
+<td class='confluenceTd'> <b>Secondary Solver Server</b> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>TEST</b> </td>
+<td class='confluenceTd'> ldnmbtestapp1 </td>
+<td class='confluenceTd'> ldnmbtestmat1 </td>
+<td class='confluenceTd'> N/A </td>
+<td class='confluenceTd'> N/A </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>QA</b> </td>
+<td class='confluenceTd'> ldnmbqaapp1 </td>
+<td class='confluenceTd'> ldnmbqamat1 </td>
+<td class='confluenceTd'> N/A </td>
+<td class='confluenceTd'> N/A </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>UAT</b> </td>
+<td class='confluenceTd'> ldnmbuatapp1 </td>
+<td class='confluenceTd'> ldnmbuatmat1 </td>
+<td class='confluenceTd'> ldnmbuatapp2 </td>
+<td class='confluenceTd'> ldnmbuatmat2 </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>PRODUCTION</b> </td>
+<td class='confluenceTd'> ldnmbapp1 </td>
+<td class='confluenceTd'> ldnmbmat1 </td>
+<td class='confluenceTd'> ldnmbapp2 </td>
+<td class='confluenceTd'> ldnmbmat2 </td>
+</tr>
+</tbody></table>
+<p><br clear="all" />
+<b>Note:</b> Where information exists in the columns 'Secondary Application Server' and 'Secondary Solver Server' this indicates that the environment is operating as an application cluster server.
+<br clear="all" />
+<b><ins>Release directories</ins></b>
+<br clear="all" />
+On each Application and Solver server the software directory names are exactly the same. These are as follows.
+<br clear="all" />
+/opt/jetty/resources<br/>
+/opt/jetty/webapps
+<br clear="all" />
+<em>Where: 'jetty' is a valid symbolic link to the directory containing the Jetty software, currently 'jetty-6.1.22'</em>
+<br clear="all" />
+<b><ins>Release software</ins></b>
+<br clear="all" />
+In the request to install the new release software you will be made aware of the new release version number. The release version number will indicate the folder name from which you will obtain the new release software.
+<br clear="all" />
+The folder containing the software for the new release is located at the following network share path.
+<br clear="all" />
+<a href="file://ldnr200/LinuxITStaging/eBroking/Matchbox">\\ldnr200\LinuxITStaging\eBroking\Matchbox</a>
+<br clear="all" />
+Each release folder on the share will itself contain number of sub folders.
+<br clear="all" />
+Each sub-folder will be named according to the intended target environment (i.e qa, uat..etc)
+<br clear="all" />
+Inside the target environment sub-folder one sub-folder named 'database' will contain the SQL scripts to be applied along with each new release. The remaining folders will contain the new release softweare
+<br clear="all" />
+<br clear="all" />
+<br clear="all" />
+<br clear="all" />
+<b>Considerations for selecting the release software to install:</b>
+<br clear="all" />
+<b>Where the environment does not operate as an application cluster:</b> Within the target environment sub-folder there will be two folders named 'gaprisk' and 'solver'. which contain the actual release folders 'resource'and 'webapps'
+<br clear="all" />
+<b>Where the environment does operate as an application cluster:</b> Within the target environment sub-folder there will be four folders named gaprisk-primary, gaprisk-secondary, solver-primary and solver-secondary this naming indicates the application cluster releationship for each server. These folders conatin the actual release folders 'resource'and 'webapps'
+<br clear="all" />
+Where clustered application servers are involved the best approach is to complete the installation of the new release on the application servers before performing the new release installation on the solver servers
+<br clear="all" />
+<b>Note: As the new release software is specific to each environment It's important</b> <b>that the new release folders</b> <b>are only copied to it's corresponding target environment.</b>
+<br clear="all" />
+<br clear="all" />
+<b>Interval:</b> These steps are to be carried out only once notified by the Matchbox team of the new release version and a time for performing the release.
+<br clear="all" />
+<b>Steps:</b>
+<br clear="all" /></p>
+<ol>
+	<li>Check the current Matchbox environment status and version using the below URL's. The required login credentials can be obtained from the Matchbox team.</li>
+</ol>
+
+
+<p><br clear="all" />
+<br clear="all" /></p>
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> <b>Environment Name</b> </td>
+<td class='confluenceTd'> Matchbox Application Information page </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>TEST</b> </td>
+<td class='confluenceTd'> <a href="http://192.168.46.177:8080/mb/apps/systemInformation">&#104;ttp://192.168.46.177:8080/mb/apps/systemInformation</a> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>QA</b> </td>
+<td class='confluenceTd'> <a href="http://ldnmbqaapp1:8080/mb/apps/systemInformation">&#104;ttp://ldnmbqaapp1:8080/mb/apps/systemInformation</a> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>UAT</b> </td>
+<td class='confluenceTd'> <a href="http://tpdeltamatchuat:8080/mb/apps/systemInformation">&#104;ttp://tpdeltamatchuat:8080/mb/apps/systemInformation</a> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>PRODUCTION</b> </td>
+<td class='confluenceTd'> <a href="http://ldnmbapp1:8080/mb/serverstatus">&#104;ttp://ldnmbapp1:8080/mb/serverstatus</a> </td>
+</tr>
+</tbody></table>
+<p><br clear="all" />
+Record the 'Build number' shown under the tab 'system Information'. This number will indicate the currently installed release version.
+<br clear="all" />
+Record all the state information shown under the tab 'Integration points'. This will indicate the status of each Matchbox integration point. Normally, all integration states will show as 'OK' If any state does not show 'OK', confirm with the Matchbox team that this is expected.
+<br clear="all" />
+To proceed with the release:
+<br clear="all" /></p>
+<ol>
+	<li>Locate the share directory containing the release software version indicated in the release request and ensure that all the folders containing the new release software exist.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Obtain command line access with root privileges to the application and solver servers. Where it's appropriate do the same for the secondary application cluster pair.</li>
+</ol>
+
+
+<p><br clear="all" />
+<b>Stopping the Matchbox environment</b>
+<br clear="all" /></p>
+<ol>
+	<li>Stop the jetty processes on each Application server in the target environment using the following command.</li>
+</ol>
+
+
+<p><br clear="all" />
+service jetty stop
+<br clear="all" /></p>
+<ol>
+	<li>Stop the jetty processes on each solver server in the target environment using the following command.</li>
+</ol>
+
+
+<p><br clear="all" />
+service jetty stop
+<br clear="all" />
+<br clear="all" />
+<b>Applying the application server release</b>
+<br clear="all" />
+<b>Repeat following steps for each application server in the environment.</b>
+<br clear="all" /></p>
+<ol>
+	<li>On each application server locate to the directory containing the current software using the following command.</li>
+</ol>
+
+
+<p><br clear="all" />
+cd /opt/jetty
+<br clear="all" /></p>
+<ol>
+	<li>On the application server move the current software folders by renaming them using the following commands. (Repeat for each Application server in the environment)</li>
+</ol>
+
+
+<p><br clear="all" />
+mv resources resources.YYYYMMDD<br/>
+mv webapps webapps.YYYYMMDD
+<br clear="all" /></p>
+<ol>
+	<li>Using ssh file transfer, <b>copy</b> the webapp and resource folders for the application server from the appropriate folder on the new release share to the folder /opt/jetty on the application server.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Where the environment is production, there is a requirement to modify the file /opt/jetty/resources/gaprisk.properties on the application servers to include valid production database connection credentials as shown below.</li>
+</ol>
+
+
+<p><br clear="all" />
+The parameter values that will require modification are as follows.
+<br clear="all" />
+<b>tp.matchbox.env</b><br/>
+<b>tp.matchbox.datasource.gcd</b><br/>
+<b>tp.matchbox.datasource.matchbox</b><br/>
+<b>tp.matchbox.datasource.export</b>
+<br clear="all" />
+Inspect the parameter attributes above to ensure they are valid for the target environment.
+<br clear="all" />
+Additionally for all environments it is important to perform a general sanity check on the gaprisk.properties file for any obvious errors such as incomplete lines etc.
+<br clear="all" />
+<b>The new release for the application is installed after the above steps have been completed for all the application servers. Continue to the solver server release.</b>
+<br clear="all" />
+<b>Applying the solver server release</b>
+<br clear="all" /></p>
+<ol>
+	<li>Obtain command line access with root privileges to the solver servers. Where it's appropriate do the same for the secondary solver server too.</li>
+</ol>
+
+
+<p><br clear="all" />
+<b>Repeat following steps for each solver server in the environmnet.</b>
+<br clear="all" /></p>
+<ol>
+	<li>On each solver server locate to the directory containing the current software using the following command.</li>
+</ol>
+
+
+<p><br clear="all" />
+cd /opt/jetty
+<br clear="all" /></p>
+<ol>
+	<li>On the solver server, move the current software folders by renaming them using the following commands. (Repeat for each solver server in the environment)</li>
+</ol>
+
+
+<p><br clear="all" />
+mv resources resources.YYYYMMDD<br/>
+mv webapps webapps.YYYYMMDD
+<br clear="all" /></p>
+<ol>
+	<li>Using ssh directory transfer, <b>copy</b> the webapp and resource folders for the solver server from the appropriate folder on the new release share to the folder /opt/jetty on the solver server.</li>
+	<li>Where the environment is production, there is a requirement to modify the file /opt/jetty/resources/solver.properties on the solver servers to include valid production connection credentials.</li>
+</ol>
+
+
+<p><br clear="all" />
+The parameter values that will require modification are as follows.
+<br clear="all" />
+<b>tp.matchbox.solver.version</b><br/>
+<b>tp.matchbox.datasource.matchbox</b>
+<br clear="all" />
+Inspect the parameter attributes above to ensure they are valid for the target environment.
+<br clear="all" />
+Additionally, for all environments it will be important to perform a general sanity check on the solver.properties file for any obvious errors. E.g. incomplete lines etc.
+<br clear="all" />
+<b>The new release for the solver is installed after the above steps have been completed for all the solver servers. Continue to the database changes.</b>
+<br clear="all" />
+<br clear="all" />
+<br clear="all" /></p>
+<ol>
+	<li>Instruct a member of the Server support team to apply the database scripts to the database for the target environment. The database scripts are located on the release database folder on the release share</li>
+</ol>
+
+
+<p><br clear="all" />
+<b>Once the database changes have been applied successfully continue to start the Matchbox environment.</b>
+<br clear="all" />
+<b>Starting the Matchbox environment</b><br/>
+.</p>
+<ol>
+	<li>Obtain command line access with root privileges to the application and solver servers. Where it's appropriate, do the same for the secondary cluster pair.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Start the jetty processes on each solver server in the target environment using the following command</li>
+</ol>
+
+
+<p><br clear="all" />
+service jetty start
+<br clear="all" /></p>
+<ol>
+	<li>Start the jetty processes on each application server in the target environment using the following command.</li>
+</ol>
+
+
+<p><br clear="all" />
+service jetty start
+<br clear="all" /></p>
+<ol>
+	<li>Check the new Matchbox environment status and version using the URL's below. The required login credentials can be obtained from the Matchbox team.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> <b>Environment Name</b> </td>
+<td class='confluenceTd'> Matchbox Application Information page </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>TEST</b> </td>
+<td class='confluenceTd'> <a href="http://192.168.46.177:8080/mb/apps/systemInformation">&#104;ttp://192.168.46.177:8080/mb/apps/systemInformation</a> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>QA</b> </td>
+<td class='confluenceTd'> <a href="http://ldnmbqaapp1:8080/mb/apps/systemInformation">&#104;ttp://ldnmbqaapp1:8080/mb/apps/systemInformation</a> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>UAT</b> </td>
+<td class='confluenceTd'> <a href="http://tpdeltamatchuat:8080/mb/apps/systemInformation">&#104;ttp://tpdeltamatchuat:8080/mb/apps/systemInformation</a> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>PRODUCTION</b> </td>
+<td class='confluenceTd'> <a href="http://ldnmbapp1:8080/mb/serverstatus">&#104;ttp://ldnmbapp1:8080/mb/serverstatus</a> </td>
+</tr>
+</tbody></table>
+<p><br clear="all" />
+Record the 'Build number' shown under the tab 'system Information'. This number should indicate the newly installed release version.
+<br clear="all" />
+Record all the state information shown under the tab 'Integration points'. This will indicate the status of each Matchbox integration point. Normally, all integration states will show as 'OK' If any state does not show 'OK', confirm with the Matchbox team that this is expected.
+<br clear="all" />
+If the new release version and integration point states are as expected, inform the Matchbox development team (and/or the change requestor) that the new Matchbox release has been applied.
+<br clear="all" />
+[Deploying A MatchBox Release (tpDeltaDeal)&#124;^HowTo_TPMB0001_Deploying_a_Matchbox_release.doc]</p>
+    </body>
+</html>

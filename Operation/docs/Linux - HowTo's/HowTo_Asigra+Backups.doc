@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>Asigra Backups</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>Asigra Backups</h1>
+        <p><b><a href="http://tpwiki.eur.ad.tullib.com/download/attachments/14124408/HowTo_Asigra+Linux+Backups.doc?version=1">Asigra Linux Backups Document</a></b></p>
+
+<p><b>Asigra Linux Backups</b>
+<br clear="all" /></p>
+<ol>
+	<li><b>Procedure for Installing the Asigra Backup Client Software</b></li>
+</ol>
+
+
+<p><br clear="all" />
+The files for the Asigra backup client can be found in the Linux share:
+<br clear="all" />
+Ldnr200\ProdSupp:\asigra
+<br clear="all" />
+Run the setupwin.exe file and then copy the dsuser.jar file to C:\Program Files\DS-User
+<br clear="all" />
+The backup server (dsclient3) should show up in the top left corner. Tick the box and enter the following details:<br/>
+Hostname: Dsclient3<br/>
+Username: root<br/>
+Password: UK-00t
+<br clear="all" /></p>
+<ol>
+	<li><b>Procedure for checking the nightly backups</b></li>
+</ol>
+
+
+<p><br clear="all" />
+On the menu screen click Logs - Activity Log
+<br clear="all" />
+In the new window (Activity Log viewer) click Find<br/>
+This will list all the filesystems which have been backed up the previous night<br/>
+As long as the arrow on the left is blue and there are no errors on the Errors column, the backup has been successful.
+<br clear="all" /></p>
+<ol>
+	<li><b>Filesystems being backup up</b></li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>ldnmbbuild[12] - /etc/apache2 and /var/svn</li>
+	<li>ldnmbuatapp[12] - /home/xlsdata/upload</li>
+	<li>ldnmbapp[12] - /home/xlsdata/upload</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li><b>Procedure for adding a backup set</b></li>
+</ol>
+
+
+<p><br clear="all" />
+On the server to be backed up:<br/>
+Create the account Asigra on the server to be backed up, as follows:<br/>
+Username: asigra<br/>
+Password: As1gra10<br/>
+UID: 1006<br/>
+Add to the sudoers file
+<br clear="all" />
+On dsclient3 asigra server:<br/>
+Add the hostname to be backed up to the /etc/hosts file.
+<br clear="all" />
+On the Asigra software:<br/>
+click on Sets - New Backup Set - UNIX_SSH,NFS,Local File System<br/>
+Click UNIX-SSH - local host and in the Path change the local host entry with the hostname of the server to be backed up.<br/>
+Select 'ask for credentials' and 'sudo as an alternate user'<br/>
+Input the Asigra username and password on the next 2 boxes which come up.<br/>
+Take the default
+<br clear="all" /></p>
+    </body>
+</html>

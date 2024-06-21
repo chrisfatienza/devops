@@ -1,0 +1,88 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>ILO ssh connections</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>ILO ssh connections</h1>
+        <p><a href="http://tpwiki.eur.ad.tullib.com/download/attachments/15007986/How-To-ILO-SSH.doc?version=1">How-To ILO ssh connections</a><br clear="all" /></p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> Tullett Prebon - Production Support </td>
+<td class='confluenceTd'> Linux How-To - ILO ssh connection </td>
+</tr>
+</tbody></table>
+
+<h2><a name="ILOsshconnections-%C2%A0"></a> </h2>
+
+
+<h2><a name="ILOsshconnections-"></a><font color="#000000"><em>Linux How-To -</em></font><font color="#000000"><em>&nbsp;</em></font> <font color="#000000"><em>ILO ssh connection</em></font></h2>
+
+
+<h3><a name="ILOsshconnections-%C2%A0"></a> </h3>
+
+
+<h3><a name="ILOsshconnections-%5C%5C"></a><font color="#000000">ILO via ssh</font><br clear="all" /></h3>
+
+<p>NB: you can also ssh to the ILO ports and have a txt based session rather than going in over the web<br clear="all" /></p>
+
+<p>e.g.<br clear="all" /></p>
+
+<p><b>ssh &#45;l ILOAdmin ilounixmgmt01</b><br clear="all" /></p>
+
+<p>enter password (found in <em>Unix Passwords.doc</em>)<br clear="all" /></p>
+
+<p>then at the ILO prompt <b>(&lt;/&gt;hpiLO-&gt;)</b><br clear="all" /></p>
+
+<p>type<br clear="all" /></p>
+
+<p><b>textcons&nbsp;</b> <br clear="all" /></p>
+
+<p>you will then see the server root login prompt as normal (or a previous shell if not logged out)<br clear="all" /> <br clear="all" /></p>
+
+<p><b>'Esc ('</b> to drop back to the ILO Prompt <br clear="all" /></p>
+
+<p>NB: All ILO connections for the Linux estate, RMDS, mangement server etc. are on the 191.168.55.x vlan (vlan550) and are recorded here:&#45;<br clear="all" /></p>
+
+<p>P:\ORACLE_UNIX\UNIX\Linux\Projects\Networks\VLAN550.xlx<br clear="all" /> <br clear="all" /></p>
+    </body>
+</html>

@@ -1,0 +1,299 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>Upgrading the Linux kernel and OFED software stack for tpIRS</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>Upgrading the Linux kernel and OFED software stack for tpIRS</h1>
+        <h1><a name="UpgradingtheLinuxkernelandOFEDsoftwarestackfortpIRS-LinuxKernelandOFEDstackupgrade.docLinuxKernelandOFEDstackupgrade.doc"></a><a href="http://tpwiki.eur.ad.tullib.com/download/attachments/15007825/Linux+Kernel+and+OFED+stack+upgrade.doc?version=1">Linux Kernel and OFED stack upgrade.doc</a></h1>
+
+
+<h1><a name="UpgradingtheLinuxkernelandOFEDsoftwarestackfortpIRS-Overview%3A"></a>Overview:</h1>
+
+<p><br clear="all" />
+The tpIRS servers require to have the following changes applied.
+<br clear="all" /></p>
+<ul>
+	<li>Linux kernel upgraded to version from version 2.6.32.12 to version 2.26.32.29</li>
+	<li>Mellanox OFED (Open Fabrics Enterprise Distribution) software that was installed at build time replaced with the Novell stock version for SuSE Linux.</li>
+</ul>
+
+
+<p><br clear="all" />
+<b>Interval:</b>
+<br clear="all" />
+As requested by MIT
+<br clear="all" />
+<b>Steps:</b>
+<br clear="all" />
+<b>Upgrading the Linux kernel version to 2.26.32.29</b>
+<br clear="all" /></p>
+<ol>
+	<li>Enable rollback of all subsequent changes.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ul>
+	<li>
+	<ul>
+		<li>Shutdown and Power off the system</li>
+		<li>Remove the boot volume mirror disk (Normally the disk in slot 2)</li>
+		<li>Boot system</li>
+	</ul>
+	</li>
+</ul>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Before performing the Linux kernel upgrade check and record the currently running version</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ul>
+	<li>
+	<ul>
+		<li>uname &#45;r</li>
+	</ul>
+	</li>
+</ul>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Backup the current kernel/kernel configuration and kernel modules</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ul>
+	<li>
+	<ul>
+		<li>tar czvf /x01/bootfs_backup.tar.gz /boot</li>
+		<li>tar czvf /x01/lib_modules-2.6.12.ta.gz /lib/modules</li>
+	</ul>
+	</li>
+</ul>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Obtain and copy the following Linux kernel packages to the servers to be upgraded.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> <b>Linux 2.26.32.29 Kernel Packages</b> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> kernel-default-base-2.6.32.29-0.3.1.x86_64.rpm </td>
+</tr>
+<tr>
+<td class='confluenceTd'> kernel-default-2.6.32.29-0.3.1.x86_64.rpm </td>
+</tr>
+</tbody></table>
+<p><br clear="all" />
+Retrieve the SuSE SLES kernel software from the following Novell download site (requires subscription details)<br/>
+<a href="http://download.novell.com/Download?buildid=nY5HfCJTbE0~">&#104;ttp://download.novell.com/Download?buildid=nY5HfCJTbE0\~</a>
+<br clear="all" /></p>
+<ol>
+	<li>Locate the Linux kernel packages on the server and install them using the following two commands</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ul>
+	<li>rpm &#45;ivh kernel-default-base-2.6.32.29-0.3.1.x86_64.rpm</li>
+	<li>rpm &#45;ivh kernel-default-2.6.32.29-0.3.1.x86_64.rpm</li>
+</ul>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Reboot the server and ensure the new kernel version is selected from the boot menu.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Login and check the running kernel version with command 'uname &#45;r'</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Edit the file /boot/grub/menu.lst and comment out the boot menu entries for the previous kernel version.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Perform another server restart to ensure the server boots correctly using default menu options</li>
+</ol>
+
+
+<p><br clear="all" />
+<br clear="all" />
+<br clear="all" />
+<br clear="all" />
+<b>Removing and replacing the Mellanox OFED software stack</b>
+<br clear="all" /></p>
+<ol>
+	<li>Ensure the required packages below have been installed and are available in the Linux OS. If they're not available, they can be obtained from the installation media for the version of the Linux OS you that is currently installed.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> <b>Required OS Packages for SuSE SLES 11 SP1</b> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> libibcommon1-1.1.2_20081020-5.12.x86_64.rpm </td>
+</tr>
+<tr>
+<td class='confluenceTd'> libibcommon1-32bit-1.1.2_20081020-5.12.x86_64.rpm </td>
+</tr>
+<tr>
+<td class='confluenceTd'> tcl-32bit-8.5.5-2.81.x86_64.rpm </td>
+</tr>
+</tbody></table>
+<p><br clear="all" /></p>
+<ol>
+	<li>Copy the required packages to the server and install them using the following commands</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ul>
+	<li>rpm &#45;ivh libibcommon1-1.1.2_20081020-5.12.x86_64.rpm</li>
+	<li>rpm &#45;ivh libibcommon1-32bit-1.1.2_20081020-5.12.x86_64.rpm</li>
+	<li>rpm &#45;ivh tcl-32bit-8.5.5-2.81.x86_64.rpm</li>
+</ul>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Remove the currently installed Mellanox OFED software stack with the following command</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ul>
+	<li>ofed_uninstall.sh</li>
+</ul>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Obtain the Novell OFED software from the Novell download site (requires subscription details)</li>
+</ol>
+
+
+<p><br clear="all" />
+<a href="http://download.novell.com/protected/Summary.jsp?buildid=x9KbOGutwcs~">&#104;ttp://download.novell.com/protected/Summary.jsp?buildid=x9KbOGutwcs\~</a>
+<br clear="all" /></p>
+<ol>
+	<li>Transfer the OFED RPM's to a new temporary directory on the server where they will be installed.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Locate to the directory containing the OFED RPM's and install them all using the following command.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ul>
+	<li>rpm &#45;ivh &#42;.rpm</li>
+</ul>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Reboot the system and perform version checks to confirm a correct installation of kernel and OFED packages.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> <b>Upgraded kernel version</b> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> 2.6.32.29-0.3-default </td>
+</tr>
+<tr>
+<td class='confluenceTd'>&nbsp;</td>
+</tr>
+<tr>
+<td class='confluenceTd'> <b>OFED-4126 package versions</b> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> ofed-1.5.2-0.7.1 </td>
+</tr>
+<tr>
+<td class='confluenceTd'> ofed-doc-1.5.2-0.7.1 </td>
+</tr>
+<tr>
+<td class='confluenceTd'> ofed-kmp-default-1.5.2_2.6.32.29_0.3-0.7.1 </td>
+</tr>
+</tbody></table>
+<p><br clear="all" /></p>
+<ol>
+	<li>Remove the temporary copies of the installation package files from the server.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+<ol>
+	<li>Once the installation has been confirmed as good, replace the mirror disk and ensure the disk completes the automatic re-sync.</li>
+</ol>
+
+
+<p><br clear="all" /></p>
+    </body>
+</html>

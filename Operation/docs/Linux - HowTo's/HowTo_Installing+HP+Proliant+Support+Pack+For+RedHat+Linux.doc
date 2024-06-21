@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>Installing HP Proliant Support Pack For RedHat Linux</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>Installing HP Proliant Support Pack For RedHat Linux</h1>
+        <p><a href="http://tpwiki.eur.ad.tullib.com/download/attachments/14124525/HowTo_Installing_HP_Proliant+Support_pack_for_RedHat_Linux.doc?version=1">Installing HP Proliant Support Pack For RedHat Linux Document</a><br clear="all" />
+<br clear="all" /></p>
+
+
+
+<p>Overview:</p>
+
+<p>All servers are required to be monitored via the HP Systems Insight Manager (SIM). In order to achieve this the Proliant Support Pack must be installed to provide the required management agents for monitoring and configuring the various server sub-systems</p>
+
+<p>Interval:</p>
+
+<p>Post OS installation</p>
+
+<p>Steps:</p>
+
+<p>1) Ensure the packages below have been installed and are available in the Linux OS. If they're not available, they can be obtained from the installation media for the version of the Linux OS you that is currently installed.</p>
+
+<p>Required OS Packages<br/>
+OpenIPMI<br/>
+libsensors4<br/>
+sensors<br/>
+libsnmp15<br/>
+perl-SNMP<br/>
+net-snmp</p>
+
+<p>2) Obtain the latest Proliant Server Support pack software for the installed Linux OS from the HP support site using the link below.</p>
+
+<p>HP ProLiant Support Pack - Download drivers and software - HP Business Support Center</p>
+
+
+<p>3) Transfer the Support pack to the server where it eventually be installed. Where required unpack the support pack contents contents.</p>
+
+<p>4) Locate to the directory containing the unpacked contents of the support pack. and install the following agent software packages in the order shown.</p>
+
+<p>Required Packages from the support pack<br/>
+hp-health<br/>
+hp-ilo<br/>
+hp-smh-templates<br/>
+hp-snmp-agents<br/>
+hpacucli<br/>
+hpsmh</p>
+
+
+<p>Continue to step ...5/</p>
+
+
+
+
+
+
+
+
+
+
+
+<p>5) As directed during the agents installation run the agent configuration utility /sbin/hpsnmpconfig. Supply the information below during the interview dialogue that's presented.</p>
+
+<p>Agent configuration values<br/>
+localhost read-only community string LDNPRV321654<br/>
+localhost read-write community string LDNPUB321654<br/>
+Management Station IP address 170.198.40.245<br/>
+Management Station read-write community string LDNPRV321654<br/>
+Management Station IP read-write IP address 170.198.40.245<br/>
+Management Station read-only community string LDNPUB321654<br/>
+Default Trap community string LDNPRV321654<br/>
+Trap destination IP Address 170.198.40.245<br/>
+System Contact Server Support London<br/>
+System Location "As appropriate" e.g. BG</p>
+
+
+
+<p>6) When all the above steps have been completed successfully, reboot the server.</p>
+
+<p>7) When the system is available. check the agent and software installation by using the system management homepage. To do this use a web browser GUI to secure browse (https://...) to the Linux server IP address on port 2381 (ensure you have the appropriate firewall access to access this IP address and port). This should present the system management homepage login screen.</p>
+
+<p>8) Login as the root user on the Linux server.</p>
+
+<p>9) The top of the Home page should display the correct server hostname and HP System Model. If this is the case the System management homepage and agents have been installed.</p>
+
+<p>10) Request the Server Management team with access to the HP Insight manager console register the server.</p>
+    </body>
+</html>

@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>Editing the Linux GRUB config</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>Editing the Linux GRUB config</h1>
+        <p><a href="http://tpwiki.eur.ad.tullib.com/download/attachments/14124413/HowTo_Edit+the+Linux+GRUB+configuration+file+to+remove+unrequired+boot+entries.doc?version=1">Edit Linux Grub Document</a></p>
+
+
+<p>Overview<br/>
+Remove unwanted GRUB configuration entries from the GRUB configuration file.</p>
+
+<p>Steps:</p>
+
+<p>1. Login to the target server .</p>
+
+<p>2. Gain shell access as the root user, on the target system then change to the directory /boot/grub</p>
+
+<p>3. Make a note of the version number for the currently running kernel on the target system (i.e. the kernel last sucessfully booted)</p>
+
+<p>TIP: Use the command 'uname &#45;r'</p>
+
+<p>4. Before making any permanant changes, make a backup copy of the existing grub configuration file 'grub.conf'</p>
+
+<p>5. Edit the current GRUB configuration file 'grub.conf' in the current working directory.</p>
+
+<p>6. Identify the boot stanza in the grub configuration file that was last used to successfully boot the system. Determine this by comparing the kernel version numbers in the file with the kernel version numbers obtained in step 3.</p>
+
+<p>7. Identify and remove all the boot stanzas except the one you wish the system to use.</p>
+
+<p>TIP: Each stanza will consist of consecutive lines and begin with a line "title..." similar to those below.</p>
+
+<p>title Red Hat Enterprise Linux ES (2.4.21-37.EL)<br/>
+root (hd0,0)<br/>
+kernel /vmlinuz-2.4.21-37.EL ro root=LABEL=/<br/>
+initrd /initrd-2.4.21-37.EL.img</p>
+
+<p>8. Ensure the entry "default=1" exists as the first non comment line in the grub configuration file. This configuration option is used to select the GRUB default boot stanza</p>
+
+<p>9. Once the changes are complete, perform a test reboot to confirm the changes are okay.</p>
+    </body>
+</html>

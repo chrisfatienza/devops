@@ -1,0 +1,140 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>Creating MySQL Read Only Accounts on tpViews</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>Creating MySQL Read Only Accounts on tpViews</h1>
+        <p><font color="black">Below is how I create read only MySQL database accounts.&nbsp; There are two ways to create the user depending on where they will be logging in from.</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">The first example will create a user and only allow them to login when they are logged into the physical Linux server, then we allow only read access to the database.&nbsp; This is the text you see when you are logged into the database and run the commands.</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">ldntpviews01:&#126; # mysql</font></p>
+
+<p><font color="black">Welcome to the MySQL monitor.&nbsp; Commands end with ; or \g.</font></p>
+
+<p><font color="black">Your MySQL connection id is 118</font></p>
+
+<p><font color="black">Server version: 5.5.16 MySQL Community Server (GPL)</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">mysql&gt; use tpviews</font></p>
+
+<p><font color="black">Database changed</font></p>
+
+<p><font color="black">mysql&gt; create user 'username'@'localhost' identified by 'Password';</font></p>
+
+<p><font color="black">Query OK, 0 rows affected (0.01 sec)</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">mysql&gt; grant select on tpviews.&#42; to 'username'@'localhost';</font></p>
+
+<p><font color="black">Query OK, 0 rows affected (0.01 sec)</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">mysql&gt;&nbsp; flush privileges;</font></p>
+
+<p><font color="black">Query OK, 0 rows affected (0.00 sec)</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">This second example will allow them to login to the database from anywhere.&nbsp; If they are wanting to run from their PC, or their home PC etc.</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">mysql&gt; create user 'username'@'%' identified by 'Password';</font></p>
+
+<p><font color="black">Query OK, 0 rows affected (0.00 sec)</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">mysql&gt; grant select on tpviews.&#42; to 'username'@'%';</font></p>
+
+<p><font color="black">Query OK, 0 rows affected (0.00 sec)</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">mysql&gt; flush privileges;</font></p>
+
+<p><font color="black">Query OK, 0 rows affected (0.00 sec)</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">If you want to see if they are set up for localhost access or access from anywhere you can run the command below</font></p>
+
+<p><br clear="all" /></p>
+
+<p><font color="black">mysql&gt; SELECT user,host,db from mysql.db;</font></p>
+
+<p><font color="black">&#43;--------&#45;</font><font color="black">&#45;-------&#45;</font><font color="black">&#45;-------&#43;</font></p>
+
+<p><font color="black">&#124; user&nbsp;&nbsp;&nbsp;&nbsp; &#124; host&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124; db&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124;</font></p>
+
+<p><font color="black">&#43;--------&#45;</font><font color="black">&#45;-------&#45;</font><font color="black">&#45;-------&#43;</font></p>
+
+<p><font color="black">&#124;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124; %&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124; test&nbsp;&nbsp;&nbsp; &#124;</font></p>
+
+<p><font color="black">&#124;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124; %&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124; test_% &#124;</font></p>
+
+<p><font color="black">&#124; rhollins &#124; %&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124; tpviews &#124;</font></p>
+
+<p><font color="black">&#124; tpviews&nbsp; &#124; %&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &#124; tpviews &#124;</font></p>
+
+<p><font color="black">&#124; ckwong&nbsp;&nbsp; &#124; localhost &#124; tpviews &#124;</font></p>
+
+<p><font color="black">&#124; tpviews&nbsp; &#124; localhost &#124; tpviews &#124;</font></p>
+
+<p><font color="black">&#43;--------&#45;</font><font color="black">&#45;-------&#45;</font><font color="black">&#45;-------&#43;</font></p>
+
+<p><font color="black">6 rows in set (0.00 sec)</font></p>
+    </body>
+</html>

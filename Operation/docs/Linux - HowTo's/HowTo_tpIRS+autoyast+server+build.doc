@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <!-- MS Word on Windows doesn't realise the encoding is UTF-8 unless this meta tag is present -->
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <base href="http://tpwiki.eur.ad.tullib.com" />
+        <title>tpIRS autoyast server build</title>
+        <style>
+            body, p, td, table, tr, .bodytext, .stepfield {
+	            font-family: Verdana, arial, sans-serif;
+            }
+            .panel {
+                margin: 10px;
+                padding: 10px;
+                border: 1px solid #999;
+                background-color: #f0f0f0;
+            }
+            .noteMacro { border-style: solid; border-width: 1px; border-color: #F0C000; background-color: #FFFFCE; text-align:left;}
+            .warningMacro { border-style: solid; border-width: 1px; border-color: #c00; background-color: #fcc; text-align:left;}
+            .infoMacro { border-style: solid; border-width: 1px; border-color: #3c78b5; background-color: #D8E4F1; text-align:left;}
+            .tipMacro { border-style: solid; border-width: 1px; border-color: #090; background-color: #dfd; text-align:left;}
+            .informationMacroPadding { padding: 5px 0 0 5px; }
+
+            table.infoMacro td, table.warningMacro td, table.tipMacro td, table.noteMacro td, table.sectionMacro td {
+                border: none;
+            }
+
+            .grid {
+                margin: 2px 0px 5px 0px;
+                border-collapse: collapse;
+            }
+            .grid th  {
+                border: 1px solid #ccc;
+                padding: 2px 4px 2px 4px;
+                background: #f0f0f0;
+                text-align: center;
+            }
+            .grid td  {
+                border: 1px solid #ccc;
+                padding: 3px 4px 3px 4px;
+            }            
+        </style>
+    </head>
+
+    <body style="background-color: white; padding: 10px;">
+        <h1>tpIRS autoyast server build</h1>
+        <p><br clear="all" /> <br clear="all" /></p>
+
+<p><font color="black">Files relevant to autoyast are,</font></p>
+
+<table class='confluenceTable'><tbody>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/sles11SP1x64</font> </td>
+<td class='confluenceTd'> <font color="black">Installation media</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/data/preinstall.xml</font> </td>
+<td class='confluenceTd'> <font color="black">Preinstall autoyast xml file</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/data/profiles</font> </td>
+<td class='confluenceTd'> <font color="black">Autoyast XML profiles</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/logs/logs</font> </td>
+<td class='confluenceTd'> <font color="black">Installation logs</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/logs/finished</font> </td>
+<td class='confluenceTd'> <font color="black">Record the successful installation</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/scripts/manifest/servers-tullet.csv</font> </td>
+<td class='confluenceTd'> <font color="black">Manifest file for Tullet TPS</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/ install-repo/scripts/gen_profile.sh</font> </td>
+<td class='confluenceTd'> <font color="black">Script generate xml profiles from manifest file</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/scripts/postinstall.sh</font> </td>
+<td class='confluenceTd'> <font color="black">Script to execute post installation configuration</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/scripts/config_ilo.sh</font> </td>
+<td class='confluenceTd'> <font color="black">Script for ILO configuration. This is called by postinstall.sh script.</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/scripts/rpms_SP1</font> </td>
+<td class='confluenceTd'> <font color="black">Additional RPMs that will be installed by postinstall.sh</font> </td>
+</tr>
+<tr>
+<td class='confluenceTd'> <font color="black">/install-repo/scripts/files</font> </td>
+<td class='confluenceTd'> <font color="black">Files/Utilities used by postinstall.sh</font> </td>
+</tr>
+</tbody></table>
+
+<p><font color="black">High level steps would be,</font><br/>
+<font color="black">1. Add the details of new machines to /install-repo/scripts/manifest/servers-tullet.csv file (follow the existing entries for relevant server type)</font><br/>
+<font color="black">2. Run / install-repo/scripts/gen_profile.sh to generate xml file in the</font> <font color="black">/</font><font color="black">install-repo/data/profiles</font><br/>
+<font color="black">3. Connect eth3 of the management server to the eth0 port of the install client</font><br/>
+<font color="black">4. Bring the eth3 port of the management server up</font><br/>
+<font color="black">5. Start following services (eg: service dhcpd start),</font><br/>
+<font color="black">&nbsp;&nbsp;&nbsp; a) tftp</font><br/>
+<font color="black">&nbsp;&nbsp;&nbsp; b) dhcpd</font><br/>
+<font color="black">&nbsp;&nbsp;&nbsp; c) nfsserver</font><br/>
+<font color="black">6. Boot the install client machine in PXE boot mode</font><br/>
+<font color="black">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; If you need to reinstall the same client again, make sure to delete the relevant file (with client serial number) in /install-repo/logs/finished directory before starting the re installation.</font><br/>
+<font color="black">&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; Refer to /install-repo/logs/logs for detail logs.</font></p>
+    </body>
+</html>
