@@ -1,0 +1,11 @@
+#!/bin/bash
+
+host=$@
+for i in $host
+do
+	INVHost=`hammer host list --search  $i |grep -i $i | awk '{print $3}'`
+	setccv=`hammer host update --name $INVHost --content-view ccv-RHEL7 --organization TPICAP`
+	newHostCCV=`hammer host list --search  $i |grep -i $i | cut -d \| -f 8`
+	#echo $INVHost `hammer host update --name $INVHost --content-view ccv-RHEL7-99 --organization TPICAP` with content-view: `hammer host list --search  $i |grep -i $i | cut -d \| -f 8`
+	echo Found: $INVHost and set to Contect-View: $newHostCCV
+done

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+host=$@
+for i in $host
+do
+	INVHost=`hammer host list --search  $i |grep -i $i | awk '{print $3}'`
+	oldhostCCV=`hammer host info --name $INVHost  | grep RHEL |grep -i name | awk '{print $2}'`
+	newHostCCV=`hammer host info --name $INVHost |grep ccv |awk '{print $2}'`
+	HostEnv=`hammer host info --name $INVHost  |egrep -i  "Production|Development" | awk '{print $2}'`
+	setccv=`hammer host update --name $INVHost --lifecycle-environment $HostEnv --content-view ccv-RHEL7 --organization TPICAP`
+	echo Found: $INVHost and set to Contect-View: $newHostCCV
+done

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+host=$@
+for i in $host
+do
+        #echo Checking if $i is pingable
+        hostchk=`ping -c1 $i`
+                if [[ $? -eq 0 ]]
+                then
+
+                hostssh=`ssh -o BatchMode=yes -o StrictHostKeyChecking=no -q $i date`
+
+                        if [[ $? -eq 0 ]]
+                        then
+				echo $i: `ssh -q $i  'rpm -qa check-mk-agent'`
+                        else
+                                echo $i: host is not accessible via ssh or passwordless ssh as root not allowed
+                        fi
+                else
+                        echo $i: host not pingable
+                fi
+done

@@ -1,0 +1,105 @@
+#!/bin/bash
+# Created by: Christopher Atienza
+# Function: Clear buffer above 90%
+#
+
+# Default values
+LOG_FILE="/var/log/memory_buffer.log"
+EMAIL_RECIPIENT="tpicapglobal.unixadministrators@tpicap.com"
+HOST=$(uname -n)
+EMAIL_SUBJECT="$HOST: Memory Buffer Alert"
+
+# Function to send email
+send_email() {
+    local email_body=$1
+    local subject=$2
+    local recipient=$3
+
+    echo -e "Subject:$subject\nTo: $recipient\n$email_body" | mail -t
+}
+
+# Function to check if the buffer size exceeds 90% of total memory
+check_buffer_size() {
+    local total_mem=$(free -m | awk 'NR==2 {print $2}')
+    local buffer_size=$(free -m | awk 'NR==2 {print $6}')
+    local buffer_percentage=$((buffer_size * 100 / total_mem))
+    local buffer_size_gb=$(echo "scale=2; $buffer_size/1024" | bc)
+    local total_mem_gb=$(echo "scale=2; $total_mem/1024" | bc)
+
+    if [[ $buffer_percentage -ge 90 ]]; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Buffer size is ${buffer_percentage}% of total memory. Clearing memory buffer..." >> "$LOG_FILE"
+        sync && echo 1 > /proc/sys/vm/drop_caches
+        local after_buffer_size=$(free -m | awk 'NR==2 {print $6}')
+        local after_buffer_percentage=$((after_buffer_size * 100 / total_mem))
+        local after_buffer_size_gb=$(echo "scale=2; $after_buffer_size/1024" | bc)
+        local email_body="The buffer size has exceeded 90% of the total memory. Memory buffer cleared.\n\nMemory Usage Before Clearing:\n$(free -h)\n\nMemory Usage After Clearing:\n$(free -h)"
+        send_email "$email_body" "$EMAIL_SUBJECT" "$EMAIL_RECIPIENT"
+    else
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Buffer size is ${buffer_percentage}% of total memory. Below threshold, nothing to worry." >> "$LOG_FILE"
+        echo "Below threshold, nothing to worry."
+    fi
+}
+
+# Function to display usage
+display_usage() {
+    echo "Usage: $0 [-l <log_file>] [-m <email_recipient>] [-h]"
+    echo "Options:"
+    echo "  -l <log_file>          Specify the log file path (default: /var/log/memory_buffer.log)"
+    echo "  -m <email_recipient>   Specify the email recipient (default: tpicapglobal.unixadministrators@tpicap.com)"
+    echo "  -h                     Display this usage message"
+    echo ""
+    echo "If no command-line options are provided, it will display the current memory usage."
+    exit 1
+}
+
+# Check if no command-line options are provided
+if [[ $# -eq 0 ]]; then
+    total_mem=$(free -m | awk 'NR==2 {print $2}')
+    buffer_size=$(free -m | awk 'NR==2 {print $6}')
+    buffer_percentage=$((buffer_size * 100 / total_mem))
+    buffer_size_gb=$(echo "scale=2; $buffer_size/1024" | bc)
+    total_mem_gb=$(echo "scale=2; $total_mem/1024" | bc)
+
+    if [[ $buffer_percentage -ge 90 ]]; then
+        echo "Current memory usage: ${buffer_percentage}%. Memory usage: ${buffer_size_gb}GB/${total_mem_gb}GB"
+    else
+        echo "Current memory usage: ${buffer_percentage}%. Memory usage: ${buffer_size_gb}GB/${total_mem_gb}GB. Below threshold, nothing to worry."
+    fi
+    exit 0
+fi
+
+while getopts "l:m:h" opt; do
+    case $opt in
+        l)
+            LOG_FILE=$OPTARG
+            ;;
+        m)
+            EMAIL_RECIPIENT=$OPTARG
+            ;;
+        h)
+            display_usage
+            ;;
+        \?)
+            display_usage
+            ;;
+    esac
+done
+
+# Check if any invalid command-line option is provided
+if [[ $OPTIND -eq 1 ]]; then
+    echo "not valid"
+    display_usage
+fi
+
+# Process the command
+shift $((OPTIND-1))
+
+# Check if an invalid command is provided
+if [[ $# -ne 0 ]]; then
+    echo "Invalid command"
+    display_usage
+fi
+
+# Check the buffer size
+check_buffer_size
+

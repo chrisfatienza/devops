@@ -1,0 +1,94 @@
+---
+- name: Query VMware Snapshot Information
+  hosts: hostlist
+  gather_facts: no
+
+  collections:
+    - community.vmware
+
+  vars:
+    vcenter_hostname: "arkpinfvca01.corp.ad.tullib.com"
+    vcenter_username: 'CORP\srvvcrwlinux'
+    vcenter_password: "R83JdsfCi^qf4k!gH"
+    ansible_python_interpreter:  /usr/bin/python3
+    vcenter_datacenter: "arkpinfesx206.corp.ad.tullib.com"
+    vcenter_folder: "/ARK/"
+
+  tasks:
+    # - name: Create a snapshot
+    #   vmware_guest_snapshot:
+    #     hostname: "{{ vcenter_hostname }}"
+    #     username: ' {{ vcenter_username }}'
+    #     password: "{{ vcenter_password }}"
+    #     datacenter: "{{ vcenter_datacenter }}"
+    #     folder: "{{ vcenter_folder }}"
+    #     name: "{{ inventory_hostname }}"
+    #     validate_certs: False
+    #     state: present
+    #     snapshot_name: snap-{{ inventory_hostname }}
+    #     description: "{{ inventory_hostname }}_description"
+
+    # - name: Remove all snapshots of a VM
+    #   vmware_guest_snapshot:
+    #     hostname: "{{ vcenter_hostname }}"
+    #     username: '{{ vcenter_username }}'
+    #     password: "{{ vcenter_password }}"
+    #     datacenter: "{{ vcenter_datacenter }}"
+    #     folder: "/{{ vcenter_folder }}/ldn2lx0005.corp.ad.tullib.com/"
+    #     name: "{{ inventory_hostname }}"
+    #     validate_certs: False
+    #     state: remove_all
+    #   delegate_to: localhost
+
+    # - name: Gather information of snapshots that in their name contain the "test" in their name.
+    #   vmware_guest_snapshot:
+    #     hostname: '{{ vcenter_hostname }}'
+    #     username: '{{ vcenter_username }}'
+    #     password: '{{ vcenter_password }}'
+    #     validate_certs: no
+    #     datacenter: '{{ vcenter_datacenter }}'
+    #     match_type: "includes"
+    #     filters:
+    #         vm_name: "{{ inventory_hostname }}"
+    #   delegate_to: localhost
+
+    # - name: Get datastore_url from given VM name
+    #   block:
+    #     - name: Get virtual machine info
+    #       vmware_vm_info:
+    #         hostname: '{{ vcenter_hostname }}'
+    #         username: '{{ vcenter_username }}'
+    #         password: '{{ vcenter_password }}'
+    #         validate_certs: no
+    #       delegate_to: localhost
+    #       register: vm_info
+
+    #     - debug:
+    #         msg: "{{ item.datastore_url }}"
+    #       with_items:
+    #         - "{{ vm_info.virtual_machines | community.general.json_query(query) }}"
+    #       vars:
+    #         query: "[?guest_name=='{{ inventory_hostname }}']"
+
+    - name: Gather information of snapshots that in their name contain the "test" in their name.
+      block:
+        - name: Gather information of snapshots
+          vmware_guest_snapshot:
+            hostname: '{{ vcenter_hostname }}'
+            username: '{{ vcenter_username }}'
+            password: '{{ vcenter_password }}'
+            validate_certs: no
+            datacenter: '{{ vcenter_datacenter }}'
+            match_type: "includes"
+
+            filters:
+                name: '{{ inventory_hostname }}'
+          delegate_to: localhost
+          register: vm_snapshot
+        
+        - debug:
+            msg: "{{ item.datastore_url }}"
+          with_items:
+            - "{{ vm_snapshot.virtual_machines | community.general.json_query(query) }}"
+          vars:
+            query: "[?guest_name=='{{ inventory_hostname }}']"

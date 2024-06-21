@@ -1,0 +1,9 @@
+---
+vars:
+    vcenter_hostname: ""
+    vcenter_username: ''
+    vcenter_password: ''
+    ansible_python_interpreter:  /usr/bin/python3
+    vcenter_datacenter: ''
+    vcenter_validate_certs: false
+    

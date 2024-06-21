@@ -1,0 +1,85 @@
+#!/bin/bash
+
+host=$@
+for i in $host
+do
+        #echo Checking if $i is pingable
+        hostchk=`ping -c1 $i`
+                if [[ $? -eq 0 ]]
+                then
+
+                hostssh=`ssh -tt -o BatchMode=yes -o StrictHostKeyChecking=no -q $i date`
+
+                        if [[ $? -eq 0 ]]
+                        then
+
+stop-insight-client() {
+    #host=$1
+
+    # Function to identify the OS version on target host
+    get_os_version() {
+        if ssh -q "$i" [ -f /etc/redhat-release ]; then
+            os_version=$(ssh -q "$i" "grep -oP '(?<=release\s)\d' /etc/redhat-release")
+            echo "$os_version"
+        elif ssh -q "$i" [ -f /etc/os-release ]; then
+            os_version=$(ssh -q "$i" "grep -oP '(?<=VERSION_ID=)\d' /etc/os-release")
+            echo "$os_version"
+        else
+            echo "Unsupported OS"
+            exit 1
+        fi
+    }
+
+    # Function to install Falcon sensor on target host
+    kill-insigth-client() {
+        os_version=$1
+        case $os_version in
+            #6|7|8|9)
+            4|5|6)
+ 		# RHEL 6 and below
+    		service insight-client stop
+    		chkconfig insight-client off
+    		echo "Stopped and disabled insight-client service for RHEL 6 and below."
+		;;
+	    7|8|9)
+		# RHEL 7 and above
+    		systemctl stop insight-client
+    		systemctl stop insight-client.timer
+    		systemctl disable insight-client
+    		systemctl disable insight-client.timer
+    		systemctl daemon-reload
+    		echo "Stopped and disabled insight-client service for RHEL 7 and above."
+                ;;
+            *)
+                echo "Unsupported OS version: $os_version"
+                exit 1
+                ;;
+        esac
+
+    }
+
+    # Main
+    os_version=$(get_os_version)
+    echo "Detected OS on $i: $os_version"
+
+    kill-insigth-client "$os_version"
+}
+
+# Main
+if [ "$#" -eq 0 ]; then
+    echo "Usage: $0 <server1> <server2> ..."
+    exit 1
+fi
+
+#for i in "$host"; do
+    stop-insight-client "$i"
+#done
+
+else
+                                echo $i: is not accessible via ssh or passwordless ssh as root not allowed
+                        fi
+                else
+                        echo $i: host not pingable
+                fi
+done
+

@@ -1,0 +1,13 @@
+#!/bin/bash
+#Author: Christopher Atienza
+
+# This will syned /root/cfgmain accros the following servers, any changes will be auto pupulated
+# ldn2lx1000
+# ldnpinfuxm05
+# njcpinfuxm01
+# sngpinfuxm01
+
+for i in `ls /root/.unison/*.prf | cut -d . -f2 | cut -d \/ -f 2  `
+do
+	unison $i
+done

@@ -1,0 +1,18 @@
+i=`cat c`
+for host in `cat c | awk '{print $1}'` ; do
+   value2=$(echo $i | grep $host | awk '{print $2}')
+   value3=$(echo $i | grep $host | awk '{print $3}')
+   port=$(echo $i | grep $host | awk '{print $4}')
+   value5=$(echo $i | grep $host | awk '{print $5}')
+   net=`ssh -q $host /usr/bin/netstat \-an \| /usr/bin/grep \-i $port`
+
+    echo #
+    echo " -----------------------------------  hostname $host -------------------------------"
+    echo "value 1 = $host Value 2 = $value2 value3 = $value3 value4 = $port value5 = $value5"
+    echo #
+    echo $net
+    echo #
+    echo " -------------------------------------------------------------------------------------"
+    echo #
+#   sed -i "s/$value1/$value2/g" circos.conf
+done

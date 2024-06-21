@@ -1,0 +1,143 @@
+#!/bin/bash
+
+# OSPrepatching script will determine the current kernel installed
+# If server is not register it will auto register basdd on the environment
+
+host=$@
+
+for i in $host
+do
+        #echo Checking if $i is pingable
+        hostchk=`ping -c1 $i`
+                if [[ $? -eq 0 ]]
+                then
+
+                hostssh=`ssh -tt -o BatchMode=yes -o StrictHostKeyChecking=no -q $i date`
+
+                        if [[ $? -eq 0 ]]
+                        then
+
+                        # Read each line from the file
+                       
+                        LatestKernel() {
+                                currentversion=$(ssh -q $i "grep -oP '(?<=release\s)\d' /etc/redhat-release")
+                                #echo $currentversion
+                                case $currentversion in
+                                        5) validkernel=2.6.18-440.el5 ;;
+                                        6) validkernel=2.6.32-754.50.1.el6.x86_64;;
+                                        7) validkernel=3.10.0-1160.118.1.el7.x86_64 ;;
+                                        8) validkernel=4.18.0-513.24.1.el8_9.x86_64 ;;
+                                        9) validkernel=5.14.0-427.16.1.el9_4.x86_64 ;;
+                                        *) echo "Unsupported OS version: $os_version";;
+                                esac
+
+                                #echo latestkernel: $validkernel vs current: `ssh -q  $host 'uname -r'`
+                        }
+                     
+                        ServerEnv()
+                        {                            
+                                while IFS= read -r file_contents; do
+                                # Check if PROD and ESX are found
+                                        if [[ $file_contents == *"PROD"* && $file_contents == *"ESX"* ]]; then
+                                                activation="PROD-V"
+                                                #activation="PROD"
+
+                                # Check if PROD is found but not ESX
+                                        elif [[ $file_contents == *"PROD"* && $file_contents == *"none"* ]]; then
+                                                activation="PROD-P"
+                                                #activation="PROD"
+
+                                # Check if DEV and ESX are found
+                                        elif [[ $file_contents == *"DEV"* && $file_contents == *"ESX"* ]]; then
+                                                activation="DEV-V"
+                                                #activation="DEV"
+
+                                # Check if DEV is found but not ESX
+                                        elif [[ $file_contents == *"DEV"* && $file_contents == *"none"* ]]; then
+                                                activation="DEV-P"
+                                                #activation="DEV"
+                                        else
+                                                echo "Environment and type could not be determined."
+                                                exit 1
+                                        fi
+                                        done < <(grep "$host" /root/cfgmain/patching/prepatch/A2RMS-ServerDetails | head -n 1)
+
+                                # Print the environment variable
+                                
+                                LatestKernel "$os_version"
+                        }
+                                
+                        registerServer() {
+                                currentversion=$(ssh -q $i "grep -oP '(?<=release\s)\d' /etc/redhat-release")
+                                case $currentversion in
+                                        6) echo rhel 6 will get its repo from: http://ldnpinfuxm05.corp.ad.tullib.com/RHEL6-ELS/rhel-6-server-els-rpms
+                                                ssh -q $i "subscription-manager unregister"
+                                                ssh -q $i 'mv /etc/yum.repos.d/* /root'
+                                                scp -q /root/cfgmain/patching/repos/rhel-6-server-rpms.repo $i:/etc/yum.repos.d ;;
+                                                #echo "Activation-KEY: ACT-RHEL6-$activation"
+                                                #ssh -q $host "curl -sS --insecure 'https://ldn2lx1000.corp.ad.tullib.com/register?force=true&hostgroup_id=18&organization_id=1&update_packages=false' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo2LCJpYXQiOjE3MTY1NjI3NzgsImp0aSI6ImUxNmI4ZGQxYzk3Njg2YjdmNjQxNzdiZjI4NzE2YmUyMzQ2MTZmMTViM2EyNDIzOTIwMThlODU2MmIzYWJjYTAiLCJleHAiOjE3MTY1NzcxNzgsInNjb3BlIjoicmVnaXN0cmF0aW9uI2dsb2JhbCByZWdpc3RyYXRpb24jaG9zdCJ9.DJ2ZLUyFP-yUqGI7tsvK-VhxK7pBSbs9G2PraIVUL30' | bash" ;;
+                                        7) ssh -q $i "subscription-manager unregister"
+                                                echo Performing Satellite Registration
+                                                echo "Activation-KEY: ACT-RHEL7-$activation"
+                                                ssh -q $i 'mv /etc/yum.repos.d/* /root'
+                                                ssh -q $i "curl -sS --insecure 'https://ldn2lx1000.corp.ad.tullib.com/register?activation_keys=ACT-RHEL7-$activation&force=true&hostgroup_id=1&organization_id=1&update_packages=false' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo2LCJpYXQiOjE3MTYyNzcwMjAsImp0aSI6ImRmZTY0OWY3ZTU4OTdmODU1MmYwMjI4Y2Q1OGVkYzZhMjc2YjgxOGM2ZWNjZjYyZGVkMzYxZDQxZWZkOTZkMWQiLCJzY29wZSI6InJlZ2lzdHJhdGlvbiNnbG9iYWwgcmVnaXN0cmF0aW9uI2hvc3QifQ.W3kCJ8ddlGTGKdtKHjc49IqaDc3IgU_a81kk1_viKa0' | bash" ;;
+                                        8) ssh -q $i "subscription-manager unregister"
+                                                echo Performing Satellite Registration
+                                                echo "Activation-KEY: ACT-RHEL8-$activation"
+                                                ssh -q $i 'mv /etc/yum.repos.d/* /root'
+                                                ssh -q $i "curl -sS --insecure 'https://ldn2lx1000.corp.ad.tullib.com/register?activation_keys=ACT-RHEL8-$activation&force=true&hostgroup_id=21&organization_id=1&update_packages=false' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo2LCJpYXQiOjE3MTYyNzcxMDEsImp0aSI6IjhmNDIwZWMyYmY4ZjYxNDZmMmU4NzJjNGIyYTQ3ZGE0Yzk4ODU3ZDU2YzkyYWQ2ZjVlODY2NTQ4ZGMxZDdjOWIiLCJzY29wZSI6InJlZ2lzdHJhdGlvbiNnbG9iYWwgcmVnaXN0cmF0aW9uI2hvc3QifQ.wXqd6udjxwNirT5WzDBDjIvz7drq0m1wbECclLO1V-Q' | bash" ;;
+                                        9) ssh -q $i "subscription-manager unregister"
+                                                echo Performing Satellite Registration
+                                                echo "Activation-KEY: ACT-RHEL9-$activation"
+                                                ssh -q $i 'mv /etc/yum.repos.d/* /root'
+                                                ssh -q $i "curl -sS --insecure 'https://ldn2lx1000.corp.ad.tullib.com/register?activation_keys=ACT-RHEL9-$activation&force=true&hostgroup_id=15&organization_id=1&update_packages=false' -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo2LCJpYXQiOjE3MTYyNzcxMzQsImp0aSI6ImUwMmY5ODBhOWEwODYxZjg3YzZjOTA4MmIwN2FjNGIzYWEyMDEzOTBkOGViODQzOTY4YTc4NDEyZGE5MWRlMzYiLCJzY29wZSI6InJlZ2lzdHJhdGlvbiNnbG9iYWwgcmVnaXN0cmF0aW9uI2hvc3QifQ.y6WVpO0iUHiyRkSsa96shWYjs9HQs6QmmU_RWg6RFh4' | bash" ;;
+                                        *) echo "Unsupported OS version: $os_version";;
+                                esac
+                        }
+
+
+                        check_rhel_registration() {
+                                subscription_status=$(ssh -q $i "subscription-manager status |grep 'Overall Status:' ")
+                                
+                                if [[ $subscription_status == *"Overall Status: Disabled"* || $subscription_status ==  *"System Purpose Status: Disabled"* ]]; then
+                                        #echo $subscription_status
+                                        echo "$i: already registered in Satellite."
+                                else          
+                                        ServerEnv $i
+                                        registerServer $i                                    
+                                fi
+                        }
+
+                                LatestKernel $validkernel
+                                 
+                                #get kernel available
+
+                                #availablekernel=$(ssh -q $i "yum list kernel.x86_64 | grep kernel" | tail -n 1 |awk '{print $2}' )
+                                availablekernel=$(ssh -q $i "yum list kernel.x86_64 |egrep '3.10.0-1160.118.1.el7|5.14.0-427.13.1.el9_4' | tail -n 1 |awk '{print $2}'" )
+                                currentinstalled=$(ssh -q  $i 'uname -r')
+                                        
+
+                                if [[ "$currentinstalled" == $validkernel ]]; then
+                                        echo
+                                else
+                                        ServerEnv $i
+                                        #echo Performing registration check
+                                        check_rhel_registration $i
+                                        #echo "The installed kernel ($currentinstalled) will be updated to: $validkernel on the next patching." 
+                                        #echo $validkernel kernel CUT vs current installed: `ssh -q  $i 'uname -r'` =====\> $i:                                                  
+                                fi
+                                        
+                                
+                                # Usages
+                                if [ "$#" -eq 0 ]; then
+                                echo "Usage: $0 <server1> <server2> ..."
+                                exit 1
+                                fi
+
+                        else
+                                echo $i: host is not accessible via ssh or passwordless ssh as root not allowed
+                        fi
+                else
+                        echo $i: host not pingable
+                fi
+done

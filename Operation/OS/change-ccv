@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [-l] [-c] hostname"
+    echo "Options:"
+    echo "  -l: List content-view"
+    echo "  -c: Change content-view"
+    exit 1
+}
+
+# Check if no arguments provided
+if [ $# -eq 0 ]; then
+    echo "Error: Hostname not provided."
+    usage
+fi
+
+# Parse options
+list_content_view=false
+change_content_view=false
+
+while getopts ":lc" opt; do
+    case ${opt} in
+        l )
+            list_content_view=true
+            ;;
+        c )
+            change_content_view=true
+            ;;
+        \? )
+            echo "Invalid option: $OPTARG"
+            usage
+            ;;
+        : )
+            echo "Option -$OPTARG requires an argument."
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+# Check if hostname is a file
+if [ -f "$1" ]; then
+    hostlist_file="$1"
+else
+    hostname="$1"
+fi
+
+# Function to list content-view
+list_content_view() {
+    echo "Listing content-view for host: $1"
+    # Command to list content-view, replace with appropriate command
+    # Example: hammer host info --name $1 | grep "Content View"
+}
+
+# Function to change content-view
+change_content_view() {
+    echo "Changing content-view for host: $1"
+    # Command to change content-view, replace with appropriate command
+    # Example: hammer host update --name $1 --content-view <content_view_name>
+}
+
+# Main logic
+if [ -n "$hostlist_file" ]; then
+    echo "Hostlist file detected: $hostlist_file"
+    # Process each hostname in the hostlist file
+    while read -r hostname; do
+        if $list_content_view; then
+            list_content_view "$hostname"
+        elif $change_content_view; then
+            change_content_view "$hostname"
+        else
+            echo "Default content-view for host: $hostname"
+            # Command to show default content-view, replace with appropriate command
+            # Example: hammer host info --name $hostname | grep "Default Content View"
+        fi
+    done < "$hostlist_file"
+else
+    if $list_content_view; then
+        list_content_view "$hostname"
+    elif $change_content_view; then
+        change_content_view "$hostname"
+    else
+        echo "Default content-view for host: $hostname"
+        # Command to show default content-view, replace with appropriate command
+        # Example: hammer host info --name $hostname | grep "Default Content View"
+    fi
+fi

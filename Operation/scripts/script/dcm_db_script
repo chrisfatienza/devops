@@ -1,0 +1,67 @@
+#!/bin/bash
+ssBaseURL="https://tss.secretservercloud.eu"
+
+# printf "Enter a Database Name:"
+echo "Enter your -a Account:"
+read admin-a
+
+printf "Enter server:"
+ead server
+
+ 
+
+case $USERNAME in
+"1")
+    USERNAME="SYSTEM"
+    SECRETID="30299"
+    ;;
+"2")
+    USERNAME="SYSASM"
+    ;;
+"3")
+    USERNAME="SYSBACKUP"
+    ;;
+"4")
+    USERNAME="SYSDG"
+    ;;
+"5")
+    USERNAME="SYSOPER"
+    ;;
+"6")
+    USERNAME="SYSRAC"
+    ;;
+"7")
+    USERNAME="SYSKM"
+    ;;
+"8")
+    USERNAME="SYSTEM"
+    ;;
+esac
+
+ 
+
+
+#change to directory where the SDK is
+cd "/opt/secretserver-sdk-1.5.3-linux-x64"
+TOKEN=$(./tss token)
+
+#echo "Token=$TOKEN" 
+
+#use the username to search for the secret and get the secret ID
+#SECRETID=$(curl -s --location "$ssBaseURL/api/v1/secrets/lookup?filter.searchField=name&filter.searchText=$USERNAME" \
+#--header 'Accept: application/json' \
+#--header "Authorization: Bearer $TOKEN" | jq '.records[0].id' | tr -d '"')
+
+
+#use the secret ID to get the secret password
+PASSWORD=$(curl -s --location "$ssBaseURL/api/v1/secrets/$SECRETID/fields/Password" \
+--header 'Accept: application/json' \
+--header "Authorization: Bearer $TOKEN" | tr -d '"')
+
+ 
+ORACLE_BASE=/orahome/app
+ORACLE_HOME=/orahome/app/oracle/19.3.0.0
+
+#run the command that logs the user into the DB
+#echo "Running command: sudo su - oracle -c \"export ORACLE_SID=$DATABASE && sqlplus $USERNAME/$PASSWORD\""
+sudo su - oracle -c "export ORACLE_SID=$DATABASE && /orahome/app/grid/19.3.0.0/bin/sqlplus $USERNAME/$PASSWORD"

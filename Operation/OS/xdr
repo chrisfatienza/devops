@@ -1,0 +1,33 @@
+#!/bin/bash
+
+check_host() {
+    local host=$1
+    # echo Checking if $host is pingable
+    if ping -c1 "$host" &> /dev/null; then
+        if ssh -o BatchMode=yes -o StrictHostKeyChecking=no -q "$host" date &> /dev/null; then
+            echo "$host: $(ssh -q "$host" 'rpm -qa ds_agent')"
+        else
+            echo "$host: host is not accessible via ssh or passwordless ssh as root not allowed"
+        fi
+    else
+        echo "$host: host not pingable"
+    fi
+}
+
+filename=""
+
+if [ "$1" == "-f" ]; then
+    filename="$2"
+    if [ ! -f "$filename" ]; then
+        echo "File not found: $filename"
+        exit 1
+    fi
+    while read -r host || [ -n "$host" ]; do
+        check_host "$host"
+    done < "$filename"
+else
+    for host in "$@"; do
+        check_host "$host"
+    done
+fi
+

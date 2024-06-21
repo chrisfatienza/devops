@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Function to check host accessibility
+check_host() {
+    host=$1
+    #echo "Checking host $host..."
+    # Check if $host is pingable
+    if ping -c1 "$host" >/dev/null 2>&1; then
+        # Check SSH accessibility
+        if ssh -o BatchMode=yes -o StrictHostKeyChecking=no -q "$host" date >/dev/null 2>&1; then
+            echo -n "$host: "
+            ssh -q "$host" 'uptime'
+         #   echo "$host: $(ssh -q "$host" 'uptime')" >> "$log_file"
+        else
+            echo "$host: Host is not accessible via SSH or passwordless SSH as root is not allowed."
+            echo "$host: Host is not accessible via SSH or passwordless SSH as root is not allowed." >> "$log_file"
+        fi
+    else
+        echo "$host: Host not pingable."
+        #echo "$host: Host not pingable." >> "$log_file"
+    fi
+}
+
+# Initialize log file
+log_file=""
+
+while getopts ":l" opt; do
+    case $opt in
+        l)
+            log_file="output.log"
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG" >&2
+            exit 1
+            ;;
+    esac
+done
+
+shift $((OPTIND -1))
+
+for host in "$@"; do
+    # Check if input is a file
+    if [ -e "$host" ]; then
+        #echo "File $host found. Treating it as a list of hostnames..."
+        # Read hostnames from the file
+        #while IFS= read -r line; do
+            # Check if the line is not empty
+            #if [ -n "$line" ]; then
+                check_host "$line"
+            #fi
+         #   for i in $line ; do
+                check_host $i
+         #   done
+        #done < "$host"
+
+        echo $host
+        
+    else
+        # Input is not a file, treat it as a hostname
+        check_host "$host"
+    fi
+done
+

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $0 <start|stop>"
+  exit 1
+fi
+
+case "$1" in
+  start)
+    echo "Executing commands:"
+    echo "  /usr/bin/perl /usr/libexec/webmin/miniserv.pl --nofork /etc/webmin/miniserv.conf"
+    /usr/bin/perl /usr/libexec/webmin/miniserv.pl --nofork /etc/webmin/miniserv.conf
+    echo "Commands for starting configured."
+    ;;
+  stop)
+    # Add stop commands if needed
+    echo "Executing command:"
+    echo "   echo 'pgrep -f  /usr/libexec/webmin/miniserv.pl'"
+	pkill `pgrep -f  /usr/libexec/webmin/miniserv.pl`
+    ;;
+  *)
+    echo "Invalid option. Usage: $0 <start|stop>"
+    exit 1
+    ;;
+esac
+
+# Run ldconfig to apply changes
+ldconfig
+
+echo "Done."

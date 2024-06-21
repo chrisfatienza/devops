@@ -1,0 +1,3 @@
+#!/bin/bash
+
+hammer auth login basic -u catienza-a -p "CF@t13nz@C522@"

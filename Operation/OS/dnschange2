@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Function to display script usage and requirements
+usage() {
+    echo "Usage: $0 -d <dnslistfile>"
+    echo "Options:"
+    echo "  -d <dnslistfile>  Path to the DNS list file (mandatory)"
+    exit 1
+}
+
+# Initialize variables
+dnslistfile=""
+
+# Function to count dots in an IP address
+count_dots() {
+    local ip="$1"
+    local dots
+    dots=$(grep -o '\.' <<< "$ip" | wc -l)
+    echo "$dots"
+}
+
+# Parse command line options
+while getopts ":d:" opt; do
+  case $opt in
+    d)
+      dnslistfile="$OPTARG"
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      usage
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      usage
+      ;;
+  esac
+done
+
+# Check if dnslistfile is provided and exists
+if [ -z "$dnslistfile" ] || [ ! -e "$dnslistfile" ]; then
+  echo "Error: You must provide a valid DNS list file with -d flag."
+  usage
+fi
+
+# Remove trailing non-printing characters from dnslistfile
+sed -i 's/[[:space:]]*$//' "$dnslistfile"
+
+# Check if each line in dnslistfile contains exactly two fields separated by a delimiter
+delimiter_pattern="[[:space:]]+"  # Allows any whitespace characters as the delimiter
+
+while IFS= read -r line; do
+  fields=($line)
+  if [ ${#fields[@]} -ne 2 ]; then
+    echo "Error: Invalid line in DNS list file: $line"
+    exit 1
+  fi
+
+  old_ip="${fields[0]}"
+  new_ip="${fields[1]}"
+
+  # Check if old and new IPs have exactly 6 dots
+  if [ "$(count_dots "$old_ip")" -ne 6 ] || [ "$(count_dots "$new_ip")" -ne 6 ]; then
+    echo "Error: Invalid IP format in DNS list file: $line"
+    exit 1
+  fi
+done < "$dnslistfile"
+
+# Read old and new IP addresses from dnslistfile
+old_ips=()
+new_ips=()
+
+while IFS= read -r line; do
+    old_ips+=($(echo "$line" | awk '{print $1}'))
+    new_ips+=($(echo "$line" | awk '{print $2}'))
+done < "$dnslistfile"
+
+# Check if the arrays have the same length
+if [ ${#old_ips[@]} -ne ${#new_ips[@]} ]; then
+    echo "Error: Arrays have different lengths"
+    exit 1
+fi
+
+# Loop through the arrays and display old and new IPs
+for ((i = 0; i < ${#old_ips[@]}; i++)); do
+    oldDNS="${old_ips[i]}"
+    newDNS="${new_ips[i]}"
+    echo "$oldDNS $newDNS"
+done

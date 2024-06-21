@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use IO::Socket::INET;
+
+if (@ARGV != 2) {
+    die "Usage: $0 <host> <port>\n";
+}
+
+my $host = $ARGV[0];
+my $port = $ARGV[1];
+my $timeout = 5; # Adjust the timeout as needed
+
+my $socket = IO::Socket::INET->new(
+    PeerAddr => $host,
+    PeerPort => $port,
+    Proto    => 'udp',
+    Timeout  => $timeout
+);
+
+if ($socket) {
+    print "UDP port $port on $host is open.\n";
+} else {
+    print "UDP port $port on $host is closed or unreachable.\n";
+}
