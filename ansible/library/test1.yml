@@ -1,0 +1,6 @@
+---
+- name: Display basic server information
+  hosts: hostlist
+  tasks:
+   - name: OS version
+     command: cat /etc/redhat-release

@@ -1,0 +1,4 @@
+- hosts: hostlist
+  tasks:
+    - name: Restore backup of /etc/resolv.conf
+      shell: cp /etc/resolv.conf.CHG0112641b /etc/resolv.conf

@@ -1,0 +1,34 @@
+# Usages: ansible-playbook -i hostlist /root/cfgmain/library/timekeeper-licupdate.yml
+---
+- name: Updating Timekeeper License
+  hosts: hostlist
+  gather_facts: false
+
+  tasks:
+    - name: Copying Timekeeper License
+      copy:
+        src: /admin/timekeeper.lic
+        dest: /opt/timekeeper/release64/timekeeper.lic
+        force: yes
+        group: root
+        owner: root
+        mode: 0644
+
+    - name: Restart the Timekeeper service
+      service:
+        name: timekeeper
+        state: restarted
+
+#    - name: Pause for 1 minute to get the tkstatus properly
+#      pause:
+#        seconds: 90
+#
+#    - name: Check the status
+#      command: tkstatus
+#      register: tkstatus_output
+##      ignore_errors: yes
+#
+#    - name: Display Timekeeper Status
+#      debug:
+#        var: tkstatus_output.stdout_lines
+       

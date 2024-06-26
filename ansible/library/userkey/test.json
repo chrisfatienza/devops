@@ -1,0 +1,30 @@
+{
+"apikey" : "77517A5D394D7B213772514F275D6E4F",
+"port" : 4882,
+"baseHostName" : "otas12-1.liquidnet.com",
+"basePath": "/api/v3",
+"ptaReferer": "Liquidnet IA Pre-Trade Service",
+"systemd": true,
+"debug" : false,
+"swaggerServer": {
+    "hostName": "njc2lx7085",
+    "port": "4882/",
+    "protocol": "http://"
+    }
+}
+
+
+{$
+"apikey" : "77517A5D394D7B213772514F275D6E4F",$
+"port" : 4882,$
+"baseHostName" : "otas12-1.liquidnet.com",$
+"basePath" : "/api/v3/",$
+"ptaReferer": "Liquidnet IA Pre-Trade Service",$
+"systemd": true,$
+"debug": false,$
+"swaggerServer": {$
+         "hostName": "njc2lx7085",$
+         "port": "4882/",$
+         "protocol": http://$
+     }$
+}$

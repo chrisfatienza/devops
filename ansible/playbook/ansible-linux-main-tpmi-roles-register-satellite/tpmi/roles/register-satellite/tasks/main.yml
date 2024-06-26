@@ -1,0 +1,4 @@
+---
+# Register
+- include: bootstrap-playbook.yml 
+...

@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Check if remote host arguments are provided
+if [ $# -eq 0 ]; then
+    echo "Usage: ./update_resolv.sh <remote_host1> <remote_host2> ..."
+    exit 1
+fi
+
+# Define the old and new IP address arrays
+old_ips=("10.1.43.186" "10.1.43.193" "10.1.43.196" "10.1.24.104" "10.1.59.11" "10.1.59.12" "10.1.59.13" "10.137.36.31" "10.137.36.32" "10.137.36.33" "10.137.36.18" "10.137.36.19")
+new_ips=("10.160.72.83" "10.161.72.28" "10.160.72.83" "10.160.72.83" "10.161.72.28" "10.160.72.83" "10.161.72.28" "10.161.72.10" "10.160.72.10" "10.161.72.10" "10.160.72.84" "10.161.72.29")
+
+# Remote username
+remote_user="root"
+
+# Remote SSH key
+ssh_key="/path/to/your/private_key"
+
+# SSH command to read and modify the /etc/resolv.conf file
+#ssh_command="ssh -i $ssh_key $remote_user@"
+ssh_command="ssh $remote_user@"
+
+# Iterate over each remote host
+for remote_host in "$@"; do
+    echo "Updating /etc/resolv.conf on $remote_host"
+
+    # SSH command with the current remote host
+    current_ssh_command="$ssh_command$remote_host"
+
+    # Generate the backup file extension using the current date
+    backup_extension=$(date +%Y%m%d)
+
+    # Check if the backup file already exists
+    if $current_ssh_command "[ -f /etc/resolv.conf.$backup_extension ]"; then
+        echo "Backup file /etc/resolv.conf.$backup_extension already exists. Skipping backup."
+    else
+        # Create a backup of the original /etc/resolv.conf file
+        $current_ssh_command "sudo cp /etc/resolv.conf /etc/resolv.conf-$backup_extension"
+        echo "Created backup file: /etc/resolv.conf-$backup_extension"
+    fi
+
+    # Read the /etc/resolv.conf file remotely
+    resolv_conf=$($current_ssh_command "cat /etc/resolv.conf")
+
+    # Iterate over each old IP address
+    for ((i = 0; i < ${#old_ips[@]}; i++)); do
+        old_ip=${old_ips[$i]}
+        new_ip=${new_ips[$i]}
+        
+        # Check if the old IP address is already present
+        if grep -q -w "$old_ip" <<< "$resolv_conf"; then
+            # Replace subsequent occurrences with an empty string
+            resolv_conf=$(echo "$resolv_conf" | sed "0,/$old_ip/s//$new_ip/" | sed "s/$old_ip//g")
+        fi
+    done
+
+    # Remove any leading/trailing whitespace and duplicate lines
+    resolv_conf=$(echo "$resolv_conf" | awk '{$1=$1};1' | awk '!x[$0]++')
+
+    # Write the modified /etc/resolv.conf file remotely
+    $current_ssh_command "echo '$resolv_conf' | sudo tee /etc/resolv.conf > /dev/null"
+
+    echo "Successfully updated /etc/resolv.conf on $remote_host"
+
+done

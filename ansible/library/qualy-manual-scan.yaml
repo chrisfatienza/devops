@@ -1,0 +1,43 @@
+---
+- hosts: hostlist
+  tasks:
+    - name: "Starting Qualys cloud agent"
+      become: true
+      become_user: svcqca
+      systemd:
+        name: qualys-cloud-agent
+        state: started
+
+    - name: "Performing Qualys manual scan"
+      shell: /usr/local/qualys/cloud-agent/bin/cloudagentctl.sh action=ondemand type=vm
+
+    - name: Qualys Manual scan
+      tags: qualyscan-manual
+      become: yes
+      become_user: svcqca 
+      shell: "sleep 5 /usr/local/qualys/cloud-agent/bin/cloudagentctl.sh action=ondemand type=vm"
+      async: 1
+      poll: 0
+    
+    - name: Wait for one hour before stopping the Qualys process
+      pause:
+        minutes: 120
+
+    - name: "Stop Qualys Agent"
+      systemd:
+        name: qualys-cloud-agent
+        state: stopped
+
+    - name: "Ensure Qualys is disabled on startup"
+      systemd:
+        name: qualys-cloud-agent
+        state: disabled
+
+#    - name: Wait for manual scan to complete
+#      wait_for:
+#        path: /var/log/qualys/qualys-cloud-agent.log
+#        search_regex: "CompletedDeltas"
+#        delay: 10
+#        timeout: 60
+#      shell: systemctl stop qualys-cloud-agent
+

@@ -1,0 +1,35 @@
+---
+- name: Replace HWADDR variable name in network config files
+  hosts: hostlist
+  become: true
+  gather_facts: true
+
+  vars:
+    MACADDR: "MACADDR"  # Updated variable name
+    backup_dir: "/var/tmp"
+
+  tasks:
+    - name: Get active network devices
+      shell: ip addr show | grep "state UP" | awk '{print $2}' | cut -d ':' -f 1
+      changed_when: false
+      register: network_devices_raw
+
+    - name: Extract network devices
+      set_fact:
+        network_devices: "{{ network_devices_raw.stdout_lines }}"
+      when: network_devices_raw.stdout_lines is defined
+
+    - name: Backup network config files
+      copy:
+        src: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
+        dest: "{{ backup_dir }}/ifcfg-{{ item }}.backup"
+      with_items: "{{ network_devices }}"
+      when: network_devices is defined
+
+    - name: Replace "hwaddr" or "HWADDR" with "MACADDR" in network config files
+      replace:
+        path: "/etc/sysconfig/network-scripts/ifcfg-{{ item }}"
+        regexp: '(?i)(hwaddr|HWADDR)'
+        replace: "MACADDR"
+        backup: yes
+      with_items: "{{ network_devices }}"

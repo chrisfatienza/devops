@@ -1,0 +1,1 @@
+%srvcsphere ALL=(ALL) NOPASSWD: /bin/cat /etc/sudoers.d/*, /bin/cat /etc/sudoers

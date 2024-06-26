@@ -1,0 +1,14 @@
+---
+# vars file for register-satellite
+bootstrap_foreman_fqdn: ldnpinfuxm03.eur.ad.tullib.com
+bootstrap_download_method: http
+bootstrap_org: "TP ICAP"
+bootstrap_location: "EMEA/London/LD5 Datacenter"
+bootstrap_activationkey: "ACT-RHEL7u6-DEV"
+bootstrap_login: "bootstrapper"
+bootstrap_password: "cr0wnlager"
+bootstrap_hostgroup: "HG-RHEL7u6-DEV"
+bootstrap_additional_args: '--skip puppet --deps-repository-url http://ldnpinfuxm03.eur.ad.tullib.com/pulp/repos/TP_ICAP/Library/content/dist/rhel/server/7/7.6/x86_64/kickstart/ --force'
+bootstrap_target_path: /root/bootstrap.py
+bootstrap_local_copy: False
+...

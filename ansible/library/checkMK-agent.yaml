@@ -1,0 +1,46 @@
+---
+- hosts: hostlist
+  tasks:
+#    - name: "Update Check_MK"
+#      yum:
+#        name: "check-mk-agent"
+#        enablerepo: "tpicap-common-tools-rhel7"
+#        state: latest
+#      register: result
+    - name: "Update/Install Check_MK Agent"
+      copy:
+        src: /root/cfgmain/check_mk/client/check-mk-agent.noarch.rpm
+        dest: /var/tmp/check-mk-agent.noarch.rpm
+        mode: 0644
+   
+    - name: Install check-mk-agent package
+      yum:
+        name: /var/tmp/check-mk-agent.noarch.rpm
+        state: present
+
+    # - name: "Get Service Facts"
+    #   service_facts:
+    #   when: result.rc == 0
+
+    # - name: "Print Check_MK Service if it exists"
+    #   debug:
+    #     var: ansible_facts.services["check_mk@.service"]
+    #   when: ansible_facts.services["check_mk@.service"] is defined and result.rc == 0
+
+    - name: "Create a file that will disable CheckMK Logging in Messages"
+      copy:
+        dest: /etc/rsyslog.d/ignore-systemd-checkmk.conf
+        content: 'if $programname == "systemd" and ($msg contains "Starting Check_MK" or $msg contains "Started Check_MK" or $msg contains "Started Checkmk") then stop'
+      when: ansible_facts.services["check_mk@.service"] is defined and result.rc == 0
+
+    - name: "Register for Config File Checking"
+      stat:
+        path: /etc/rsyslog.d/ignore-systemd-checkmk.conf
+      register: stat_result
+      when: ansible_facts.services["check_mk@.service"] is defined and result.rc == 0
+
+    - name: "Restart rsyslog service if Config File has been copied"
+      systemd:
+        state: restarted
+        name: rsyslog
+      when: ansible_facts.services["check_mk@.service"] is defined and stat_result.stat.exists and result.rc == 0

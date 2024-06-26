@@ -1,0 +1,18 @@
+- hosts: hostlist
+  become: yes
+  tasks:
+    - name: Copy multipath template
+      copy:
+        src: /root/cfgmain/library/multipath.conf
+        dest: /etc
+        backup: True
+
+    - name: Copy multipath template
+      copy:
+        src: /root/cfgmain/library/setmultipath.sh
+        dest: /root
+        mode: 0755
+    
+    - name: Setting multipath.conf
+      shell: /root/setmultipath.sh
+      ignore_errors: yes

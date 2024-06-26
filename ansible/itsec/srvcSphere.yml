@@ -1,0 +1,49 @@
+---
+- name: Sphere Service Account Creation
+  hosts: hostlist
+  gather_facts: false
+
+  tasks:
+    - name: set up groups
+      group:
+        name: srvcsphere
+        gid: 1126648370
+
+    - name: Create srvcsphere User
+      user:
+        name: srvcsphere
+        uid: 1126648370
+        group: srvcsphere
+        comment: "Sphere Service Account"
+        state: present
+        createhome: yes
+        shell: /bin/bash
+        #$rvSph3r as password# 
+        password: "$6$xXdx/s70$PIm5Er9G4K1lgXbqr1oyDGvq5N028ot235ekJ91oxpYme6V.4TMvV7JoU5acxMHK4zP3i0YcKwfMo2Gabt3rI/"
+
+    - name: SSH key for srvcsphere
+      authorized_key:
+        state: present
+        user: srvcsphere
+        key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDPxeCMapnFqe1TfuUXNPtNtiPJQbsO4MjTJHgaJYIV8ykDvtqeHhmppx9EfTbeP7/zt1s9U1WaIavD9vRLJau5snZRu6KzxmOrDf21ezzkMUflkMRHDCz2PrDFmnYczi5AzDb4gqwARfHlZ/q1Oj/t4CARNrDyJGUiRYjKAx4Jc/ktSL5te/HeMpzCoWnc1YzJptAvUCAEWlRbWhq9XZWhvgQGTtDjGUZkldPd9kaSMPdhdNaqfqpAh00FvcJlx8uryhhc3DJny7oIFUdVRFFbt/sIjnNERijBPTPKddloW3qvBhTcFbE3zVgiodRRearYUq86BnIK8OPBFKwojd4x'
+
+    - name: add timestamp to history
+      lineinfile:
+        path: /home/srvcsphere/.bashrc
+        state: present
+        line: "export HISTTIMEFORMAT='%F %T '"
+
+    - name: sudo for srvcsphere
+      copy:
+        src: files/etc/sudoers.d/sudoers_srvcsphere
+        dest: /etc/sudoers.d/srvcsphere
+        force: yes
+        group: root
+        owner: root
+        mode: 0644
+
+    - name: Allow srvcsphere to ssh in
+      lineinfile:
+        path: /etc/security/access.conf
+        insertbefore: '^-:ALL:ALL'
+        line: '+:srvcsphere:ALL'

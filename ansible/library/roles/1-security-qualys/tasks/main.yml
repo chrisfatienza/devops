@@ -1,0 +1,4 @@
+---
+
+- include: section1-qualys.yml
+  become: yes

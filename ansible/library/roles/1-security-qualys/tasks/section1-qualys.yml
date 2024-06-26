@@ -1,0 +1,125 @@
+# tasks file for qualys_cloud_agent deployment
+---
+- name: Qualys Aent Deployment
+  host: hostlist
+  gather_facts: false
+
+  tasks:
+    - name: Create svcqca Group
+      group:
+        name: svcqca
+        gid: 2708
+  
+    - name: Create svcqca User
+      user:
+        name: svcqca
+        uid: 2708
+        group: svcqca
+        comment: "Qualys Cloud Agent Service Account"
+        home: "/home/svcqca"
+        shell: /bin/bash
+        password: "$6$lNK6g1B7$Miw5TpHbjPxW2lOhxAitfb22saRUH0W9dMuubcmLUzg2isiN5agVCL8MjSJrmMd5PEoPkknyZzGiWQbGKJUep/"
+  
+    - name: Add Qualys SSH-Key
+      authorized_key:
+        user: svcqca
+        state: present
+        key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCrOOi3cMubz5DTl85EIho6zJDNjBBcp6H1CXmYfgiXKr/XhqgyCOgCPJof7ikvleikm2UE5J7KiIRyvN0LvPDXe3dz1xGEm/sy7lLGyMQUFF0GnTDsFVeEYx6703U/m0kUgRquBP1UCD6KWnplVzHA+chBK9xLrojxteanbZ8jTW3I07HzzvT9ygiNkHF2IPW9f5vWeqkDqhMcNGjh1UDIPFajTd1W73BKr5R4uk3AetCO0PbcYVF5fjVkGEDyw9/m1ZjUQK/T7Bhv1mkGgz7dsAQnT5h74T22EblNvALL8fe/8QoSgKRD3GosRN5JtNvyJ6xiK7O5Ux6azK2tmtQf"
+  
+    - name: Configure sudoers
+      copy:
+        src: /root/cfgmain/library/roles/1-security-qualys/files/sudoers_qualys
+        dest: /etc/sudoers.d/
+        owner: root
+        group: root
+        mode: 0755
+  
+    - name: Copy Qualy Cloud Agent package to server
+      copy:
+        src: qualys-cloud-agent.x86_64.rpm
+        dest: /var/tmp/qualys-cloud-agent.x86_64.rpm
+  
+    - name: Install Qualys Cloud Agent from Common Tools
+      yum:
+        name: /var/tmp/qualys-cloud-agent.x86_64.rpm
+        state: present
+        disable_gpg_check: true
+  
+    - name: Change ownership to qualys cloud agent service account
+      file:
+        path: "{{ item }}"
+        state: directory
+        recurse: yes
+        owner: svcqca
+        group: svcqca
+      with_items:
+        - /etc/qualys
+        - /usr/local/qualys
+  
+    - name: Distribute config for EMEA UK
+      command: /usr/local/qualys/cloud-agent/bin/qualys-cloud-agent.sh ActivationId=0bfc6401-4fa2-4175-9cc2-fb8070f75e9a CustomerId=b546b3c9-3885-53eb-e040-18ac09046184 User=svcqca LogLevel=3 UseSudo=1 SudoUser=svcqca UserGroup=svcqca
+      #when: OU_Location | regex_search('EMEA')
+      when: ansible_hostname | regex_search('uk')
+  
+    - name: Distribute config for APAC HK
+      command: /usr/local/qualys/cloud-agent/bin/qualys-cloud-agent.sh ActivationId=c5c79f46-237a-430b-bfd9-96cbf7895d77 CustomerId=b546b3c9-3885-53eb-e040-18ac09046184 User=svcqca LogLevel=3 UseSudo=1 SudoUser=svcqca UserGroup=svcqca
+      #when: OU_Location | regex_search('APAC')
+      when: ansible_hostname | regex_search('hk')
+  
+    - name: Distribute config for APAC TK
+      command: /usr/local/qualys/cloud-agent/bin/qualys-cloud-agent.sh ActivationId=c5c79f46-237a-430b-bfd9-96cbf7895d77 CustomerId=b546b3c9-3885-53eb-e040-18ac09046184 User=svcqca LogLevel=3 UseSudo=1 SudoUser=svcqca UserGroup=svcqca
+      #when: OU_Location | regex_search('APAC')
+      when: ansible_hostname | regex_search('tk')
+  
+    - name: Distribute config for AMER NJ
+      command: /usr/local/qualys/cloud-agent/bin/qualys-cloud-agent.sh ActivationId=4cbf2459-cb83-4d1a-8364-a4415508bd68 CustomerId=b546b3c9-3885-53eb-e040-18ac09046184 User=svcqca LogLevel=3 UseSudo=1 SudoUser=svcqca UserGroup=svcqca
+      #when: OU_Location | regex_search('AMER')
+      when: ansible_hostname | regex_search('nj')
+  
+    - name: Qualys installer cleanup
+      shell: rm /var/tmp/qualys-cloud-agent.x86_64.rpm
+      args:
+        warn: false
+  
+    - name: "Starting Qualys cloud agent"
+      become: true
+      become_user: svcqca`
+      systemd:
+        name: qualys-cloud-agent
+        state: restarted
+  
+    - name: "Performing Qualys manual scan"
+      shell: /usr/local/qualys/cloud-agent/bin/cloudagentctl.sh action=ondemand type=vm
+  
+    - name: Qualys Manual scan
+      tags: qualyscan-manual
+      become: yes
+      become_user: svcqca
+      shell: "sleep 5 /usr/local/qualys/cloud-agent/bin/cloudagentctl.sh action=ondemand type=vm"
+      async: 1
+      poll: 0
+  
+    - name: Wait for one hour before stopping the Qualys process
+      pause:
+        minutes: 60
+  
+    - name: "Stop Qualys Agent"
+      systemd:
+        name: qualys-cloud-agent
+        state: stopped
+  
+    - name: "Ensure Qualys is disabled on startup"
+      systemd:
+        name: qualys-cloud-agent
+        enabled: no
+  
+    - name: Add cron job to start Qualys and perform manual scan and turn off after an hour
+      become: true
+      cron:
+        name: "Qualys Cron Job"
+        minute: "0"
+        hour: "19"
+        weekday: "6"
+        user: svcqca
+        job: "sudo systemctl start qualys-cloud-agent && sudo /usr/local/qualys/cloud-agent/bin/cloudagentctl.sh action=ondemand type=vm && sleep 3600 && sudo systemctl stop qualys-cloud-agent"
+...

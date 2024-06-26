@@ -1,0 +1,10 @@
+#!/usr/bin/expect --
+# All fw authentication expect script for telnet.
+
+spawn telnet 10.91.3.233 900
+expect "User:"
+send "C_Atienza\r"
+expect "password:"
+send @t13nz@CFChr1s522@\r"
+expect "Enter your choice: "
+send "1\r"

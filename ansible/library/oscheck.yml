@@ -1,0 +1,8 @@
+---
+- hosts: hostlist
+  tasks:
+
+  - name: Check OS
+    shell: cat /etc/os-release
+  
+  - debug: msg="{{ reponse.stout}}"

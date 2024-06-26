@@ -1,0 +1,2 @@
+#Sudo Config for Qualys Cloud Agent User
+%svcqca ALL=(ALL) NOPASSWD: ALL

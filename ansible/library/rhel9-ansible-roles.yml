@@ -1,0 +1,26 @@
+---
+- hosts: hostlist
+  tasks:
+    - name: Use role in loop
+      include_role:
+          name: '{{ roleinputvar }}'
+      loop:
+      #  - rhel9-hostregistration-satellite 
+        - rhel9-1-copy9-ssh-keys
+      #    - rhel9-2-hardening
+        - rhel9-3-common-tools-realm
+        - rhel9-4-install9-admin-packages
+        - rhel9-5-extra9-admin-tasks
+        - rhel9-6-appdynamics9-machine-agent
+        - rhel9-7-cmdb9-file-update
+        - rhel9-8-motd9-update
+        - rhel9-9-security-tools
+      # - timekeeper
+        - chronyd
+      #  - rhel9-liquidnet
+      loop_control:
+        loop_var: roleinputvar
+
+    # - name: Apply patching
+    #   include_tasks: /root/cfgmain/library/rhel9patch.yml
+...

@@ -1,0 +1,12 @@
+---
+- name: Send message to Microsoft Teams
+  hosts: localhost
+  tasks:
+    - name: Post message
+      uri:
+        url: "https://tpicap365.webhook.office.com/webhookb2/3eb87f51-6cde-4a4c-b99f-8aebc62358c5@7bc8ad67-ee7f-43cb-8a42-1ada7dcc636e/IncomingWebhook/cbab897e272b4663bdf0ad0e99038cc1/4c29b30e-ba9e-4d09-950d-3a4053bf26bd"
+        method: POST
+        body_format: json
+        body: '{"text": "Test message from ldn2lx1000"}'
+        status_code: 200
+        validate_certs: no

@@ -1,0 +1,13 @@
+---
+- hosts: hostlist
+  become: true
+  gather_facts: yes
+  tasks:
+  # - name: Shutdown the server
+  #   command: poweroff
+
+
+
+  - name: Power off the server via iLO
+    raw: |
+      sshpass -p "{{ ilo_password }}" ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {{ ilo_username }}@{{ ilo_ip }} "power off"

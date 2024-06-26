@@ -1,0 +1,32 @@
+
+[sssd]
+domains = corp.ad.tullib.com
+config_file_version = 2
+services = nss, pam
+
+[domain/corp.ad.tullib.com]
+ignore_group_members = True
+timeout = 300
+#ad_server = njc1ws0001,njc1ws0005,njc1ws4990
+#domain-controller-site = JerseyCity-CORE
+ad_domain = corp.ad.tullib.com
+ad_site = JerseyCity-CORE
+#domain-controller-site = ldap._tcp.JerseyCity-CORE._sites.corp.ad.tullib.com 
+krb5_realm = CORP.AD.TULLIB.COM
+realmd_tags = manages-system joined-with-samba
+cache_credentials = True
+id_provider = ad
+krb5_store_password_if_offline = True
+default_shell = /bin/bash
+ldap_id_mapping = True
+use_fully_qualified_names = False
+fallback_homedir = /home/%u
+access_provider = simple
+dyndns_update = false
+simple_allow_groups = $, corp-unixsa-linux, corp-marketdata-linux
+simple_allow_users = $
+#addd for large ad group issue
+ldap_use_tokengroups = True
+ldap_group_nesting_level = 0
+ldap_groups_use_matching_rule_in_chain = True
+ldap_initgroups_use_matching_rule_in_chain = True

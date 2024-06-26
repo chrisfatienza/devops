@@ -1,0 +1,98 @@
+- name: Update and Gather Information
+  hosts: hostlist
+  become: yes
+  vars:
+    log_timestamp: "{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+
+  tasks:
+    - name: Create log directory on Ansible control machine (localhost)
+      local_action:
+        module: file
+        path: "/root/cfgmain/check_mk/physical/hp/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}"
+        state: directory
+        recurse: yes
+
+    - name: Copy hponcfg RPM to /var/tmp
+      copy:
+        src: hponcfg-5.6.0-0.x86_64.rpm
+        dest: /var/tmp
+
+    - name: Install hponcfg package
+      yum:
+        name: /var/tmp/hponcfg-5.6.0-0.x86_64.rpm
+        disable_gpg_check: true
+
+    - name: Copy HPILONetwork config  Servers
+      copy:
+        src: "{{ 'setilonetwork.yml-' + item.name }}"
+        dest: "/root/setilonetwork.yml"
+        force: yes
+      when: ansible_hostname | regex_search(item.pattern)
+      register: copy_result
+      loop:
+        - { name: "njc1", pattern: '^njc1' }
+        - { name: "njc2", pattern: '^njc2' }
+        - { name: "njc4", pattern: '^njc4' }
+        - { name: "njc3", pattern: '^njc3' }
+        - { name: "ldn1", pattern: '^ldn1' }
+        - { name: "ldn2", pattern: '^ldn2' }
+        - { name: "sng1", pattern: '^sng1' }
+        - { name: "sng2", pattern: '^sng2' }
+        - { name: "syd1", pattern: '^syd1' }
+        - { name: "syd2", pattern: '^syd2' }
+        - { name: "hkg1", pattern: '^hkg1' }
+        - { name: "hkg2", pattern: '^hkg2' }
+
+    - name: Allocate Proper ILO name
+      replace:
+        regexp: "ILOHost"
+        replace: "i{{ ansible_hostname }}"
+        dest: "/root/setilonetwork.yml"
+
+    - name: Set HP ILO Network
+      shell: hponcfg -f /root/setilonetwork.yml
+      ignore_errors: yes
+
+    - name: Gatther existing SNMP settings
+      copy:
+        src: getsnmpsetttings.yml
+        dest: /root
+
+    - name: Execute commands and capture output
+      shell: "{{ item }}"
+      loop:
+        - "hponcfg -w /root/iLO_ouput.out"
+        - "cat /root/iLO_ouput.out"
+        - "hponcfg -f /root/getsnmpsetttings.yml"
+      register: command_result
+      ignore_errors: yes
+
+    - name: Save command outputs as log files
+      copy:
+        content: "{{ item.stdout }}"
+        dest: "/root/cfgmain/check_mk/physical/hp/logs/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/{{ item.item.split(' ')[0] }}.log"
+      loop: "{{ command_result.results }}"
+      delegate_to: localhost
+
+    - name: Copy password resset xml to host
+      copy:
+        src: iloadmin.yml
+        dest: /root
+
+    - name: Update IlO password
+      shell: "hponcfg -f /root/iloadmin.yml"
+      ignore_errors: yes
+
+    - name: Copy ilo-communitystring.yml to host
+      copy:
+        src: ilo-communitystring.yml
+        dest: /root
+
+    - name: Update ILO Community string
+      shell: "hponcfg -f /root/ilo-communitystring.yml"
+      ignore_errors: yes
+
+
+
+
+

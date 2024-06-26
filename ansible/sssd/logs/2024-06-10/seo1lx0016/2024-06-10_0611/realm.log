@@ -1,0 +1,16 @@
+corp.ad.tullib.com
+  type: kerberos
+  realm-name: CORP.AD.TULLIB.COM
+  domain-name: corp.ad.tullib.com
+  configured: kerberos-member
+  server-software: active-directory
+  client-software: sssd
+  required-package: oddjob
+  required-package: oddjob-mkhomedir
+  required-package: sssd
+  required-package: adcli
+  required-package: samba-common-tools
+  login-formats: %U
+  login-policy: allow-permitted-logins
+  permitted-logins: 
+  permitted-groups: corp-unixsa-linux, corp-korea-neri-linux, corp-itsecurity-srvcs-linux

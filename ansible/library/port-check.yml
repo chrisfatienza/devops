@@ -1,0 +1,70 @@
+# Author by: Christopher Atienza
+# Usages:
+# ansible-playbook port-check.yml --extra-vars "host_list_file=path/to/host_list.csv target_host=www.example.com target_ports=[80, 443]"
+---
+- name: Port Scanning Playbook
+  hosts: localhost
+  #hosts: hostlist
+  gather_facts: false
+  vars:
+    target_host: "{{ target_host }}"  # Specify the separate target host here
+    target_ports: "{{ target_ports }}"  # Specify the ports to check
+
+ 
+
+  tasks:
+    - name: Read host list file
+      read_csv:
+        path: "{{ host_list_file }}"  # Path to the host list file
+        delimiter: ','
+      register: host_list
+
+ 
+
+    - name: Scan ports on host list
+      block:
+        - name: Check port connectivity on host list
+          wait_for:
+            host: "{{ item }}"
+            port: "{{ item_port }}"
+            timeout: 5
+          loop: "{{ host_list.list }}"
+          loop_control:
+            loop_var: item_host
+          vars:
+            item_port: "{{ target_ports }}"
+          ignore_errors: true
+          register: port_status
+
+ 
+
+        - name: Print port status on host list
+          debug:
+            msg: "Port {{ item_port }} is {{ 'open' if port_status.results[item_host.index].failed else 'closed' }}"
+          loop: "{{ host_list.list }}"
+          loop_control:
+            loop_var: item_host
+          vars:
+            item_port: "{{ target_ports }}"
+
+ 
+
+    - name: Scan ports on target host
+      block:
+        - name: Check port connectivity on target host
+          wait_for:
+            host: "{{ target_host }}"
+            port: "{{ item }}"
+            timeout: 5
+          loop: "{{ target_ports }}"
+          ignore_errors: true
+          register: target_port_status
+
+ 
+
+        - name: Print port status on target host
+          debug:
+            msg: "Port {{ item }} is {{ 'open' if target_port_status.failed else 'closed' }}"
+          loop: "{{ target_ports }}"
+
+

@@ -1,0 +1,7 @@
+---
+- hosts: hostlist
+  roles:
+  - 4-appdynamics-machine-agent
+  - 5-cmdb-file-update
+  - 6-motd-update
+...

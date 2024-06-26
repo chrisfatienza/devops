@@ -1,0 +1,13 @@
+#push ssh-ky of the application account
+#
+---
+- hosts: hostlist
+  become: yes
+  tasks:
+    - name: Set authorized key for user "{{ account }}"
+      authorized_key:
+        user: "{{ account }}"
+        state: present
+        key: "{{ lookup('file', '/root/cfgmain/library/userkey/{{ account }}-id_rsa.pub') }}"
+
+

@@ -1,0 +1,18 @@
+---
+- name: Configure Snapshot
+  hosts: hostlist
+  tasks:
+    - name: Create a snapshot
+      vmware_guest_snapshot:
+        hostname: "arkpinfvca01.corp.ad.tullib.com"
+        username: 'CORP\srvvcrwlinux'
+        password: "R83JdsfCi^qf4k!gH"
+        datacenter: "arkpinfesx206.corp.ad.tullib.com"
+        folder: "/ARK/"
+        name: "{{ inventory_hostname }}"
+        validate_certs: False
+        state: present
+        snapshot_name: snap3
+        description: snap3_description
+#       no_log: True
+      delegate_to: localhost

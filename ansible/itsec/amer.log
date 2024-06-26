@@ -1,0 +1,500 @@
+va1puflink04:
+appbcp1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+appprod1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+va1puflink01:
+va1peucfh04:
+va1peucfh02:
+va1pads08:
+va1pads07:
+va1pads06:
+va1pads05:
+va1pads04:
+va1pads03:
+va1pads02:
+va1pads01:
+va1padh08:
+va1padh07:
+va1padh04:
+va1padh03:
+va1padh02:
+va1padh01:
+usu00infpbs03p:
+ustrweb02p:
+ustrweb01p:
+usprweb03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprweb02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprweb01s:
+usprweb01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvunixadm01d:
+usprvtis01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvsyslog01p:
+usprvsvn02d:
+usprvsmb01d:
+usprvsdr01s:
+usprvsdr01p:
+usprvrfobr02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvrfobr01s:
+usprvrfobr01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvreport01s:
+usprvreport01p:
+usprvrepo02d:
+usprvrepo01d: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvrel01s:
+br00umdbapp01t:
+br00utemapp01t:
+br00uvapvcs01p:
+br01orappl01h:
+br01ubolapp01p:
+br01udbaora02t:
+br01uelastic01p:
+br01ugitapp01p:
+br01uimdsgl01p:
+br01uimdsgl02p:
+br01umatomo01p:
+br01umdbapp01p:
+br01umdbapp02p:
+br01umdbapp03p:
+br01umysql01p:
+br01uoemapp01: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+br01uoraoem01p:
+br01uoraorc01p:
+br01uvspapp01p:
+br1lx0001:
+br1lx0002:
+br2lx0001: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+brlmfixview01:
+brspfixview01:
+brspfixview02:
+brsptema05:
+brzdinfora01:
+brzpinftbp01:
+brzpinfzbx01:
+brzpprxadm01:
+brzpprxadm02:
+centos8:
+usprvpbs02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvpbs01p:
+dev-svr:
+dev-svr3:
+ds10:
+ds12:
+usprvpbjs02p:
+usprvpbjs01s:
+ednaapd01m-icap:
+ednaovm01m-icap:
+eds1fsn01p:
+eos:
+euw1lx0030:
+euw1lx0486:
+usprvpbjs01p:
+fd3:
+fd4:
+usprvpbjs01d:
+hbrafis01m:
+usprvomgw01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvnfs01d:
+usprvnfa01p:
+usprvmisr01p:
+usprvmdb01s:
+usprvmdb01p:
+usprvjboss01d:
+usprvisgw01s:
+usprvisgw01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvirisk01s:
+usprvirisk01p:
+usprvhst02s:
+usprvhst02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvhst01s:
+usprvhst01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvgw02d:
+usprvfotrp05p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfotr23p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfotr10p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfotr08p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfotr01s:
+usprvfobrp02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfobr17p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfobr10p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfobr06s:
+usprvfobr04p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfobr03s:
+usprvfobr03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvfobr01s:
+usprvfo18d:
+usprvfo14d:
+usprvfo10d:
+usprvfo09d:
+usprvfo08d:
+usprvfo02d:
+usprvfhist01s:
+usprvfhist01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvetct01s:
+usprvdashb01s:
+usprvdashb01p:
+usprvcsm04s:
+usprvcsm03s:
+usprvcsm02s:
+usprvcsm01s:
+usprvbsa01p:
+usprvbe08d:
+usprvbe06d:
+usprvbe01d:
+usprvauth01s:
+usprvauth01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprvagcybe01p:
+usprora12pn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora12pn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora10sn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora10sn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora10pn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora10pn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora07pn2:
+usprora07pn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora07mn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora07mn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora02s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora01s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprora01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprnrgcsmp01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprnrgcsm04p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprnrgcsm03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprnrgcsm02s:
+usprnrgcsm02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprnrgcsm01s:
+usprnrgcsm01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtrp01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr13p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr12p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr11p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr10p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr09p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr08p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr07p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr06p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr05p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr04p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmtr01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmplt01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmbr03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmbr02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsmbr01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usprcsm04s:
+usprcsm03s:
+usprcsm02s:
+usprcsm01s:
+ushsweb01s:
+ushsreport01p:
+ushsora01d: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+ushslatam02s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+ushslatam02p:
+ushslatam01s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+ushslatam01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+ushsjboss02p:
+ushsjboss01p:
+ushsicorp02p:
+ushsicorp01p:
+ushsftp01p:
+ushsdtec02s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+ushsdtec02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+ushsdtec01s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+ushsdtec01p:
+ushsdata02p:
+ushsdata01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usguibos01s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usgblzn01d:
+usednicesat2:
+usednalrps1:
+use1lx0459:
+use1lx0309: uid=1126648370(srvcsphere) gid=1752200513(domain users) groups=1752200513(domain users),1126637122(ntfs l amer filerepo tcapturedev rw),1126631904(l njc1ws0630),1752396981(tp_icap_users (liquidnet)),1752224283(global_l_axiom_users),1126607314(ntfs l amer filerepo tcaptureshadow rw_domainusers),1752317487(ntfs l amer filerepo tcapture rw),1126630970(l njc1ws2295),1752276527(l ldn1ws0057),1752276500(l ldn1ws0055),1752317490(ntfs l amer filerepo bmksystem rw),1752317488(ntfs l amer filerepo tcaptureuat rw),1752317489(ntfs l amer filerepo tcaptureshadow rw)
+use1lx0303: uid=1126648370(srvcsphere) gid=1752200513(domain users) groups=1752200513(domain users),1126637122(ntfs l amer filerepo tcapturedev rw),1126631904(l njc1ws0630),1752396981(tp_icap_users (liquidnet)),1752224283(global_l_axiom_users),1126607314(ntfs l amer filerepo tcaptureshadow rw_domainusers),1752317487(ntfs l amer filerepo tcapture rw),1126630970(l njc1ws2295),1752276527(l ldn1ws0057),1752276500(l ldn1ws0055),1752317490(ntfs l amer filerepo bmksystem rw),1752317488(ntfs l amer filerepo tcaptureuat rw),1752317489(ntfs l amer filerepo tcaptureshadow rw)
+use1lx0284: uid=1126648370(srvcsphere) gid=1752200513(domain users) groups=1752200513(domain users),1126637122(ntfs l amer filerepo tcapturedev rw),1126631904(l njc1ws0630),1752396981(tp_icap_users (liquidnet)),1752224283(global_l_axiom_users),1126607314(ntfs l amer filerepo tcaptureshadow rw_domainusers),1752317487(ntfs l amer filerepo tcapture rw),1126630970(l njc1ws2295),1752276527(l ldn1ws0057),1752276500(l ldn1ws0055),1752317490(ntfs l amer filerepo bmksystem rw),1752317488(ntfs l amer filerepo tcaptureuat rw),1752317489(ntfs l amer filerepo tcaptureshadow rw)
+use1lx0205:
+use1lx0159: uid=1126648370(srvcsphere) gid=1752200513(domain users) groups=1752200513(domain users),1126637122(ntfs l amer filerepo tcapturedev rw),1126631904(l njc1ws0630),1752396981(tp_icap_users (liquidnet)),1752224283(global_l_axiom_users),1126607314(ntfs l amer filerepo tcaptureshadow rw_domainusers),1752317487(ntfs l amer filerepo tcapture rw),1126630970(l njc1ws2295),1752276527(l ldn1ws0057),1752276500(l ldn1ws0055),1752317490(ntfs l amer filerepo bmksystem rw),1752317488(ntfs l amer filerepo tcaptureuat rw),1752317489(ntfs l amer filerepo tcaptureshadow rw)
+use1lx0152:
+isdlastline:
+isdutil:
+iv-icap-01:
+jcapdev1:
+jcapprd1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcbodev1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcbodev2:
+jcboprd1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcbwc1:
+jcchapauth1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcchapdb1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcchapdb2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcdbdev1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcdbdev2:
+jcdmzfeed2:
+jcdns3: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcdns4: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcdsapp1:
+jcdscb1:
+jcdscb2:
+jcdssrc2:
+jcdsux1:
+jcem1:
+jcempvc1:
+jceni1:
+jcfds1:
+jcfeeds1:
+jcfwl01-ilo:
+jcindyd1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcindyp1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jckvm1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jckvm2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jckvm3:
+jckvm4:
+jcmail: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcmfc1:
+jcmfcqa1:
+jcmfdev1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcmfdev2:
+jcmfqa1:
+jcmqdev1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcmqdev2:
+jcmqprd1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcnasa1-2:
+jcrhdev01:
+jcrm01: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm02: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm04: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm05: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm06: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm07: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm08: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm10: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm11: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm12: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm13: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm14: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm15: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm16: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm17: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm18: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm19: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm20: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrm21: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+jcrmdev01:
+jcsadmin: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere)
+jcsat1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere) context=root:system_r:unconfined_t:SystemLow-SystemHigh
+jcsmon:
+jcswdlrc1:
+jcswdlrc2:
+jcyaovm02m-icap:
+jcyaovm03m-icap:
+use1lx0007: uid=1126648370(srvcsphere) gid=1752200513(domain users) groups=1752200513(domain users),1126637122(ntfs l amer filerepo tcapturedev rw),1126631904(l njc1ws0630),1752396981(tp_icap_users (liquidnet)),1752224283(global_l_axiom_users),1126607314(ntfs l amer filerepo tcaptureshadow rw_domainusers),1752317487(ntfs l amer filerepo tcapture rw),1126630970(l njc1ws2295),1752276527(l ldn1ws0057),1752276500(l ldn1ws0055),1752317490(ntfs l amer filerepo bmksystem rw),1752317488(ntfs l amer filerepo tcaptureuat rw),1752317489(ntfs l amer filerepo tcaptureshadow rw)
+usdrweb02p:
+usdrweb01p:
+kudu1:
+usdrvwiki01d:
+usdrvtis01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvsdr01p:
+usdrvrfobr02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvrfobr01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvreport01p:
+usdrvrepo02d:
+usdrvrepo01d:
+usdrvpbs02p:
+usdrvpbs02d:
+usdrvpbs01p:
+usdrvpbjs02p:
+usdrvpbjs01s:
+usdrvpbjs01p:
+usdrvpbjs01d:
+usdrvomgw01s:
+usdrvomgw01p:
+usdrvnfs01p:
+usdrvnfs01d:
+usdrvnfa01s:
+usdrvnfa01p:
+usdrvmisr01p:
+usdrvmdb01p:
+usdrvisgw01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvirisk01p:
+usdrvimd01d:
+usdrvhst02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvhst01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfotr16s:
+usdrvfotr16p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfotr15p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfotr14p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfotr12p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfotr10p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfotr08p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfobr14p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfobr13p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfobr12p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfobr10p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfobr04s:
+usdrvfobr04p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfobr03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvfo12d:
+usdrvfo11d:
+usdrvfo10d:
+usdrvfo09d:
+usdrvfo08d:
+usdrvfhist01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvdtec01p:
+usdrvcsm05s:
+usdrvbsa01s:
+usdrvbsa01p:
+usdrvauth01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrvarch01p:
+usdrvagcybe01s:
+usdrvagcybe01p:
+usdrvadm07p:
+usdrvadm07d:
+usdrvadm06d:
+usdrv3par01p:
+usdrreport01p:
+usdrora12sn2:
+usdrora12sn1:
+usdrora12s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora12pn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora12pn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora10sn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora10sn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora10pn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora10pn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora07s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora07pn2: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora07pn1: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrora01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrnrgcsm02p:
+usdrnrgcsm01p:
+usdrguibos02p:
+usdrcsmtr07p:
+usdrcsmtr06p:
+usdrcsmtr05p:
+usdrcsmtr04p:
+usdrcsmtr03p:
+usdrcsmtr02p:
+usdrcsmtr01p:
+usdrcsmbr03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrcsmbr02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usdrcsmbr01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usbhjboss01s:
+usbhjboss01p:
+usappweb02p:
+usappweb01s:
+usappweb01p:
+usadmnb03p:
+usadmnb01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+usadmin03p:
+usadmin03d:
+usadmin02d:
+usadmin01d:
+usaddat01d:
+us11vish10101pm:
+us01wmsgmsq01s:
+us01ustpieb01p:
+us01ushrapp19d:
+us01ushrapp18d:
+us01ushrapp17d:
+us01ushrapp16d:
+us01ushrapp15d:
+us01ushrapp14d:
+us01ushrapp13d:
+us01ushrapp12d:
+us01ushrapp11d:
+us01ushrapp10d:
+us01ushrapp09d:
+us01ushrapp08d:
+us01ushrapp07d:
+us01ushrapp06d:
+us01ushrapp05d:
+us01ushrapp04d:
+us01ushrapp03d:
+us01ushrapp02d:
+us01ushrapp01d:
+us01usbkapp01p:
+us01urepprc01p:
+us01uprcall01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01uoraoem01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01uoraman01p:
+us01umosgen01p:
+us01umisqss01p:
+us01ujvaapp01p:
+us01uinfapp01p:
+us01uimdmlk04p:
+us01uimdmlk03p:
+us01uimdmlk02p:
+us01uimdmlk01p:
+us01uimdadh06p:
+us01uimdadh05p:
+us01uimdadh04p:
+us01uimdadh03p:
+us01uimdadh02p:
+us01uimdadh01p:
+us01uiasapp01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01uhstnrg01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtntpi01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtntpe01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtnpgb01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtnnrg01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtnndf01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtnmbs01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtniro01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtngar01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtnemk01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ugtncds01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufotnrg02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufotnrg01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufotiro02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufotiro01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufotcds02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufotcds01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufogftn01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocraa02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocraa01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocpag01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocpaf01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftv04p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftv03p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftv02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftv01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftl02s:
+us01ufocftl02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftl01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftf02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocftf01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocfbv02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocfbv01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocfbl02s:
+us01ufocfbl02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocfbl01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocfbf02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufocfbf01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufobiro02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufobiro01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufobcds02p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ufobcds01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01uetclog01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01udbwapp01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01ucrkgsw02p:
+us01ucrkgsw01p:
+us01ubosora01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us01uanaapp01p:
+us01aaznsms01p:
+us00vfacapp01p:
+us00ustpieb01s:
+us00ustpieb01p:
+us00ushrapp01d: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us00usbkapp01s:
+us00usbkapp01p:
+us00urmdweb01d:
+us00urepprc01s:
+us00urepprc01p:
+us00uprcall01s:
+us00uprcall01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us00uorasfn01s: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us00uoraoem01s:
+us00uoraoem01p: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)
+us00uoraman01s:
+us00uoraman01p:
+us00uoragtn01d: uid=1126648370(srvcsphere) gid=1126648370(srvcsphere) groups=1126648370(srvcsphere)

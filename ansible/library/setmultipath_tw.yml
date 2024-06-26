@@ -1,0 +1,105 @@
+---
+- name: Configure Multipath and Setup File System
+  hosts: hostlist
+  gather_facts: true
+  become: true
+
+  tasks:
+
+    - name: Retrieve hostname
+      debug:
+        msg: "Hostname: {{ ansible_hostname }}"
+
+    - name: Copy multipath.conf file
+      copy:
+        src: multipath.conf
+        dest: /etc/multipath.conf
+
+    - name: Register multipath.conf entries
+      shell: cat /etc/multipath.conf
+      register: multipathContent
+
+    - name: Get firstwwid
+      shell: multipath -ll | grep -B1 250G | grep PURE | head -n 1 | awk '{print $1}'
+      register: firstwwid
+
+    - name: Get secondwwid
+      shell: multipath -ll | grep -B1 200G | grep PURE | head -n 1 | awk '{print $1}'
+      register: secondwwid
+
+    - name: Update multipath.conf with WWIDs
+      replace:
+        path: /etc/multipath.conf
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.line }}"
+      loop:
+        - { regexp: 'firstwwid', line: "{{ firstwwid.stdout }}" }
+        - { regexp: 'secondwwid', line: "{{ secondwwid.stdout }}" }
+        - { regexp: 'uname-n', line: "{{ ansible_hostname | regex_replace('^(.*?)\\..*$', '\\1') }}" }
+
+    - name: Reload multipathd service
+      service:
+        name: multipathd
+        state: reloaded
+
+    - name: Create partition
+      shell: "echo -e 'n\np\n1\n\n\nw\n' | fdisk /dev/mapper/`uname -n | cut -d . -f 1`_vg01_mpath_pur01_2"
+      args:
+        warn: no
+        executable: /bin/bash
+
+    - name: Inform OS about partition table changes
+      command: partprobe
+
+    - name: Format partition with XFS
+      command: mkfs.xfs /dev/mapper/{{ ansible_hostname | regex_replace('^(.*?)\\..*$', '\\1') }}_vg01_mpath_pur01_2p1
+
+    - name: Create volume group
+      lvg:
+        vg: vg01
+        pvs: /dev/mapper/{{ ansible_hostname | regex_replace('^(.*?)\\..*$', '\\1') }}_vg01_mpath_pur01_2p1
+
+    - name: Create logical volume
+      command: lvcreate -l +100%FREE -n lvappdata vg01
+
+    - name: Format logical volume with XFS
+      command: mkfs.xfs /dev/mapper/vg01-lvappdata
+
+    - name: Update /etc/fstab
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ item }}"
+      loop:
+        - '/dev/mapper/vg01-lvappdata /appdata xfs defaults 0 0'
+        - '/appdata/liquidnet /liquidnet none bind 0 0'
+
+    - name: Create /appdata directory
+      file:
+        path: /appdata
+        state: directory
+
+    - name: Mount /appdata
+      mount:
+        src: /dev/mapper/vg01-lvappdata
+        path: /appdata
+        fstype: xfs
+        opts: defaults
+        state: mounted
+
+    - name: Create /appdata/liquidnet directory
+      file:
+        path: /appdata/liquidnet
+        state: directory
+
+    - name: Mount /liquidnet
+      mount:
+        path: /liquidnet
+        src: /appdata/liquidnet
+        fstype: none
+        opts: bind
+        state: mounted
+
+  post_tasks:
+    - name: Display notification
+      debug:
+        msg: "Run the ansible roles for Liquidnet to complete the build"

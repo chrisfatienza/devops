@@ -1,0 +1,23 @@
+---
+- name: Create Unix user "srvcsphere"
+  hosts: hostlist
+  become: true
+  vars:
+    srvcsphere_password: "$rvSph3r#"  # Replace with the desired password
+  tasks:
+    - name: Create the srvcsphere group
+      group:
+        name: srvcsphere
+        gid: 1126648370
+        state: present
+
+    - name: Create the srvcsphere user
+      user:
+        name: srvcsphere
+        uid: 1126648370
+        group: srvcsphere
+        home: /home/srvcsphere
+        comment: "Service Account"
+        shell: /bin/bash
+        password: "$6$xXdx/s70$PIm5Er9G4K1lgXbqr1oyDGvq5N028ot235ekJ91oxpYme6V.4TMvV7JoU5acxMHK4zP3i0YcKwfMo2Gabt3rI/"
+        state: present

@@ -1,0 +1,12 @@
+<RIBCL VERSION="2.0">
+   <LOGIN USER_LOGIN="ILOAdmin" PASSWORD="IL0Adm1n">
+      <RIB_INFO MODE="write">
+         <MOD_NETWORK_SETTINGS>
+            <DNS_NAME value="ILOHost"/>
+            <DOMAIN_NAME value="corp.ad.tullib.com"/>
+            <PRIM_DNS_SERVER value="10.203.32.96"/>
+            <SEC_DNS_SERVER value="10.202.36.31"/>
+         </MOD_NETWORK_SETTINGS>
+      </RIB_INFO>
+   </LOGIN>
+</RIBCL>

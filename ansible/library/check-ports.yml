@@ -1,0 +1,45 @@
+---
+- name: Check ports on servers
+  hosts: localhost
+  become: yes
+  gather_facts: false
+  vars_prompt:
+    - name: use_server_list_file
+      prompt: "Do you want to use a file for the server list? [y/n] "
+      private: no
+
+    - name: use_port_list_file
+      prompt: "Do you want to use a file for the port list? [y/n] "
+      private: no
+   
+    - name: server_list_file
+      prompt: "Enter the filename for the server list: "
+      private: no
+      when: use_server_list_file == 'y'
+   
+    - name: port_list_file
+      prompt: "Enter the filename for the port list: "
+      private: no
+      when: use_port_list_file == 'y'
+
+  tasks:
+    - name: Load server list from file
+      set_fact:
+        server_list: "{{ lookup('file', server_list_file) }}"
+      when: use_server_list_file == 'y' and server_list_file is defined
+   
+    - name: Load port list from file
+      set_fact:
+        port_list: "{{ lookup('file', port_list_file) }}"
+      when: use_port_list_file == 'y' and port_list_file is defined
+   
+    - name: Check ports
+      block:
+       - name: "Check ports on {{ item.server }}"
+         wait_for:
+          host: "{{ item.server }}"
+          port: "{{ item.port }}"
+          delay: 0
+          timeout: 3
+         loop: "{{ server_list.split(',')|product(port_list.split(','))|map('join', ':')|map('dict', server=attribute('item', 0), port=attribute('item', 1))|list }}"
+      when: use_server_list_file == 'n' and use_port_list_file == 'n'

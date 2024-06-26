@@ -1,0 +1,7 @@
+<RIBCL VERSION="2.22">
+ <LOGIN USER_LOGIN="ILOAdmin" PASSWORD="ILOAdmin">
+      <RIB_INFO MODE="read">
+         <GET_SNMP_IM_SETTINGS/>
+      </RIB_INFO>
+   </LOGIN>
+</RIBCL>

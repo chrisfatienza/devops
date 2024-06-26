@@ -1,0 +1,6 @@
+---
+- name: OS Prepatching
+  hosts: all
+  tasks:
+    - name: Running osprepatching script
+      script: osprepatching {{ ansible_hostname }}

@@ -1,0 +1,60 @@
+---
+- name: Add Satellite server host entry
+  lineinfile:
+    path: /etc/hosts
+    line: "10.91.81.149    ldn2lx1000 ldn2lx1000.corp.ad.tullib.com"
+    state: present
+
+- name: copy register7.sh from local machine
+  copy:
+    src: register7.sh
+    dest: /root/register7.sh
+    mode: '0500'
+  when: ansible_facts['distribution_major_version'] == "7"
+
+- name: copy register8.sh from local machine
+  copy:
+    src: register8.sh
+    dest: /root/register8.sh
+    mode: '0500'
+  when: ansible_facts['distribution_major_version'] == "8"
+
+- name: Run register7.sh
+  shell: /root/register7.sh
+  when: ansible_facts['distribution_major_version'] == "7"
+
+- name: Run register8.sh
+  shell: /root/register8.sh
+  when: ansible_facts['distribution_major_version'] == "8"
+
+- name: Clear Yum caches
+  command:
+    cmd: yum clean all
+
+
+#- name: download bootstrap.py from {{ bootstrap_foreman_fqdn }}
+#  get_url:
+#    dest: "{{ bootstrap_target_path }}"
+#    url: "{{ bootstrap_download_method }}://{{ bootstrap_foreman_fqdn }}/pub/bootstrap.py"
+#  when: not bootstrap_local_copy
+#
+#- name: copy bootstrap.py from local machine
+#  copy:
+#    dest: "{{ bootstrap_target_path }}"
+#    src: bootstrap.py
+#  when: bootstrap_local_copy
+#
+#- name: generate bootstrap.py arguments
+#  set_fact:
+#    bootstrap_args: "--server {{ bootstrap_foreman_fqdn }} --organization '{{ bootstrap_org }}' --location '{{ bootstrap_location }}' --activationkey 'BLANK-KEY','{{ bootstrap_activationkey }}' --download-method {{ bootstrap_download_method }}"
+#    bootstrap_foreman_args: "{% if bootstrap_password != '' %}--login '{{ bootstrap_login }}' --password '{{ bootstrap_password }}' --hostgroup '{{ bootstrap_hostgroup }}'{% else %}--skip foreman{% endif %}"
+#
+#- name: run bootstrap.py
+#  command: "python {{ bootstrap_target_path }} {{ bootstrap_args }} {{ bootstrap_foreman_args }} {{ bootstrap_additional_args }}"
+##    no_log: True
+#
+##- name: remove bootstrap.py
+##  file:
+##    path: "{{ bootstrap_target_path }}"
+##    state: absent
+...

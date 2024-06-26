@@ -1,0 +1,76 @@
+---
+- name: Qualys SEV5 
+  hosts: hostlist
+  become: yes
+  vars:
+    log_timestamp: "{{ ansible_date_time.date }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}"
+
+  tasks:
+    - name: Create log directory on Ansible control machine (localhost)
+      local_action:
+        module: file
+        path: "/root/cfgmain/patching/logs/SEV5/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}"
+        state: directory
+        recurse: yes
+
+    - name: Fetch advisory file from remote host
+      copy:
+        src: /root/cfgmain/patching/logs/SEV5/advisory_file
+        dest: /tmp/  # Destination directory on the control machine
+
+    - name: Read advisory numbers from the fetched file
+      slurp:
+        src: /tmp/advisory_file  # Path to the file on the control machine
+      register: advisory_file_contents
+
+  #  - name: Disable TPICAP_Extra_Packages_for_Enterprise_Linux__EPEL_EPEL_7_-_x86_64
+  #     shell: subscription-manager repos --disable=TPICAP_Extra_Packages_for_Enterprise_Linux__EPEL_EPEL_7_-_x86_64
+  #     ignore_errors: yes 
+
+    # - name: Copy /etc/yum/pluginconf.d/search-disabled-repos.conf to /root
+    #   shell: cp -p /etc/yum/pluginconf.d/search-disabled-repos.conf /root
+    #   ignore_errors: yes
+
+    # - name: search for /etc/yum/pluginconf.d/search-disabled-repos.conf then change notify_only=1 to notify_only=0
+    #   replace:
+    #     path: /etc/yum/pluginconf.d/search-disabled-repos.conf
+    #     regexp: '^notify_only=1'
+    #     replace: 'notify_only=0'
+    #   ignore_errors: yes
+
+    - name: Generate yum command
+      set_fact:
+        #yum_command: "yum -y --skip-broken --disablerepo=TPICAP_Extra_Packages_for_Enterprise_Linux__EPEL_EPEL_7_-_x86_64 update-minimal --advisory={{ advisory_file_contents.content | b64decode | replace('\n', ' --advisory=') }}"
+        #yum_command: "yum -y update-minimal --advisory={{ advisory_file_contents.content | b64decode | replace('\n', ' --advisory=') }}"
+        yum_command: "yum -y update nss expat git"
+        #yum_command: "yum -y update apr-util bind-utils c-ares cups-client emacs-filesystem git grub2 iperf3 krb5-libs libXpm nss openssl open-vm-tools openssh-server expat docker glibc gzip libldb  libX11 libxml2 linux-firmware microcode__ctl nettle openldap perl polkit python rpm rsync rsyslog samba-client-libs puppet-agent containers-common sssd"
+      ignore_errors: yes
+
+    - name: Capture exiting packages
+      shell: "rpm -qa"
+      register: currentlistpackages
+
+    - name: Save List of packages as a log file
+      copy:
+        content: "{{ currentlistpackages.stdout }}"
+        dest: "/root/cfgmain/patching/logs/SEV5/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/currentlistpackages.log"
+      delegate_to: localhost
+
+    - name: Run yum command
+      shell: "{{ yum_command }}"
+      register: patchingSEV5_result
+      ignore_errors: yes
+
+    - name: Debug patchingSEV5_result
+      debug:
+        var: patchingSEV5_result.stdout_lines
+        
+    - name: Save patching output SEV5 as a log file
+      copy:
+        content: "{{ patchingSEV5_result.stdout }}"
+        dest: "/root/cfgmain/patching/logs/SEV5/{{ ansible_date_time.date }}/{{ ansible_hostname }}/{{ log_timestamp }}/patchingSEV5_result.log"
+      delegate_to: localhost
+
+    # - name: Copy /root/search-disabled-repos.conf /etc/yum/pluginconf.d/search-disabled-repos.conf
+    #   shell: cp -p /root/search-disabled-repos.conf /etc/yum/pluginconf.d/search-disabled-repos.conf
+    #   ignore_errors: yes

@@ -1,0 +1,18 @@
+#  - rhel9-hostregistration-satellite 
+  - rhel9-1-copy9-ssh-keys - completed
+  - rhel9-2-hardening  - completed - around 2hrs to complete on Physical :-(
+  - rhel9-3-common-tools-realma - completed
+  - rhel9-4-install9-admin-packages - completed
+  - rhel9-5-extra9-admin - completed
+  - rhel9-6-appdynamics9-machine-agent - inprogress almost 30mins still not complete
+  - rhel9-7-cmdb9-file-update - completed
+  - rhel9-8-motd9-update - completed
+  - rhel9-9-security-tools - completed
+  - chronyd - inprogress
+  - rhel9-liquidnet - inprogress
+- include: /root/cfgmain/library/rhel9patch.yml - inprogresso
+
+notes: computer-site detected under JerseyCity - need to check with NetOps/Wintel for Hongkong
+Hongkong ADs = hkgpinfdcg02.corp.ad.tullib.com and hkgpinfdcg01.corp.ad.tullib.com
+
+corp-unixsa-linux - Dante still not added :-(
