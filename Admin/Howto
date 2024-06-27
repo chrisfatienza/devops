@@ -1,0 +1,14 @@
+Checkmk consulting: Check if count of powersupplies is greater 2
+
+If you are interested if Count of power supplies is greater 2
+and you send me an agent output of e.g. one of the UCS Management Boards that contains Services for the power supplies,
+I can show you how to set up a simple active check to count them.
+
+Only if you are interested.
+
+
+This is how to download the agent output:
+
+https://checkmk.atlassian.net/wiki/spaces/KB/pages/9473296/How+to+collect+troubleshooting+data+for+various+issue+types#Howtocollecttroubleshootingdataforvariousissuetypes-ViatheGUI
+
+Jodok Glabasna <jodok.glabasna@checkmk.com>

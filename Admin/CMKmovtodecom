@@ -1,0 +1,29 @@
+---
+- name: Move host to DECOM and activate changes
+  hosts: localhost
+  gather_facts: no
+  vars:
+    host_name: "cmkcentral.corp.ad.tullib.com"
+    site_name: "Main"
+    proto: "https"
+    username: "automation"
+    key: "10b70962-b2ac-4244-803a-8be7cd06a11a"
+    api_url: "{{ proto }}://{{ host_name }}/{{ site_name }}/check_mk/api/1.0"
+
+  tasks:
+    - name: Move host to DECOM
+      shell: |
+        curl \
+          --request POST \
+          --write-out "\nxxx-status_code=%{http_code}\n" \
+          --header "Authorization: Bearer {{ username }} {{ key }}" \
+          --header "Accept: application/json" \
+          --header "If-Match: "*"" \
+          --header "Content-Type: application/json" \
+          --insecure \
+          --data '{
+                  "target_folder": "~decom"
+                }' \
+          "{{ api_url }}/objects/host_config/{{ item }}/actions/move/invoke"
+      with_items: "{{ host }}"
+      register: move_response
