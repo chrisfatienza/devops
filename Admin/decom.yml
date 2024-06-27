@@ -1,0 +1,27 @@
+---
+- name: Move host configuration using Check_MK API
+  hosts: localhost
+  tasks:
+    - name: Make API request to move host configuration
+      uri:
+        url: "{{ proto }}://{{ host_name }}/{{ site_name }}/check_mk/api/1.0/objects/host_config/testhostname/actions/move/invoke"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ username }} {{ password }}"
+          Accept: "application/json"
+          If-Match: '"a20ceacf346041dc"'
+          Content-Type: "application/json"
+        body: '{"target_folder": "DECOM"}'
+        body_format: json
+        status_code: 200
+      vars:
+        host_name: "localhost"
+        site_name: "Main"
+        proto: "http"  # [http|https]
+        username: "automation"
+        password: "test123"
+      register: result
+
+    - name: Output response
+      debug:
+        msg: "Status code: {{ result.status }}"
