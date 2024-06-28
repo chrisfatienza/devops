@@ -1,0 +1,239 @@
+
+
+
+install
+
+url --url http://ldn2lx1000.corp.ad.tullib.com/pulp/content/TPICAP/Production/ccv-RHEL9/content/dist/rhel9/9.0/x86_64/baseos/kickstart/
+
+lang en_US.UTF-8
+selinux --disabled
+keyboard us
+skipx
+
+
+network --bootproto static --device=link  --ip=10.250.34.41 --netmask=255.255.255.0 --gateway=10.250.34.1 --nameserver=10.90.72.4,10.91.72.4 --mtu=1500 --hostname seo1lx8001.corp.ad.tullib.com --device=d4:04:e6:86:d2:83
+
+rootpw --iscrypted $5$w1wopO5LD9reqFhX$D3YJnldelcVkoAVxmwx8p3nV2tQkVGBPkzUaT6zy8q5
+firewall --disable
+authconfig --useshadow --passalgo=SHA256 --kickstart
+timezone --utc Asia/Singapore
+services --disabled gpm,sendmail,cups,pcmcia,isdn,rawdevices,hpoj,bluetooth,openibd,avahi-daemon,avahi-dnsconfd,hidd,hplip,pcscd
+
+
+
+
+bootloader --location=mbr --append="net.ifnames=0 biosdevname=0" 
+
+# Partition clearing information
+clearpart --linux --initlabel --drives=sda
+# Disk partitioning information
+part pv.113 --fstype="lvmpv" --ondisk=sda --size=240800
+part /boot --fstype="xfs" --ondisk=sda --size=1024
+part /boot/efi --fstype="efi" --ondisk=sda --size=600 --fsoptions="umask=0077,shortname=winnt"
+volgroup VG0 --pesize=4096 pv.295
+logvol / --fstype="xfs" --size=15360 --name=root --vgname=VG0
+logvol swap --fstype="swap" --size=32768 --name=swap --vgname=VG0
+logvol /var --fstype="xfs" --size=20480 --name=var --vgname=VG0
+logvol /var/log --fstype="xfs" --size=15360 --name=var_log --vgname=VG0
+logvol /var/log/audit --fstype="xfs" --size=10240 --name=var_log_audit --vgname=VG0
+logvol /var/tmp --fstype="xfs" --size=10240 --name=var_tmp --vgname=VG0
+logvol /tmp --fstype="xfs" --size=10240 --name=tmp --vgname=VG0
+logvol /home --fstype="xfs" --size=20480 --name=home --vgname=VG0
+logvol /opt --fstype="xfs" --size=53248 --name=opt --vgname=VG0
+logvol /appdata --fstype="xfs" --size=10240 --name=appdata --vgname=VG0
+logvol /cores --fstype="xfs" --size=32768 --name=cores --vgname=VG0
+
+
+
+
+text
+reboot
+
+%packages
+yum
+dhclient
+ntp
+wget
+nfs-utils
+rpcbind
+@Base
+sendmail
+telnet
+nmap
+cockpit-system
+-postfix
+@Core
+#Added as part of image to lessen run time of ansible roles
+realmd
+oddjob
+oddjob-mkhomedir
+sssd
+sssd-tools
+adcli
+krb5-workstation
+samba-common-tools
+redhat-lsb-core
+%end
+
+
+%post --nochroot
+exec < /dev/tty3 > /dev/tty3
+#changing to VT 3 so that we can see whats going on....
+/usr/bin/chvt 3
+(
+cp -va /etc/resolv.conf /mnt/sysimage/etc/resolv.conf
+/usr/bin/chvt 1
+) 2>&1 | tee /mnt/sysimage/root/install.postnochroot.log
+%end
+%post
+logger "Starting anaconda seo1lx8001.corp.ad.tullib.com postinstall"
+exec < /dev/tty3 > /dev/tty3
+#changing to VT 3 so that we can see whats going on....
+/usr/bin/chvt 3
+(
+#
+
+
+
+# ens15f1 interface
+real=`grep -l d4:04:e6:86:d2:83 /sys/class/net/*/{bonding_slave/perm_hwaddr,address} 2>/dev/null | awk -F '/' '// {print $5}' | head -1`
+sanitized_real=`echo $real | sed s/:/_/`
+
+cat << EOF-b6b17c26 > /etc/sysconfig/network-scripts/ifcfg-$sanitized_real
+BOOTPROTO="none"
+IPADDR="10.250.34.41"
+NETMASK="255.255.255.0"
+GATEWAY="10.250.34.1"
+DOMAIN="corp.ad.tullib.com"
+DEVICE=$real
+HWADDR="d4:04:e6:86:d2:83"
+ONBOOT=yes
+PEERDNS=yes
+PEERROUTES=yes
+DEFROUTE=yes
+DNS1="10.90.72.4"
+DNS2="10.91.72.4"
+MTU=1500
+EOF-b6b17c26
+
+
+
+#update local time
+echo "updating system time"
+/usr/sbin/ntpdate -sub 0.fedora.pool.ntp.org
+/usr/sbin/hwclock --systohc
+
+
+
+
+
+
+
+  
+
+  echo "##############################################################"
+  echo "################# SUBSCRIPTION MANAGER #######################"
+  echo "##############################################################"
+  echo
+  echo "Starting the subscription-manager registration process"
+
+  
+    # Avoid timeout accessing unreachable repo on air gapped infrastructure,
+    #  assuming subscription-manager is installed in custom packages section.
+    if ! rpm --query --quiet subscription-manager ; then
+      if [ -f /usr/bin/dnf ]; then
+        dnf -y install subscription-manager
+      else
+        yum -t -y install subscription-manager
+      fi
+    fi
+  
+
+
+
+  
+
+  
+    rpm -Uvh http://ldn2lx1000.corp.ad.tullib.com/pub/katello-ca-consumer-latest.noarch.rpm
+  
+
+  
+    subscription-manager register --name="seo1lx8001.corp.ad.tullib.com" --org='TPICAP' --activationkey='ACT-RHEL9-PROD-P'
+  
+
+  
+
+    
+
+  
+
+  
+    
+       if [ -f /usr/bin/dnf ]; then
+         PACKAGE_MAN="dnf -y"
+       else
+         PACKAGE_MAN="yum -t -y"
+       fi
+    
+
+    
+      $PACKAGE_MAN install katello-host-tools
+    
+
+    
+  
+
+
+
+
+
+
+# update all the base packages from the updates repository
+if [ -f /usr/bin/dnf ]; then
+  dnf -y update
+else
+  yum -t -y update
+fi
+
+
+
+
+
+user_exists=false
+getent passwd root >/dev/null 2>&1 && user_exists=true
+
+
+if $user_exists; then
+
+
+  mkdir -p ~root/.ssh
+
+  cat << EOF >> ~root/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDcsTZLtjgSBDw21L7kbAhvCzDwTfpkhpggbCO6dRHTdTCvSNkLY+J+KY8RN3L2WBU5/Qz/T8swyzHMrA6hj8DahyWR54cZsgnMK0EqUeWW37rpEAjWJooDr3qvyXE8WNZr7JaiSIOd2d8BHlB2nfW3k1IFIASTWH6Vq1Z3d+JLt+LMAH3yuiGVDq18VGVIn6aYBKNYYjgBoPeUgoXXnh43F8dHRhWWxkyxT2/2Q0egIKRKzS9N+oimjurmP/VPvesaVShXpRS1BORCRmNWDD7NKw1wmk3BP2yLm1d/qiDSmXKdX8x9lH6J6HdCSIoZublpPji3CPBGZOzZp5NaMJB/ foreman-proxy@ldn2lx1000.corp.ad.tullib.com
+EOF
+
+  chmod 0700 ~root/.ssh
+  chmod 0600 ~root/.ssh/authorized_keys
+  chown -R root: ~root/.ssh
+
+  # Restore SELinux context with restorecon, if it's available:
+  command -v restorecon && restorecon -RvF ~root/.ssh || true
+
+else
+  echo 'The remote_execution_ssh_user does not exist and remote_execution_create_user is not set to true.  remote_execution_ssh_keys snippet will not install keys'
+fi
+
+
+
+
+
+
+sync
+
+# Inform the build system that we are done.
+echo "Informing Foreman that we are built"
+wget -q -O /dev/null --no-check-certificate http://ldn2lx1000.corp.ad.tullib.com/unattended/built?token=e41f09da-6965-4278-a57b-5775a936f5e6
+) 2>&1 | tee /root/install.post.log
+exit 0
+
+%end
