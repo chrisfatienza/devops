@@ -1,29 +1,23 @@
-
-
-
-install
-
-url --url http://ldn2lx1000.corp.ad.tullib.com/pulp/content/TPICAP/Production/ccv-RHEL9/content/dist/rhel9/9.0/x86_64/baseos/kickstart/
-
 lang en_US.UTF-8
-selinux --disabled
 keyboard us
-skipx
+timezone --utc Asia/Singapore
+rootpw $2b$10$.PjmUYqBvw8NWKnTvDc7POt8BI14lfj4ZS3fLsL0Ko5KMiHKM5mFC --iscrypted
+text
+url --url http://ldn2lx1000.corp.ad.tullib.com/pulp/content/TPICAP/Production/ccv-RHEL9/content/dist/rhel9/9.0/x86_64/baseos/kickstart/
+reqpart
 
+skipx
+selinux --disabled
 
 network --bootproto static --device=link  --ip=10.250.34.41 --netmask=255.255.255.0 --gateway=10.250.34.1 --nameserver=10.90.72.4,10.91.72.4 --mtu=1500 --hostname seo1lx8001.corp.ad.tullib.com --device=d4:04:e6:86:d2:83
 
 rootpw --iscrypted $5$w1wopO5LD9reqFhX$D3YJnldelcVkoAVxmwx8p3nV2tQkVGBPkzUaT6zy8q5
 firewall --disable
 authconfig --useshadow --passalgo=SHA256 --kickstart
-timezone --utc Asia/Singapore
+
 services --disabled gpm,sendmail,cups,pcmcia,isdn,rawdevices,hpoj,bluetooth,openibd,avahi-daemon,avahi-dnsconfd,hidd,hplip,pcscd
 
-
-
-
 bootloader --location=mbr --append="net.ifnames=0 biosdevname=0" 
-
 # Partition clearing information
 clearpart --linux --initlabel --drives=sda
 # Disk partitioning information
@@ -42,12 +36,6 @@ logvol /home --fstype="xfs" --size=20480 --name=home --vgname=VG0
 logvol /opt --fstype="xfs" --size=53248 --name=opt --vgname=VG0
 logvol /appdata --fstype="xfs" --size=10240 --name=appdata --vgname=VG0
 logvol /cores --fstype="xfs" --size=32768 --name=cores --vgname=VG0
-
-
-
-
-text
-reboot
 
 %packages
 yum
@@ -93,8 +81,6 @@ exec < /dev/tty3 > /dev/tty3
 (
 #
 
-
-
 # ens15f1 interface
 real=`grep -l d4:04:e6:86:d2:83 /sys/class/net/*/{bonding_slave/perm_hwaddr,address} 2>/dev/null | awk -F '/' '// {print $5}' | head -1`
 sanitized_real=`echo $real | sed s/:/_/`
@@ -115,7 +101,6 @@ DNS1="10.90.72.4"
 DNS2="10.91.72.4"
 MTU=1500
 EOF-b6b17c26
-
 
 
 #update local time
